@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/PlayerController.h"
+#include "Tool/ScreenMove.h"
 #include "TowerDefencePlayerController.generated.h"
 
 /**
@@ -23,4 +24,10 @@ public:
 
 	//初始化
 	virtual void BeginPlay() override;
+
+	void SetInputModeGameAndUI();
+
+protected:
+
+	FScreenMoveUnits ScreenMoveUnits;
 };
