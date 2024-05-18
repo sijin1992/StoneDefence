@@ -13,5 +13,14 @@ UCLASS()
 class STONEDEFENCE_API ATowerDefencePlayerController : public APlayerController
 {
 	GENERATED_BODY()
+
+public:
+	//构建函数
+	ATowerDefencePlayerController();
 	
+	//Tick
+	virtual void Tick(float DeltaSeconds) override;
+
+	//初始化
+	virtual void BeginPlay() override;
 };

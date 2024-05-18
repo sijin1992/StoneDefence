@@ -3,15 +3,16 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "GameFramework/GameModeBase.h"
+#include "GameFramework/GameMode.h"
 #include "StoneDefenceGameModeBase.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class STONEDEFENCE_API AStoneDefenceGameModeBase : public AGameModeBase
+class STONEDEFENCE_API AStoneDefenceGameModeBase : public AGameMode
 {
 	GENERATED_BODY()
-	
+public:
+	AStoneDefenceGameModeBase();
 };
