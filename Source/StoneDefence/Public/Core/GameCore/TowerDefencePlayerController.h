@@ -27,6 +27,15 @@ public:
 
 	void SetInputModeGameAndUI();
 
+	/**
+	* 绑定输入事件
+	* @return:		
+	*/
+	virtual void SetupInputComponent() override;
+
+	void MouseWheelUp();
+	void MouseWheelDown();
+
 protected:
 
 	FScreenMoveUnits ScreenMoveUnits;

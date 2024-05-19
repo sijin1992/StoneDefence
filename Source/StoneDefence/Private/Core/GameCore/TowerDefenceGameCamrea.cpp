@@ -39,3 +39,21 @@ void ATowerDefenceGameCamrea::SetupPlayerInputComponent(UInputComponent* PlayerI
 
 }
 
+void ATowerDefenceGameCamrea::Zoom(bool bDirection, const float& ZoomSpeed)
+{
+	if (bDirection)
+	{
+		if (CameraBoom->TargetArmLength > 400)
+		{
+			CameraBoom->TargetArmLength -= ZoomSpeed * 2;
+		}
+	}
+	else
+	{
+		if (CameraBoom->TargetArmLength < 800)
+		{
+			CameraBoom->TargetArmLength += ZoomSpeed * 2;
+		}
+	}
+}
+
