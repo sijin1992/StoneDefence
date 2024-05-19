@@ -21,7 +21,8 @@ ATowerDefenceGameCamrea::ATowerDefenceGameCamrea()
 	MarkBox->AttachToComponent(RootComponent, FAttachmentTransformRules::KeepRelativeTransform);
 
 	//控制我们摄像机的角度和距离地面的高度
-	CameraBoom->TargetArmLength = 800.f;
+	CameraBoom->TargetArmLength = 799.0f;
+	CameraBoom->SetRelativeLocation(FVector(0.0f,0.0f,250.0f));
 	CameraBoom->SetRelativeRotation(FRotator(-60.f, 0.f, 0.f));
 }
 

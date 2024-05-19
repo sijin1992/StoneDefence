@@ -13,5 +13,9 @@ UCLASS()
 class STONEDEFENCE_API ATowerDefenceLevelGameMode : public AGameMode
 {
 	GENERATED_BODY()
-	
+
+public:
+	ATowerDefenceLevelGameMode();
+
+	virtual void BeginPlay() override;
 };
