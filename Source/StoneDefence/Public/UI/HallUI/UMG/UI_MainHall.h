@@ -14,4 +14,13 @@ class STONEDEFENCE_API UUI_MainHall : public UUI_RuleOfTheWidget
 {
 	GENERATED_BODY()
 	
+	UPROPERTY(meta = (BindWidget))
+	class UUI_HallMenuSystem* HallMenuSystem;
+
+public:
+	/**
+	* UMG的初始化函数，相当于BeginPlay
+	* @return:		
+	*/
+	virtual void NativeConstruct();
 };

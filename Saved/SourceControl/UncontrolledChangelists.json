@@ -5,13 +5,6 @@
 			"guid": "00000000000000000000000000000000",
 			"description": "Default Uncontrolled Changelist",
 			"files": [
-				"F:/MyUE/UETest/StoneDefence/Content/Maps/NewMap_HLOD0_Instancing.uasset",
-				"F:/MyUE/UETest/StoneDefence/Content/__ExternalActors__/Maps/NewMap/7/PV/3F6BO7MT23VXF0F3BJ3SVV.uasset",
-				"F:/MyUE/UETest/StoneDefence/Content/__ExternalObjects__/Maps/NewMap/B/1I/0IU8TM862LV9H1H1NLM65H.uasset",
-				"F:/MyUE/UETest/StoneDefence/Content/__ExternalObjects__/Maps/NewMap/A/GD/MF84NVBBXEU474DJ8ZVZAE.uasset",
-				"F:/MyUE/UETest/StoneDefence/Content/__ExternalObjects__/Maps/NewMap/4/S0/NGAU94BV2F559EHNTPSSBV.uasset",
-				"F:/MyUE/UETest/StoneDefence/Content/__ExternalObjects__/Maps/NewMap/6/3M/ZEFXAEX0HV3TIZWTU363JO.uasset",
-				"F:/MyUE/UETest/StoneDefence/Content/__ExternalObjects__/Maps/NewMap/D/74/RFBFD2DNH0FEFQHKLMS41U.uasset",
 				"F:/MyUE/UETest/StoneDefence/Content/__ExternalActors__/Maps/NewMap/7/8Q/VJ59F2KE5EJH7KL11HW56U.uasset",
 				"F:/MyUE/UETest/StoneDefence/Content/__ExternalActors__/Maps/NewMap/8/ZI/VRIBNAXQJAWQR5GOWUC1SN.uasset",
 				"F:/MyUE/UETest/StoneDefence/Content/__ExternalActors__/Maps/NewMap/4/A0/I6PGO2ZACY1WYF9I5EWTV6.uasset",
@@ -148,8 +141,18 @@
 				"F:/MyUE/UETest/StoneDefence/Content/__ExternalActors__/Maps/NewMap/6/QE/645MYKBV7S2CA2AS80U9VV.uasset",
 				"F:/MyUE/UETest/StoneDefence/Content/__ExternalActors__/Maps/NewMap/B/FI/U8ULXKBNWT08NU7LK2FOIG.uasset",
 				"F:/MyUE/UETest/StoneDefence/Content/__ExternalActors__/Maps/NewMap/2/3V/GBY3G54KKIE9KG4FYKY4K6.uasset",
-				"F:/MyUE/UETest/StoneDefence/Content/Maps/NewMap.umap",
-				"F:/MyUE/UETest/StoneDefence/Content/Maps/TestMap.umap"
+				"F:/MyUE/UETest/StoneDefence/Content/Maps/TestMap.umap",
+				"F:/MyUE/UETest/StoneDefence/Content/Maps/HallMap.umap",
+				"F:/MyUE/UETest/StoneDefence/Content/UI/Hall/HallMain_BP.uasset",
+				"F:/MyUE/UETest/StoneDefence/Content/UI/Hall/System/HallMenuSystem_BP.uasset",
+				"F:/MyUE/UETest/StoneDefence/Content/Maps/NewMap_HLOD0_Instancing.uasset",
+				"F:/MyUE/UETest/StoneDefence/Content/__ExternalActors__/Maps/NewMap/7/PV/3F6BO7MT23VXF0F3BJ3SVV.uasset",
+				"F:/MyUE/UETest/StoneDefence/Content/__ExternalObjects__/Maps/NewMap/B/1I/0IU8TM862LV9H1H1NLM65H.uasset",
+				"F:/MyUE/UETest/StoneDefence/Content/__ExternalObjects__/Maps/NewMap/A/GD/MF84NVBBXEU474DJ8ZVZAE.uasset",
+				"F:/MyUE/UETest/StoneDefence/Content/__ExternalObjects__/Maps/NewMap/4/S0/NGAU94BV2F559EHNTPSSBV.uasset",
+				"F:/MyUE/UETest/StoneDefence/Content/__ExternalObjects__/Maps/NewMap/6/3M/ZEFXAEX0HV3TIZWTU363JO.uasset",
+				"F:/MyUE/UETest/StoneDefence/Content/__ExternalObjects__/Maps/NewMap/D/74/RFBFD2DNH0FEFQHKLMS41U.uasset",
+				"F:/MyUE/UETest/StoneDefence/Content/Maps/NewMap.umap"
 			]
 		}
 	]

@@ -14,4 +14,5 @@ class STONEDEFENCE_API ATowerDefenceHallGameMode : public AGameMode
 {
 	GENERATED_BODY()
 	
+	ATowerDefenceHallGameMode();
 };

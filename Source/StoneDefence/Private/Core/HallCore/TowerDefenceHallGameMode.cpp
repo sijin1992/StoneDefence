@@ -2,4 +2,13 @@
 
 
 #include "Core/HallCore/TowerDefenceHallGameMode.h"
+#include "UI/HallUI/Core/TowerDefenceHallHUD.h"
+#include "Core/HallCore/TowerDefenceHallPawn.h"
+#include "Core/GameCore/TowerDefencePlayerController.h"
 
+ATowerDefenceHallGameMode::ATowerDefenceHallGameMode()
+{
+	HUDClass = ATowerDefenceHallHUD::StaticClass();
+	DefaultPawnClass = ATowerDefenceHallPawn::StaticClass();
+	PlayerControllerClass = ATowerDefencePlayerController::StaticClass();
+}
