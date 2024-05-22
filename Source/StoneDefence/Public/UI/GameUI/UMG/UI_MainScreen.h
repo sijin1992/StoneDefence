@@ -14,4 +14,27 @@ class STONEDEFENCE_API UUI_MainScreen : public UUI_RuleOfTheWidget
 {
 	GENERATED_BODY()
 	
+	UPROPERTY(meta = (BindWidget))
+	class UUI_GameMenuSystem* GameMenuSystem;
+
+	UPROPERTY(meta = (BindWidget))
+	class UUI_GameInfoPrintSystem* GameInfoPrintSystem;
+
+	UPROPERTY(meta = (BindWidget))
+	class UUI_MiniMapSystem* MiniMapSystem;
+
+	UPROPERTY(meta = (BindWidget))
+	class UUI_MissionSystem* MissionSystem;
+
+	UPROPERTY(meta = (BindWidget))
+	class UUI_PlayerSkillSystem* PlayerSkillSystem;
+
+	UPROPERTY(meta = (BindWidget))
+	class UUI_RucksackSystem* RucksackSystem;
+
+	UPROPERTY(meta = (Bindwidget))
+	class UUI_ToolBarSystem* ToolBarSystem;
+
+public:
+	virtual void NativeConstruct();
 };
