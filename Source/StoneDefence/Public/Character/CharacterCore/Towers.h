@@ -24,6 +24,9 @@ class STONEDEFENCE_API ATowers : public ARuleOfTheCharacter
 	class UDestructibleComponent* DestructibleMeshBuilding;
 
 public:
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "BaseAttrubute")
+	FRotator TowersRotator;
+public:
 	ATowers();
 
 protected:

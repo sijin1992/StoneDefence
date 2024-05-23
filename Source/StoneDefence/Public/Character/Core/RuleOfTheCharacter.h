@@ -51,6 +51,10 @@ protected:
 	virtual bool IsTeam();
 
 public:
+	UFUNCTION(Blueprintable, BlueprintPure, Category = "Towers|Attrubute")
+	bool IsActive() { return IsDeath(); }
+
+public:
 	FORCEINLINE ATowerDefencePlayerController* GetGameController() { return GetWorld() ? (GetWorld()->GetFirstPlayerController<ATowerDefencePlayerController>()) : NULL; }
 	FORCEINLINE ATowerDefenceGameState* GetGameState() { return GetWorld() ? (GetWorld()->GetGameState<ATowerDefenceGameState>()) : NULL; }
 
