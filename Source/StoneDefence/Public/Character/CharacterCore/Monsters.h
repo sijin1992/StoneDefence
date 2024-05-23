@@ -13,5 +13,8 @@ UCLASS()
 class STONEDEFENCE_API AMonsters : public ARuleOfTheCharacter
 {
 	GENERATED_BODY()
-	
+
+public:
+	virtual void BeginPlay() override;
+	virtual void Tick(float DeltaTime) override;
 };
