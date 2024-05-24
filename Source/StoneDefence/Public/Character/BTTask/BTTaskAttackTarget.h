@@ -13,12 +13,10 @@ UCLASS()
 class STONEDEFENCE_API UBTTaskAttackTarget : public UBTTaskNode
 {
 	GENERATED_BODY()
-	
 public:
-
-	virtual void OnGameplayTaskInitialized(UGameplayTask& Task) {}
+	virtual void OnGameplayTaskDeactivated(UGameplayTask& Task) {}
 
 	virtual void OnGameplayTaskActivated(UGameplayTask& Task) {}
 
-	virtual void OnGameplayTaskDeactivated(UGameplayTask& Task) {}
+	virtual void OnGameplayTaskInitialized(UGameplayTask& Task) {}
 };

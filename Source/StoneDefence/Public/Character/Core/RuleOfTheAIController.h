@@ -4,14 +4,18 @@
 
 #include "CoreMinimal.h"
 #include "AIController.h"
-#include "RulerOfTheAIController.generated.h"
+#include "RuleOfTheAIController.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class STONEDEFENCE_API ARulerOfTheAIController : public AAIController
+class STONEDEFENCE_API ARuleOfTheAIController : public AAIController
 {
 	GENERATED_BODY()
+
+public:
+
+	virtual AActor* FindTarget() { return nullptr; };
 	
 };

@@ -3,15 +3,18 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Character/Core/RulerOfTheAIController.h"
+#include "Character/Core/RuleOfTheAIController.h"
 #include "MonsterAIController.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class STONEDEFENCE_API AMonsterAIController : public ARulerOfTheAIController
+class STONEDEFENCE_API AMonsterAIController : public ARuleOfTheAIController
 {
 	GENERATED_BODY()
 	
+public:
+	AActor* FindTarget();
+
 };
