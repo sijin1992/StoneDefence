@@ -4,46 +4,12 @@
 #include "Character/AIController/MonsterAIController.h"
 #include "Character/CharacterCore/Towers.h"
 #include "EngineUtils.h"
+#include "../StoneDefenceUtils.h"
 
 AActor* AMonsterAIController::FindTarget()
 {
-	//获取最近塔的算法
-	//[&]:GetPawn方法是MonsterController里的，所以要在[]加入&
-	//->ATowers：Lambda表达式中带有返回值类型
-	auto GetRecentlyTowers = [&](const TArray<ATowers*> &MyTowers) -> ATowers*
-		{
-			if (MyTowers.Num())
-			{
-				float TowerTargetDistance = 99999999.0f;
-				int32 TowersIndex = INDEX_NONE;//-1
-				FVector MyLocation = GetPawn()->GetActorLocation();
-				for (int32 i = 0; i < MyTowers.Num(); i++)
-				{
-					if (ATowers* TowerCharacter = MyTowers[i])
-					{
-						FVector TowerLocation = TowerCharacter->GetActorLocation();
-						FVector TmpVector = TowerLocation - MyLocation;
-						float TowerAndMonsterDistance = TmpVector.Size();
-
-						if (TowerAndMonsterDistance < TowerTargetDistance)
-						{
-							TowersIndex = i;
-							TowerTargetDistance = TowerAndMonsterDistance;
-						}
-					}
-				}
-
-				if (TowersIndex != INDEX_NONE)
-				{
-					return MyTowers[TowersIndex];
-				}
-			}
-
-			return NULL;
-		};
-
-	TArray<ATowers*> TargetMainTowersArray;
-	TArray<ATowers*> TargetTowersArray;
+	TArray<ARuleOfTheCharacter*> TargetMainTowersArray;
+	TArray<ARuleOfTheCharacter*> TargetTowersArray;
 
 	for (TActorIterator<ATowers>it(GetWorld(), ATowers::StaticClass()); it; ++it)
 	{
@@ -61,8 +27,8 @@ AActor* AMonsterAIController::FindTarget()
 		}
 	}
 
-	ATowers* MainTowers = GetRecentlyTowers(TargetMainTowersArray);
-	ATowers* NorTowers = GetRecentlyTowers(TargetTowersArray);
+	ATowers* MainTowers = Cast<ATowers>(StoneDefenceUtils::FindTargetRecently(TargetMainTowersArray,GetPawn()->GetActorLocation()));
+	ATowers* NorTowers = Cast<ATowers>(StoneDefenceUtils::FindTargetRecently(TargetTowersArray,GetPawn()->GetActorLocation()));
 
 	//如果主塔没死，优先返回主塔
 	if (MainTowers)

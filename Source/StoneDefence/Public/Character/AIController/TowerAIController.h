@@ -6,6 +6,7 @@
 #include "Character/Core/RuleOfTheAIController.h"
 #include "TowerAIController.generated.h"
 
+class ARuleOfTheCharacter;
 /**
  * 
  */
@@ -15,5 +16,22 @@ class STONEDEFENCE_API ATowerAIController : public ARuleOfTheAIController
 	GENERATED_BODY()
 	
 public:
+	ATowerAIController();
+
+	virtual void Tick(float DeltaTime) override;
+
 	AActor* FindTarget();
+
+protected:
+	//存放找到的怪物列表
+	UPROPERTY()
+	TArray<ARuleOfTheCharacter*> TArrayMonsters;
+	//目标弱指针
+	TWeakObjectPtr<ARuleOfTheCharacter> Target;
+
+	//心跳诊断
+	float HeartbeatDiagnosis;
+
+	//相当于服务节点
+	void BTService_FindTarget();
 };
