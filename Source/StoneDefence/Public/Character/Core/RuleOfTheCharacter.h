@@ -60,4 +60,8 @@ public:
 
 	FORCEINLINE USceneComponent* GetHomingPoint() const { return HomingPoint; }
 	FORCEINLINE UArrowComponent* GetOpenFirePoint() const { return OpenFirePoint; }
+
+public:
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "AnimAttribute")
+	bool bAttack;
 };
