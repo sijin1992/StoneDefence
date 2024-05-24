@@ -7,6 +7,7 @@
 #include "Interface/Character/IRuleCharacter.h"
 #include "Core/GameCore/TowerDefencePlayerController.h"
 #include "Core/GameCore/TowerDefenceGameState.h"
+#include "../StoneDefenceType.h"
 #include "RuleOfTheCharacter.generated.h"
 
 UCLASS()
@@ -38,6 +39,8 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
+	virtual EGameCharacterType::Type GetType();
+
 protected:
 
 	virtual float TakeDamage(float Damage, struct FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
@@ -52,7 +55,7 @@ protected:
 
 public:
 	UFUNCTION(Blueprintable, BlueprintPure, Category = "Towers|Attrubute")
-	bool IsActive() { return IsDeath(); }
+	bool IsActive() { return !IsDeath(); }
 
 public:
 	FORCEINLINE ATowerDefencePlayerController* GetGameController() { return GetWorld() ? (GetWorld()->GetFirstPlayerController<ATowerDefencePlayerController>()) : NULL; }

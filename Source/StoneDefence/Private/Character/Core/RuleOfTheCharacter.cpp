@@ -43,6 +43,11 @@ void ARuleOfTheCharacter::Tick(float DeltaTime)
 
 }
 
+EGameCharacterType::Type ARuleOfTheCharacter::GetType()
+{
+	return EGameCharacterType::Type::MAX;
+}
+
 float ARuleOfTheCharacter::TakeDamage(float Damage, struct FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
 {
 	Super::TakeDamage(Damage, DamageEvent, EventInstigator, DamageCauser);

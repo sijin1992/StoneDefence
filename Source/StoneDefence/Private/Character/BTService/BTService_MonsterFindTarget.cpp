@@ -39,17 +39,20 @@ void UBTService_MonsterFindTarget::TickNode(UBehaviorTreeComponent& OwnerComp, u
 					if (Target->IsActive())
 					{
 						MyBlackBoard->SetValueAsObject(BlackBoardKey_Target.SelectedKeyName, Target.Get());//为啥要用Target.Get(),因为Target时弱指针，需要转化成对象
+						MyBlackBoard->SetValueAsVector(BlackBoardKey_TargetLocation.SelectedKeyName, Target.Get()->GetActorLocation());
 					}
 					else
 					{
 						//如果目标已经死亡,设置为NULL
 						MyBlackBoard->SetValueAsObject(BlackBoardKey_Target.SelectedKeyName, NULL);
+						MyBlackBoard->SetValueAsVector(BlackBoardKey_TargetLocation.SelectedKeyName, FVector::ZeroVector);
 					}
 				}
 				else
 				{
 					//对象无意义也置为NULL
 					MyBlackBoard->SetValueAsObject(BlackBoardKey_Target.SelectedKeyName, NULL);
+					MyBlackBoard->SetValueAsVector(BlackBoardKey_TargetLocation.SelectedKeyName, FVector::ZeroVector);
 				}
 			}
 			//获取距离

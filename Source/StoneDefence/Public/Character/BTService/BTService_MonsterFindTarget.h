@@ -17,10 +17,13 @@ class STONEDEFENCE_API UBTService_MonsterFindTarget : public UBTService
 public:
 	//FBlackboardKeySelector 通过反射可以设置很多种类型
 	UPROPERTY(EditAnywhere, Category = "BlackBoard")
-	struct FBlackboardKeySelector BlackBoardKey_Target;//搜集对象
+	struct FBlackboardKeySelector BlackBoardKey_Target;//搜集目标对象
 
 	UPROPERTY(EditAnywhere, Category = "BlackBoard")
-	struct FBlackboardKeySelector BlackBoardKey_Distance;//距离
+	struct FBlackboardKeySelector BlackBoardKey_Distance;//到目标的距离
+
+	UPROPERTY(EditAnywhere, Category = "BlackBoard")
+	struct FBlackboardKeySelector BlackBoardKey_TargetLocation;//目标位置
 
 	/**
 	* 每帧搜集对象并计算距离
