@@ -3,14 +3,14 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AIController.h"
+#include "Character/Core/RulerOfTheAIController.h"
 #include "TowerAIController.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class STONEDEFENCE_API ATowerAIController : public AAIController
+class STONEDEFENCE_API ATowerAIController : public ARulerOfTheAIController
 {
 	GENERATED_BODY()
 	

@@ -8,13 +8,16 @@ public class StoneDefence : ModuleRules
 	{
 		PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
 		//系统模块
-		PublicDependencyModuleNames.AddRange(new string[] { "Core", 
+		PublicDependencyModuleNames.AddRange(new string[] { 
+			"Core", 
 			"CoreUObject", 
 			"Engine", 
 			"InputCore", 
 			"UMG",
-			"ApexDestruction"
-		});
+			"ApexDestruction",
+            "AIModule",
+			"GameplayTasks"
+        });
 		//自定义插件
         PublicDependencyModuleNames.AddRange(new string[] {
             "StoneToolClass", 
