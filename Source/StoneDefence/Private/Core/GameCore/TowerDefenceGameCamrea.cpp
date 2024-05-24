@@ -21,9 +21,17 @@ ATowerDefenceGameCamrea::ATowerDefenceGameCamrea()
 	MarkBox->AttachToComponent(RootComponent, FAttachmentTransformRules::KeepRelativeTransform);
 
 	//控制我们摄像机的角度和距离地面的高度
-	CameraBoom->TargetArmLength = 799.0f;
-	CameraBoom->SetRelativeLocation(FVector(0.0f,0.0f,250.0f));
+	CameraBoom->TargetArmLength = 299.0f;
+	//CameraBoom->SetRelativeLocation(FVector(0.0f,0.0f,250.0f));
 	CameraBoom->SetRelativeRotation(FRotator(-60.f, 0.f, 0.f));
+
+	//开启碰撞
+	MarkBox->SetCollisionProfileName(TEXT("ControllerPawnProfile"));//使用预设
+	//MarkBox->SetCollisionEnabled(ECollisionEnabled::QueryOnly);//查询类型
+	//MarkBox->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);//碰撞响应全部关闭
+	//MarkBox->SetCollisionResponseToChannel(ECollisionChannel::ECC_Visibility, ECollisionResponse::ECR_Overlap);
+	//MarkBox->SetCollisionResponseToChannel(ECollisionChannel::ECC_WorldDynamic, ECollisionResponse::ECR_Overlap);
+
 }
 
 // Called when the game starts or when spawned
