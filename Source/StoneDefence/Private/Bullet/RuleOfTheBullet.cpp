@@ -41,74 +41,73 @@ void ARuleOfTheBullet::BeginPlay()
 	//处理不同子弹类型初始化
 	switch (BulletType)
 	{
-	case EBulletType::BULLET_DIRECT_LINE:
-		UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), OpenFireParticle, GetActorLocation());//播放开火特效
-		break;
-	case EBulletType::BULLET_LINE:
-		UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), OpenFireParticle, GetActorLocation());
-		break;
-	case EBulletType::BULLET_TRACK_LINE://跟踪子弹
-	{
-		UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), OpenFireParticle, GetActorLocation());
-		ProjectileMoement->bIsHomingProjectile = true;//开启跟踪
-		ProjectileMoement->bRotationFollowsVelocity = true;//旋转跟随速度
-		//拿到施法者
-		if (ARuleOfTheCharacter *InstigatorCharacter = (GetInstigator<ARuleOfTheCharacter>()))
+		case EBulletType::BULLET_DIRECT_LINE:
+			UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), OpenFireParticle, GetActorLocation());//播放开火特效
+			break;
+		case EBulletType::BULLET_LINE:
+			UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), OpenFireParticle, GetActorLocation());
+			break;
+		case EBulletType::BULLET_TRACK_LINE://跟踪子弹
 		{
-			//拿到Controller
-			if (ARuleOfTheAIController *InstigatorController = Cast<ARuleOfTheAIController>(InstigatorCharacter->GetController()))
+			UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), OpenFireParticle, GetActorLocation());
+			ProjectileMoement->bIsHomingProjectile = true;//开启跟踪
+			ProjectileMoement->bRotationFollowsVelocity = true;//旋转跟随速度
+			//拿到施法者
+			if (ARuleOfTheCharacter *InstigatorCharacter = (GetInstigator<ARuleOfTheCharacter>()))
 			{
-				//拿到Target
-				if (ARuleOfTheCharacter* TargetCharacter = InstigatorController->Target.Get())
+				//拿到Controller
+				if (ARuleOfTheAIController *InstigatorController = Cast<ARuleOfTheAIController>(InstigatorCharacter->GetController()))
 				{
-					//对当前目标加速度大小设置
-					ProjectileMoement->HomingAccelerationMagnitude = 4000.0f;
-					//跟踪组件设为目标的跟踪点
-					ProjectileMoement->HomingTargetComponent = TargetCharacter->GetHomingPoint();
-				}
-			}
-		}
-
-		break;
-	}
-	case EBulletType::BULLET_RANGE_LINE://范围伤害,丢手雷
-		break;
-	case EBulletType::BULLET_RANGE://范围伤害
-		//获取施法者
-		if (ARuleOfTheCharacter* InstigatorCharacter = GetInstigator<ARuleOfTheCharacter>())
-		{
-			ProjectileMoement->StopMovementImmediately();//移动立即停止
-			
-			TArray<AActor*> IgnoreActors;//忽略/友军列表
-			//TArray<AActor*> TargetActors;//敌人列表
-			//迭代器遍历忽略的Actor和目标Actor
-			for (TActorIterator<ARuleOfTheCharacter>it(GetWorld(), ARuleOfTheCharacter::StaticClass()); it; ++it)
-			{
-				if (ARuleOfTheCharacter* TheCharacter = *it)
-				{
-					FVector VDistance = TheCharacter->GetActorLocation() - InstigatorCharacter->GetActorLocation();
-					if (VDistance.Size() <= 1400.0f)
+					//拿到Target
+					if (ARuleOfTheCharacter* TargetCharacter = InstigatorController->Target.Get())
 					{
-						if (TheCharacter->IsTeam() == InstigatorCharacter->IsTeam())
-						{
-							IgnoreActors.Add(TheCharacter);
-						}
-						else
-						{
-							UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), DamgeParticle, TheCharacter->GetActorLocation());
-							//TargetActors.Add(TheCharacter);
-						}
+						//对当前目标加速度大小设置
+						ProjectileMoement->HomingAccelerationMagnitude = 4000.0f;
+						//跟踪组件设为目标的跟踪点
+						ProjectileMoement->HomingTargetComponent = TargetCharacter->GetHomingPoint();
 					}
 				}
 			}
-			//造成范围伤害,向四周衰减
-			UGameplayStatics::ApplyRadialDamageWithFalloff(GetWorld(), 100.0f, 10.0f, GetActorLocation(), 400.0f, 1000.0f, 1.0f, UDamageType::StaticClass(), IgnoreActors, GetInstigator());
+			break;
 		}
-		break;
-	case EBulletType::BULLET_CHAIN://链式子弹
-		ProjectileMoement->StopMovementImmediately();
-		BoxDamage->SetCollisionEnabled(ECollisionEnabled::NoCollision);//设置没有任何碰撞,因为通过其他点对点的方式造成伤害，没有必要通过碰撞造成伤害
-		break;
+		case EBulletType::BULLET_RANGE_LINE://范围伤害,丢手雷,抛物线
+		{
+			ProjectileMoement->StopMovementImmediately();//关闭动态模拟
+
+			if (ARuleOfTheCharacter* InstigatorCharacter = GetInstigator<ARuleOfTheCharacter>())
+			{
+				if (ARuleOfTheAIController* InstigatorController = Cast<ARuleOfTheAIController>(InstigatorCharacter->GetController()))
+				{
+					if (ARuleOfTheCharacter* TargetCharacter = InstigatorController->Target.Get())
+					{
+						ProjectileMoement->ProjectileGravityScale = 1.0f;//打开重力
+
+						FVector TargetFromOwnerVector = TargetCharacter->GetActorLocation() - GetActorLocation();//距离d,与水平面可能存在误差
+
+						float InTime = (TargetFromOwnerVector.Size() / ProjectileMoement->InitialSpeed);//时间t
+						float Y = ProjectileMoement->GetGravityZ() * InTime;//Vy,GetGravityZ,UE中的重力加速度是每秒980像素
+						float X = ProjectileMoement->InitialSpeed * InTime;//Vx
+						float V = FMath::Sqrt(X * X + Y * Y);//V
+
+						float CosRadian = FMath::Acos(TargetFromOwnerVector.Size() / V * (InTime * (PI * 0.1f)));//反余弦求出抛物线弧度,PI * 0.1f用于修复上面的误差
+						FRotator Rot = GetActorRotation();
+						Rot.Pitch = CosRadian * (180 / PI);//将弧度转换成角度
+						SetActorRotation(Rot);
+
+						ProjectileMoement->SetVelocityInLocalSpace(FVector(1.0f, 0.0f, 0.0f) * ProjectileMoement->InitialSpeed);//重新设置速度，开启动态模拟
+					}
+				}
+			}
+			break;
+		}
+		case EBulletType::BULLET_RANGE://范围伤害
+			ProjectileMoement->StopMovementImmediately();//移动立即停止
+			RadialDamage(GetActorLocation(), GetInstigator<ARuleOfTheCharacter>());
+			break;
+		case EBulletType::BULLET_CHAIN://链式子弹
+			ProjectileMoement->StopMovementImmediately();
+			BoxDamage->SetCollisionEnabled(ECollisionEnabled::NoCollision);//设置没有任何碰撞,因为通过其他点对点的方式造成伤害，没有必要通过碰撞造成伤害
+			break;
 	}
 	//绑定代理
 	BoxDamage->OnComponentBeginOverlap.AddUniqueDynamic(this, &ARuleOfTheBullet::OnBeginOverlap);
@@ -119,6 +118,45 @@ void ARuleOfTheBullet::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+}
+
+void ARuleOfTheBullet::RadialDamage(const FVector& Origin, ARuleOfTheCharacter* InstigatorCharacter)
+{
+	//获取施法者
+	if (InstigatorCharacter)
+	{
+		TArray<AActor*> IgnoreActors;//忽略/友军列表
+		//TArray<AActor*> TargetActors;//敌人列表
+		//迭代器遍历忽略的Actor和目标Actor
+		for (TActorIterator<ARuleOfTheCharacter>it(GetWorld(), ARuleOfTheCharacter::StaticClass()); it; ++it)
+		{
+			if (ARuleOfTheCharacter* TheCharacter = *it)
+			{
+				FVector VDistance = TheCharacter->GetActorLocation() - InstigatorCharacter->GetActorLocation();
+				if (VDistance.Size() <= 1400.0f)
+				{
+					if (TheCharacter->IsTeam() == InstigatorCharacter->IsTeam())
+					{
+						IgnoreActors.Add(TheCharacter);
+					}
+					else
+					{
+						UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), DamgeParticle, TheCharacter->GetActorLocation());
+						//TargetActors.Add(TheCharacter);
+					}
+				}
+			}
+		}
+		//造成范围伤害,向四周衰减
+		UGameplayStatics::ApplyRadialDamageWithFalloff(
+			GetWorld(), 
+			100.0f, 10.0f, 
+			Origin, 
+			400.0f, 1000.0f, 1.0f, 
+			UDamageType::StaticClass(), 
+			IgnoreActors, 
+			GetInstigator());
+	}
 }
 
 void ARuleOfTheBullet::OnBeginOverlap(UPrimitiveComponent* OverlappedComp, AActor* Other, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
@@ -138,17 +176,25 @@ void ARuleOfTheBullet::OnBeginOverlap(UPrimitiveComponent* OverlappedComp, AActo
 					//生成粒子特效
 					UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), DamgeParticle, SweepResult.Location);
 
-					//造成伤害
-					UGameplayStatics::ApplyDamage(OtherCharacter, 100.f, InstigatorCharacter->GetController(), InstigatorCharacter, UDamageType::StaticClass());
-				}
-
-				//处理不同子弹类型销毁
-				switch (BulletType)
-				{
-				case EBulletType::BULLET_LINE:
-				case EBulletType::BULLET_TRACK_LINE:
-					Destroy();
-					break;
+					//处理不同子弹类型销毁
+					switch (BulletType)
+					{
+						case EBulletType::BULLET_DIRECT_LINE:
+						case EBulletType::BULLET_LINE:
+						case EBulletType::BULLET_TRACK_LINE:
+						{
+							//造成伤害
+							UGameplayStatics::ApplyDamage(
+								OtherCharacter, 
+								100.f, 
+								InstigatorCharacter->GetController(), 
+								InstigatorCharacter,
+								UDamageType::StaticClass());
+							//销毁
+							Destroy();
+							break;
+						}
+					}
 				}
 			}
 		}

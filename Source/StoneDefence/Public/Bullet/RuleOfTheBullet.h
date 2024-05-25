@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include "../StoneDefenceType.h"
+#include "Character/Core/RuleOfTheCharacter.h"
 #include "RuleOfTheBullet.generated.h"
 
 UCLASS()
@@ -37,6 +38,8 @@ public:
 
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
+	//范围伤害
+	void RadialDamage(const FVector& Origin, ARuleOfTheCharacter* InstigatorCharacter);
 
 protected:
 	// Called when the game starts or when spawned

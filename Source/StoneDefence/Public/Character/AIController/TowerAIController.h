@@ -28,8 +28,6 @@ protected:
 	//存放找到的怪物列表
 	UPROPERTY()
 	TArray<ARuleOfTheCharacter*> TArrayMonsters;
-	//目标弱指针
-	TWeakObjectPtr<ARuleOfTheCharacter> TargetWeakPtr;
 
 	//心跳诊断
 	float HeartbeatDiagnosis;

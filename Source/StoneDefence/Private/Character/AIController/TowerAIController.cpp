@@ -28,14 +28,14 @@ void ATowerAIController::Tick(float DeltaTime)
 	{
 		if (ATowers *Towers = GetPawn<ATowers>())
 		{
-			if (!TargetWeakPtr.IsValid())
+			if (!Target.IsValid())
 			{
-				TargetWeakPtr = Cast<ARuleOfTheCharacter>(FindTarget());
+				Target = Cast<ARuleOfTheCharacter>(FindTarget());
 			}
 
-			if (TargetWeakPtr.IsValid())
+			if (Target.IsValid())
 			{
-				Towers->TowersRotator = FRotationMatrix::MakeFromX(TargetWeakPtr->GetActorLocation() - GetPawn()->GetActorLocation()).Rotator();
+				Towers->TowersRotator = FRotationMatrix::MakeFromX(Target->GetActorLocation() - GetPawn()->GetActorLocation()).Rotator();
 				if (GetPawn()->GetActorRotation() != FRotator::ZeroRotator)
 				{
 					Towers->TowersRotator -= GetPawn()->GetActorRotation();
@@ -93,7 +93,7 @@ void ATowerAIController::BTService_FindTarget()
 				}
 			}
 
-			AttackTarget(TargetWeakPtr.Get());//弱指针Target.Get：将弱指针转换成裸指针
+			AttackTarget(Target.Get());//弱指针Target.Get：将弱指针转换成裸指针
 		}
 	}
 }
