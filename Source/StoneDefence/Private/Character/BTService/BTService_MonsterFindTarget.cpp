@@ -12,40 +12,40 @@ void UBTService_MonsterFindTarget::TickNode(UBehaviorTreeComponent& OwnerComp, u
 {
 	Super::TickNode(OwnerComp, NodeMemory, DeltaSeconds);
 	//拿到AIController
-	if (ARuleOfTheAIController* MonsterAIController = Cast<ARuleOfTheAIController>(OwnerComp.GetOwner()))
+	if (ARuleOfTheAIController* CharacterAIController = Cast<ARuleOfTheAIController>(OwnerComp.GetOwner()))
 	{
 		//拿到保存的数据
 		if (UBlackboardComponent* MyBlackBoard = OwnerComp.GetBlackboardComponent())
 		{
 			//通过基类方法寻找对象
-			if (ARuleOfTheCharacter* NewTarget = Cast<ARuleOfTheCharacter>(MonsterAIController->FindTarget()))
+			if (ARuleOfTheCharacter* NewTarget = Cast<ARuleOfTheCharacter>(CharacterAIController->FindTarget()))
 			{
 				//如果找到的对象与目标不一样
-				if (Target != NewTarget)
+				if (CharacterAIController->Target != NewTarget)
 				{
 					//拿到当前的对象
-					if (ARuleOfTheCharacter* MonsterSelf = Cast<ARuleOfTheCharacter>(MonsterAIController->GetPawn()))
+					if (ARuleOfTheCharacter* CharacterSelf = Cast<ARuleOfTheCharacter>(CharacterAIController->GetPawn()))
 					{
-						//让对象立即停止移动
-						MonsterSelf->GetCharacterMovement()->StopMovementImmediately();
+						//让自身对象立即停止移动
+						CharacterSelf->GetCharacterMovement()->StopMovementImmediately();
 					}
 					//更换目标
-					Target = NewTarget;
+					CharacterAIController->Target = NewTarget;
 				}
 				//如果对象有意义
-				if (Target.IsValid())
+				if (CharacterAIController->Target.IsValid())
 				{
 					//如果目标还活动将数据保存到黑板
-					if (Target->IsActive())
+					if (CharacterAIController->Target->IsActive())
 					{
 						//获取自身到目标塔的方向向量
-						FVector NewTargetV = MonsterAIController->GetPawn()->GetActorLocation() - Target.Get()->GetActorLocation();
+						FVector NewTargetV = CharacterAIController->GetPawn()->GetActorLocation() - CharacterAIController->Target.Get()->GetActorLocation();
 						NewTargetV.Normalize();
 						//方向单位向量乘以攻击范围后再加上目标的位置
-						FVector CurrentLocation = NewTargetV * 800.0f + Target.Get()->GetActorLocation();
+						FVector CurrentLocation = NewTargetV * 800.0f + CharacterAIController->Target.Get()->GetActorLocation();
 						MyBlackBoard->SetValueAsVector(BlackBoardKey_TargetLocation.SelectedKeyName, CurrentLocation);
 
-						MyBlackBoard->SetValueAsObject(BlackBoardKey_Target.SelectedKeyName, Target.Get());//为啥要用Target.Get(),因为Target时弱指针，需要转化成对象
+						MyBlackBoard->SetValueAsObject(BlackBoardKey_Target.SelectedKeyName, CharacterAIController->Target.Get());//为啥要用Target.Get(),因为Target时弱指针，需要转化成对象
 					}
 					else
 					{
@@ -62,13 +62,13 @@ void UBTService_MonsterFindTarget::TickNode(UBehaviorTreeComponent& OwnerComp, u
 				}
 			}
 			//获取距离
-			if (Target.IsValid())
+			if (CharacterAIController->Target.IsValid())
 			{
-				FVector Mylocation = MonsterAIController->GetPawn()->GetActorLocation();
-				FVector TMDistance = Mylocation - Target->GetActorLocation();
+				FVector Mylocation = CharacterAIController->GetPawn()->GetActorLocation();
+				FVector TMDistance = Mylocation - CharacterAIController->Target->GetActorLocation();
 				if (TMDistance.Size() > 2200)
 				{
-					if (ARuleOfTheCharacter* MonsterAI = Cast<ARuleOfTheCharacter>(MonsterAIController->GetPawn()))
+					if (ARuleOfTheCharacter* MonsterAI = Cast<ARuleOfTheCharacter>(CharacterAIController->GetPawn()))
 					{
 						//如果大于攻击距离就设置为不攻击
 						MonsterAI->bAttack = false;

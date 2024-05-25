@@ -8,6 +8,7 @@
 #include "Character/Core/RuleOfTheCharacter.h"
 #include "Kismet/GameplayStatics.h"
 #include "GameFramework/DamageType.h"
+#include "Character/Core/RuleOfTheAIController.h"
 
 // Sets default values
 ARuleOfTheBullet::ARuleOfTheBullet()
@@ -36,6 +37,7 @@ void ARuleOfTheBullet::BeginPlay()
 {
 	Super::BeginPlay();
 
+	//处理不同子弹类型初始化
 	switch (BulletType)
 	{
 	case EBulletType::BULLET_DIRECT_LINE:
@@ -45,10 +47,29 @@ void ARuleOfTheBullet::BeginPlay()
 		UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), OpenFireParticle, GetActorLocation());
 		break;
 	case EBulletType::BULLET_TRACK_LINE://跟踪子弹
+	{
 		UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), OpenFireParticle, GetActorLocation());
 		ProjectileMoement->bIsHomingProjectile = true;//开启跟踪
 		ProjectileMoement->bRotationFollowsVelocity = true;//旋转跟随速度
+		//拿到施法者
+		if (ARuleOfTheCharacter *InstigatorCharacter = (GetInstigator<ARuleOfTheCharacter>()))
+		{
+			//拿到Controller
+			if (ARuleOfTheAIController *InstigatorController = Cast<ARuleOfTheAIController>(InstigatorCharacter->GetController()))
+			{
+				//拿到Target
+				if (ARuleOfTheCharacter* TargetCharacter = InstigatorController->Target.Get())
+				{
+					//对当前目标加速度大小设置
+					ProjectileMoement->HomingAccelerationMagnitude = 4000.0f;
+					//跟踪组件设为目标的跟踪点
+					ProjectileMoement->HomingTargetComponent = TargetCharacter->GetHomingPoint();
+				}
+			}
+		}
+
 		break;
+	}
 	case EBulletType::BULLET_RANGE://范围伤害
 		ProjectileMoement->StopMovementImmediately();//移动立即停止
 		break;
@@ -87,6 +108,15 @@ void ARuleOfTheBullet::OnBeginOverlap(UPrimitiveComponent* OverlappedComp, AActo
 
 					//造成伤害
 					UGameplayStatics::ApplyDamage(OtherCharacter, 100.f, InstigatorCharacter->GetController(), InstigatorCharacter, UDamageType::StaticClass());
+				}
+
+				//处理不同子弹类型销毁
+				switch (BulletType)
+				{
+				case EBulletType::BULLET_LINE:
+				case EBulletType::BULLET_TRACK_LINE:
+					Destroy();
+					break;
 				}
 			}
 		}

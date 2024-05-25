@@ -17,6 +17,11 @@ class STONEDEFENCE_API ARuleOfTheAIController : public AAIController
 
 public:
 
+	//弱指针，当对象被销毁时会自动置为nullptr，无需手动销毁
+	//这里的弱指针继承自Object，在slate中的弱指针时C++原生的
+	TWeakObjectPtr<class ARuleOfTheCharacter> Target;
+
 	virtual AActor* FindTarget() { return nullptr; };
+
 	virtual void AttackTarget(ARuleOfTheCharacter* AttackTarget) {};
 };

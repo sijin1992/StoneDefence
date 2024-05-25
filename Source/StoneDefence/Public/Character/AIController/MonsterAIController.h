@@ -16,6 +16,7 @@ class STONEDEFENCE_API AMonsterAIController : public ARuleOfTheAIController
 	GENERATED_BODY()
 	
 public:
+
 	AActor* FindTarget();
 
 	void AttackTarget(ARuleOfTheCharacter* AttackTarget);
