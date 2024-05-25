@@ -28,24 +28,22 @@ class STONEDEFENCE_API ARuleOfTheCharacter : public ACharacter, public IRuleChar
 	class UBoxComponent* TraceShowCharacterInformation;
 
 public:
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "AnimAttribute")
+	bool bAttack;
+
+public:	
 	// Sets default values for this character's properties
 	ARuleOfTheCharacter();
 
-protected:
-	// Called when the game starts or when spawned
-	virtual void BeginPlay() override;
-
-public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
 	virtual EGameCharacterType::Type GetType();
 
-protected:
-
-	virtual float TakeDamage(float Damage, struct FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
-
 	virtual bool IsDeath();
+
+	UFUNCTION(Blueprintable, BlueprintPure, Category = "Towers|Attrubute")
+	bool IsActive() { return !IsDeath(); }
 
 	virtual float GetHealth();
 
@@ -54,17 +52,15 @@ protected:
 	virtual bool IsTeam();
 
 public:
-	UFUNCTION(Blueprintable, BlueprintPure, Category = "Towers|Attrubute")
-	bool IsActive() { return !IsDeath(); }
-
-public:
 	FORCEINLINE ATowerDefencePlayerController* GetGameController() { return GetWorld() ? (GetWorld()->GetFirstPlayerController<ATowerDefencePlayerController>()) : NULL; }
 	FORCEINLINE ATowerDefenceGameState* GetGameState() { return GetWorld() ? (GetWorld()->GetGameState<ATowerDefenceGameState>()) : NULL; }
 
 	FORCEINLINE USceneComponent* GetHomingPoint() const { return HomingPoint; }
 	FORCEINLINE UArrowComponent* GetOpenFirePoint() const { return OpenFirePoint; }
 
-public:
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "AnimAttribute")
-	bool bAttack;
+protected:
+	// Called when the game starts or when spawned
+	virtual void BeginPlay() override;
+
+	virtual float TakeDamage(float Damage, struct FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
 };

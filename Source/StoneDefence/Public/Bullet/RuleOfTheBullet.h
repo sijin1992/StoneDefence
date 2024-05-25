@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "../StoneDefenceType.h"
 #include "RuleOfTheBullet.generated.h"
 
 UCLASS()
@@ -20,9 +21,22 @@ class STONEDEFENCE_API ARuleOfTheBullet : public AActor
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "BaseAttrubute", meta = (AllowPrivateAccess = "true"))
 	class UProjectileMovementComponent* ProjectileMoement;
 
+public:
+	UPROPERTY(EditDefaultsOnly, Category = "Bullet")
+	TEnumAsByte<EBulletType> BulletType;
+	//开火特效
+	UPROPERTY(EditDefaultsOnly, Category = "Bullet")
+	UParticleSystem* OpenFireParticle;
+	//子弹伤害特效(碰撞后产生的特效)
+	UPROPERTY(EditDefaultsOnly,Category = "Bullet")
+	UParticleSystem* DamgeParticle;
+
 public:	
 	// Sets default values for this actor's properties
 	ARuleOfTheBullet();
+
+	// Called every frame
+	virtual void Tick(float DeltaTime) override;
 
 protected:
 	// Called when the game starts or when spawned
@@ -30,9 +44,4 @@ protected:
 	
 	UFUNCTION()
 	void OnBeginOverlap(UPrimitiveComponent* OverlappedComp, AActor* Other, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
-
-public:	
-	// Called every frame
-	virtual void Tick(float DeltaTime) override;
-
 };

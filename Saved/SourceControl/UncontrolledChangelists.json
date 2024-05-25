@@ -213,6 +213,8 @@
 				"F:/MyUE/UETest/StoneDefence/Content/Character/Monster/AI/MonsterBlackboard_BP.uasset",
 				"F:/MyUE/UETest/StoneDefence/Content/Bullet/BulletBase_BP.uasset",
 				"F:/MyUE/UETest/StoneDefence/Content/Character/Tower/Cannon/BP/CannonBullet_BP.uasset",
+				"F:/MyUE/UETest/StoneDefence/Content/Character/Tower/Cannon/Particle/NewParticleSystem1.uasset",
+				"F:/MyUE/UETest/StoneDefence/Content/Character/Tower/Cannon/Particle/NewParticleSystem.uasset",
 				"F:/MyUE/UETest/StoneDefence/Content/Character/Monster/AI/NewBlackboardData.uasset",
 				"F:/MyUE/UETest/StoneDefence/Content/Character/Monster/AI/NewBehaviorTree.uasset",
 				"F:/MyUE/UETest/StoneDefence/Content/Character/Monster/AI/BTService_BlueprintBase_New.uasset",
