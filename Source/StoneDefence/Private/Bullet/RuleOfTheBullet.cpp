@@ -39,10 +39,13 @@ void ARuleOfTheBullet::BeginPlay()
 	switch (BulletType)
 	{
 	case EBulletType::BULLET_DIRECT_LINE:
+		UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), OpenFireParticle, GetActorLocation());//播放开火特效
 		break;
 	case EBulletType::BULLET_LINE:
+		UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), OpenFireParticle, GetActorLocation());
 		break;
 	case EBulletType::BULLET_TRACK_LINE://跟踪子弹
+		UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), OpenFireParticle, GetActorLocation());
 		ProjectileMoement->bIsHomingProjectile = true;//开启跟踪
 		ProjectileMoement->bRotationFollowsVelocity = true;//旋转跟随速度
 		break;

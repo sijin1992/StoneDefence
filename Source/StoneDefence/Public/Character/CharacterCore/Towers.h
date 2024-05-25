@@ -29,6 +29,8 @@ public:
 public:
 	ATowers();
 
+	virtual bool IsTeam();
+
 	virtual EGameCharacterType::Type GetType();
 
 protected:

@@ -17,6 +17,11 @@ ATowers::ATowers()
 	DestructibleMeshBuilding->AttachToComponent(RootComponent, FAttachmentTransformRules::KeepRelativeTransform);
 }
 
+bool ATowers::IsTeam()
+{
+	return true;
+}
+
 EGameCharacterType::Type ATowers::GetType()
 {
 	return EGameCharacterType::Type::TOWER;

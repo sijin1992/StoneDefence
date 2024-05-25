@@ -32,7 +32,7 @@ void UAnimNotify_SpawnBullet::Notify(USkeletalMeshComponent* MeshComp, UAnimSequ
 #if WITH_EDITOR
 	FVector ComponentLocation = MeshComp->GetSocketLocation(InSocketName);
 	FRotator ComponentRotation = MeshComp->GetSocketRotation(InSocketName);
-	if (APawn* Character = Cast<APawn>(MeshComp->GetOuter()))//动画编辑器也可见
+	if (AActor* Character = Cast<AActor>(MeshComp->GetOuter()))//动画编辑器也可见，必须是AActor类型
 #else
 	FVector ComponentLocation = Character->GetOpenFirePoint()->GetComponentLocation();
 	FRotator ComponentRotation = Character->GetOpenFirePoint()->GetComponentRotation();
@@ -45,7 +45,8 @@ void UAnimNotify_SpawnBullet::Notify(USkeletalMeshComponent* MeshComp, UAnimSequ
 		Transform.SetRotation(ComponentRotation.Quaternion());//将Rotation转化成四元数类型:TQuat
 		//构造ActorSpawnParameters
 		FActorSpawnParameters ActorSpawnParameters;
-		ActorSpawnParameters.Instigator = Character;//设置施法者
+		ActorSpawnParameters.Instigator = Cast<APawn>(Character);//设置施法者
+
 		if (ARuleOfTheBullet *Bullet = Character->GetWorld()->SpawnActor<ARuleOfTheBullet>(BulletClass, Transform, ActorSpawnParameters))
 		{
 
