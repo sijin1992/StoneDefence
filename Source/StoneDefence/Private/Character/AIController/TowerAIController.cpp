@@ -6,6 +6,7 @@
 #include "Character/CharacterCore/Monsters.h"
 #include "Character/CharacterCore/Towers.h"
 #include "../StoneDefenceUtils.h"
+#include "UObject/WeakObjectPtrTemplates.h"
 
 ATowerAIController::ATowerAIController()
 	:HeartbeatDiagnosis(0.0f)
@@ -15,26 +16,26 @@ ATowerAIController::ATowerAIController()
 void ATowerAIController::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
+	//心跳诊断
 	HeartbeatDiagnosis += DeltaTime;
 	if (HeartbeatDiagnosis >= 0.5f)
 	{
 		BTService_FindTarget();
 		HeartbeatDiagnosis = 0;
 	}
-
+	//遍历怪物列表
 	if (TArrayMonsters.Num())
 	{
 		if (ATowers *Towers = GetPawn<ATowers>())
 		{
-			if (!Target.IsValid())
+			if (!TargetWeakPtr.IsValid())
 			{
-				Target = Cast<ARuleOfTheCharacter>(FindTarget());
+				TargetWeakPtr = Cast<ARuleOfTheCharacter>(FindTarget());
 			}
 
-			if (Target.IsValid())
+			if (TargetWeakPtr.IsValid())
 			{
-				Towers->TowersRotator = FRotationMatrix::MakeFromX(Target->GetActorLocation() - GetPawn()->GetActorLocation()).Rotator();
+				Towers->TowersRotator = FRotationMatrix::MakeFromX(TargetWeakPtr->GetActorLocation() - GetPawn()->GetActorLocation()).Rotator();
 				if (GetPawn()->GetActorRotation() != FRotator::ZeroRotator)
 				{
 					Towers->TowersRotator -= GetPawn()->GetActorRotation();
@@ -51,6 +52,21 @@ AActor* ATowerAIController::FindTarget()
 		return StoneDefenceUtils::FindTargetRecently(TArrayMonsters, GetPawn()->GetActorLocation());
 	}
 	return nullptr;
+}
+
+void ATowerAIController::AttackTarget(ARuleOfTheCharacter* AttackTarget)
+{
+	if (ATowers *Towers = GetPawn<ATowers>())
+	{
+		if (TArrayMonsters.Num() > 0)
+		{
+			Towers->bAttack = true;
+		}
+		else
+		{
+			Towers->bAttack = false;
+		}
+	}
 }
 
 void ATowerAIController::BTService_FindTarget()
@@ -77,14 +93,7 @@ void ATowerAIController::BTService_FindTarget()
 				}
 			}
 
-			if (TArrayMonsters.Num() > 0)
-			{
-				Towers->bAttack = true;
-			}
-			else
-			{
-				Towers->bAttack = false;
-			}
+			AttackTarget(TargetWeakPtr.Get());//弱指针Target.Get：将弱指针转换成裸指针
 		}
 	}
 }

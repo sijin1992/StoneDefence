@@ -38,8 +38,14 @@ void UBTService_MonsterFindTarget::TickNode(UBehaviorTreeComponent& OwnerComp, u
 					//如果目标还活动将数据保存到黑板
 					if (Target->IsActive())
 					{
+						//获取自身到目标塔的方向向量
+						FVector NewTargetV = MonsterAIController->GetPawn()->GetActorLocation() - Target.Get()->GetActorLocation();
+						NewTargetV.Normalize();
+						//方向单位向量乘以攻击范围后再加上目标的位置
+						FVector CurrentLocation = NewTargetV * 800.0f + Target.Get()->GetActorLocation();
+						MyBlackBoard->SetValueAsVector(BlackBoardKey_TargetLocation.SelectedKeyName, CurrentLocation);
+
 						MyBlackBoard->SetValueAsObject(BlackBoardKey_Target.SelectedKeyName, Target.Get());//为啥要用Target.Get(),因为Target时弱指针，需要转化成对象
-						MyBlackBoard->SetValueAsVector(BlackBoardKey_TargetLocation.SelectedKeyName, Target.Get()->GetActorLocation());
 					}
 					else
 					{

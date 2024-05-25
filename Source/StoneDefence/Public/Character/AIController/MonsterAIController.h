@@ -6,6 +6,7 @@
 #include "Character/Core/RuleOfTheAIController.h"
 #include "MonsterAIController.generated.h"
 
+class ARuleOfTheCharacter;
 /**
  * 
  */
@@ -17,4 +18,5 @@ class STONEDEFENCE_API AMonsterAIController : public ARuleOfTheAIController
 public:
 	AActor* FindTarget();
 
+	void AttackTarget(ARuleOfTheCharacter* AttackTarget);
 };
