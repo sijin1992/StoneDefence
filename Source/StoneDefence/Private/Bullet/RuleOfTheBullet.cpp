@@ -23,6 +23,8 @@ ARuleOfTheBullet::ARuleOfTheBullet()
 	ProjectileMoement->InitialSpeed = 1600.0f;//初始移动速度
 	ProjectileMoement->ProjectileGravityScale = 0.0f;//重力为0，不会有掉落效果
 	ProjectileMoement->UpdatedComponent = BoxDamage;
+
+	InitialLifeSpan = 4.0f;//4S后自动销毁
 }
 
 // Called when the game starts or when spawned
