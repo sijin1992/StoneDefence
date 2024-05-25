@@ -9,6 +9,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "GameFramework/DamageType.h"
 #include "Character/Core/RuleOfTheAIController.h"
+#include "EngineUtils.h"
 
 // Sets default values
 ARuleOfTheBullet::ARuleOfTheBullet()
@@ -70,8 +71,39 @@ void ARuleOfTheBullet::BeginPlay()
 
 		break;
 	}
+	case EBulletType::BULLET_RANGE_LINE://范围伤害,丢手雷
+		break;
 	case EBulletType::BULLET_RANGE://范围伤害
-		ProjectileMoement->StopMovementImmediately();//移动立即停止
+		//获取施法者
+		if (ARuleOfTheCharacter* InstigatorCharacter = GetInstigator<ARuleOfTheCharacter>())
+		{
+			ProjectileMoement->StopMovementImmediately();//移动立即停止
+			
+			TArray<AActor*> IgnoreActors;//忽略/友军列表
+			//TArray<AActor*> TargetActors;//敌人列表
+			//迭代器遍历忽略的Actor和目标Actor
+			for (TActorIterator<ARuleOfTheCharacter>it(GetWorld(), ARuleOfTheCharacter::StaticClass()); it; ++it)
+			{
+				if (ARuleOfTheCharacter* TheCharacter = *it)
+				{
+					FVector VDistance = TheCharacter->GetActorLocation() - InstigatorCharacter->GetActorLocation();
+					if (VDistance.Size() <= 1400.0f)
+					{
+						if (TheCharacter->IsTeam() == InstigatorCharacter->IsTeam())
+						{
+							IgnoreActors.Add(TheCharacter);
+						}
+						else
+						{
+							UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), DamgeParticle, TheCharacter->GetActorLocation());
+							//TargetActors.Add(TheCharacter);
+						}
+					}
+				}
+			}
+			//造成范围伤害,向四周衰减
+			UGameplayStatics::ApplyRadialDamageWithFalloff(GetWorld(), 100.0f, 10.0f, GetActorLocation(), 400.0f, 1000.0f, 1.0f, UDamageType::StaticClass(), IgnoreActors, GetInstigator());
+		}
 		break;
 	case EBulletType::BULLET_CHAIN://链式子弹
 		ProjectileMoement->StopMovementImmediately();
