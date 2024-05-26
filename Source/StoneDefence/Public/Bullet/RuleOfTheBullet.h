@@ -38,6 +38,7 @@ public:
 
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
+
 	//范围伤害
 	void RadialDamage(const FVector& Origin, ARuleOfTheCharacter* InstigatorCharacter);
 

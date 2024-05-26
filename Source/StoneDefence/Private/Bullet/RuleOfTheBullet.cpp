@@ -10,6 +10,7 @@
 #include "GameFramework/DamageType.h"
 #include "Character/Core/RuleOfTheAIController.h"
 #include "EngineUtils.h"
+#include "Components/ArrowComponent.h"
 
 // Sets default values
 ARuleOfTheBullet::ARuleOfTheBullet()
@@ -105,9 +106,23 @@ void ARuleOfTheBullet::BeginPlay()
 			RadialDamage(GetActorLocation(), GetInstigator<ARuleOfTheCharacter>());
 			break;
 		case EBulletType::BULLET_CHAIN://链式子弹
+		{
 			ProjectileMoement->StopMovementImmediately();
 			BoxDamage->SetCollisionEnabled(ECollisionEnabled::NoCollision);//设置没有任何碰撞,因为通过其他点对点的方式造成伤害，没有必要通过碰撞造成伤害
+
+			if (ARuleOfTheCharacter* InstigatorCharacter = GetInstigator<ARuleOfTheCharacter>())
+			{
+				if (ARuleOfTheAIController* InstigatroController = Cast<ARuleOfTheAIController>(InstigatorCharacter->GetController()))
+				{
+					if (ARuleOfTheCharacter* TargetCharacter = InstigatroController->Target.Get())
+					{
+						//生成特效，只不过链式特效需要绑定到敌人身上的追踪点
+						UGameplayStatics::SpawnEmitterAttached(DamgeParticle,TargetCharacter->GetHomingPoint());
+					}
+				}
+			}
 			break;
+		}
 	}
 	//绑定代理
 	BoxDamage->OnComponentBeginOverlap.AddUniqueDynamic(this, &ARuleOfTheBullet::OnBeginOverlap);
@@ -118,6 +133,27 @@ void ARuleOfTheBullet::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	if (ARuleOfTheCharacter* InstigatorCharacter = GetInstigator<ARuleOfTheCharacter>())
+	{
+		if (ARuleOfTheAIController* InstigatroController = Cast<ARuleOfTheAIController>(InstigatorCharacter->GetController()))
+		{
+			if (ARuleOfTheCharacter* TargetCharacter = InstigatroController->Target.Get())
+			{
+				TArray<USceneComponent*> SceneComponents;
+				RootComponent->GetChildrenComponents(true, SceneComponents);
+				for (auto & Temp : SceneComponents)
+				{
+					if (UParticleSystemComponent *ParticleSystem = Cast<UParticleSystemComponent>(Temp))
+					{
+						//设置粒子目标点
+						ParticleSystem->SetBeamEndPoint(0, TargetCharacter->GetHomingPoint()->GetComponentLocation());
+						//设置粒子源点
+						ParticleSystem->SetBeamSourcePoint(0, InstigatorCharacter->GetOpenFirePoint()->GetComponentLocation(),0);
+					}
+				}
+			}
+		}
+	}
 }
 
 void ARuleOfTheBullet::RadialDamage(const FVector& Origin, ARuleOfTheCharacter* InstigatorCharacter)
