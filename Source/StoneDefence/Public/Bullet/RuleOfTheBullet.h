@@ -8,6 +8,7 @@
 #include "Character/Core/RuleOfTheCharacter.h"
 #include "RuleOfTheBullet.generated.h"
 
+class USplineComponent;
 UCLASS()
 class STONEDEFENCE_API ARuleOfTheBullet : public AActor
 {
@@ -32,6 +33,10 @@ public:
 	UPROPERTY(EditDefaultsOnly,Category = "Bullet")
 	UParticleSystem* DamgeParticle;
 
+	//贝塞尔曲线轨迹的跟踪子弹Z轴方向偏移量
+	UPROPERTY(EditDefaultsOnly, Category = "Bullet Track Bezier")
+	float SplineOffset;
+
 public:	
 	// Sets default values for this actor's properties
 	ARuleOfTheBullet();
@@ -48,4 +53,10 @@ protected:
 	
 	UFUNCTION()
 	void OnBeginOverlap(UPrimitiveComponent* OverlappedComp, AActor* Other, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+
+private:
+	UPROPERTY()
+	USplineComponent *Spline;
+
+	float CurrentSplineTime;
 };
