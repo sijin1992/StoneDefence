@@ -16,6 +16,6 @@ class STONEDEFENCE_API ATowerDefenceLevelGameMode : public AGameMode
 
 public:
 	ATowerDefenceLevelGameMode();
-
+protected:
 	virtual void BeginPlay() override;
 };

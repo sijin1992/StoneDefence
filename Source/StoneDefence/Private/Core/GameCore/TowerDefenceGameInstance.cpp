@@ -7,7 +7,7 @@
 void UTowerDefenceGameInstance::Init()
 {
 	Super::Init();
-
+	UE_LOG(LogTemp, Warning, TEXT("GameInstance Init"));
 	FSimpleScreenLoadingModule &SimpleScreenLoading = FModuleManager::LoadModuleChecked<FSimpleScreenLoadingModule>("SimpleScreenLoading");
 	SimpleScreenLoading.SetupScreenLoading();
 }

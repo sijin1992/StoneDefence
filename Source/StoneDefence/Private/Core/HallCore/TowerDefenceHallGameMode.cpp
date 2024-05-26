@@ -12,3 +12,9 @@ ATowerDefenceHallGameMode::ATowerDefenceHallGameMode()
 	DefaultPawnClass = ATowerDefenceHallPawn::StaticClass();
 	PlayerControllerClass = ATowerDefencePlayerController::StaticClass();
 }
+
+void ATowerDefenceHallGameMode::BeginPlay()
+{
+	Super::BeginPlay();
+	UE_LOG(LogTemp, Warning, TEXT("Hall BeginPlay"));
+}

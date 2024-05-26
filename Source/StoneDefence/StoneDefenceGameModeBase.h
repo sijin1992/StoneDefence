@@ -15,4 +15,7 @@ class STONEDEFENCE_API AStoneDefenceGameModeBase : public AGameMode
 	GENERATED_BODY()
 public:
 	AStoneDefenceGameModeBase();
+protected:
+	virtual void BeginPlay() override;
+
 };

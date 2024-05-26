@@ -21,3 +21,9 @@ AStoneDefenceGameModeBase::AStoneDefenceGameModeBase()
 	//加载HUD
 	HUDClass = ARuleOfTheHUD::StaticClass();
 }
+
+void AStoneDefenceGameModeBase::BeginPlay()
+{
+	Super::BeginPlay();
+	UE_LOG(LogTemp, Warning, TEXT("Game BeginPlay"));
+}
