@@ -4,3 +4,4 @@
 
 #include "CoreMinimal.h"
 
+STONEDEFENCE_API DECLARE_LOG_CATEGORY_EXTERN(LogStoneDefence, Log, All);

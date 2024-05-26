@@ -15,9 +15,9 @@ struct FCharacterData : public FTableRowBase
 public:
 	FCharacterData();
 	//////////////////////////////////基础属性////////////////////////////////////////
-	//玩家ID
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Table ID")
-	FString GUID;
+	////玩家ID
+	//UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Table ID")
+	//FString GUID;
 
 	//角色名字
 	UPROPERTY(EditDefaultsOnly, Category = "Table Attribute")

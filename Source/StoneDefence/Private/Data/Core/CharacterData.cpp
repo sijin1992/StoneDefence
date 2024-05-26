@@ -5,7 +5,7 @@
 
 FCharacterData::FCharacterData()
 	:Name(NAME_None),
-	GUID(FGuid::NewGuid().ToString()),
+	//GUID(FGuid::NewGuid().ToString()),
 	Lv(1),
 	MaxHealth(100),
 	Health(MaxHealth),
