@@ -7,6 +7,8 @@
 #include "Data/Core/CharacterData.h"
 #include "TowerDefenceGameState.generated.h"
 
+FCharacterData CharacterDataNULL;
+class ARuleOfTheCharacter;
 /**
  * 
  */
@@ -16,13 +18,24 @@ class STONEDEFENCE_API ATowerDefenceGameState : public AGameState
 	GENERATED_BODY()
 
 public:
-	const FCharacterData& AddCharacterData(const FString &Hash, const FCharacterData &Data);
+	ATowerDefenceGameState();
 
-	bool RemoveCharacterData(const FString& Hash);//Hash即ID
+	//生成角色
+	ARuleOfTheCharacter* SpawnCharacter(const FVector& Location, const FRotator& Rotator);
 
-	FCharacterData& GetCharacterData(const FString& Hash);
+	template<class T>
+	T *SpawnCharacter(const FVector& Location, const FRotator& Rotator)
+	{
+		return Cast<T>(SpawnCharacter(Location, Rotator));
+	}
+	//增
+	const FCharacterData& AddCharacterData(const FGuid &Hash, const FCharacterData &Data);
+	//删
+	bool RemoveCharacterData(const FGuid &Hash);//Hash即ID
+	//改
+	FCharacterData& GetCharacterData(const FGuid &Hash);
 
 private:
 	UPROPERTY()
-	TMap<FString, FCharacterData> CharacterDatas;
+	TMap<FGuid, FCharacterData> CharacterDatas;
 };

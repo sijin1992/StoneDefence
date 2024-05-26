@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
-#include "Interface/Character/IRuleCharacter.h"
+#include "Interface/Character/RuleCharacter.h"
 #include "Core/GameCore/TowerDefencePlayerController.h"
 #include "Core/GameCore/TowerDefenceGameState.h"
 #include "../StoneDefenceType.h"
@@ -15,22 +15,25 @@ class STONEDEFENCE_API ARuleOfTheCharacter : public ACharacter, public IRuleChar
 {
 	GENERATED_BODY()
 	//跟踪点
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "BaseAttrubute", meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "CharacterComponent", meta = (AllowPrivateAccess = "true"))
 	class USceneComponent* HomingPoint;
 	//显示角色信息组件
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "BaseAttrubute", meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "CharacterComponent", meta = (AllowPrivateAccess = "true"))
 	class UWidgetComponent* Widget;
 	//开火点
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "BaseAttrubute", meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "CharacterComponent", meta = (AllowPrivateAccess = "true"))
 	class UArrowComponent* OpenFirePoint;
 	//碰撞盒
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "BaseAttrubute", meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "CharacterComponent", meta = (AllowPrivateAccess = "true"))
 	class UBoxComponent* TraceShowCharacterInformation;
 
 public:
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "AnimAttribute")
+	//是否在攻击
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "CharacterAttribute")
 	bool bAttack;
-
+	//角色ID
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "CharacterID")
+	FGuid GUID;
 public:	
 	// Sets default values for this character's properties
 	ARuleOfTheCharacter();
@@ -51,9 +54,11 @@ public:
 
 	virtual bool IsTeam();
 
+	virtual FCharacterData& GetCharacterData();
+
 public:
 	FORCEINLINE ATowerDefencePlayerController* GetGameController() { return GetWorld() ? (GetWorld()->GetFirstPlayerController<ATowerDefencePlayerController>()) : NULL; }
-	FORCEINLINE ATowerDefenceGameState* GetGameState() { return GetWorld() ? (GetWorld()->GetGameState<ATowerDefenceGameState>()) : NULL; }
+	FORCEINLINE ATowerDefenceGameState* GetGameState() { return GetWorld() ? (GetWorld()->GetGameState<ATowerDefenceGameState>()) : nullptr; }
 
 	FORCEINLINE USceneComponent* GetHomingPoint() const { return HomingPoint; }
 	FORCEINLINE UArrowComponent* GetOpenFirePoint() const { return OpenFirePoint; }

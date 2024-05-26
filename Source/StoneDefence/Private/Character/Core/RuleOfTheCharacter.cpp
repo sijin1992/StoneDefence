@@ -56,20 +56,29 @@ float ARuleOfTheCharacter::TakeDamage(float Damage, struct FDamageEvent const& D
 
 bool ARuleOfTheCharacter::IsDeath()
 {
-	return false;
+	return GetHealth() <= 0.0f;
 }
 
 float ARuleOfTheCharacter::GetHealth()
 {
-	return 0.f;
+	return GetCharacterData().Health;
 }
 
 float ARuleOfTheCharacter::GetMaxHealth()
 {
-	return 0.f;
+	return GetCharacterData().MaxHealth;
 }
 
 bool ARuleOfTheCharacter::IsTeam()
 {
 	return false;
+}
+
+FCharacterData& ARuleOfTheCharacter::GetCharacterData()
+{
+	if (GetGameState())
+	{
+		return GetGameState()->GetCharacterData(GUID);
+	}
+	return CharacterDataNULL;
 }
