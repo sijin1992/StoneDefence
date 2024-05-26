@@ -4,24 +4,69 @@
 #include "Core/GameCore/TowerDefenceGameState.h"
 #include "../StoneDefenceMacro.h"
 #include "Character/Core/RuleOfTheCharacter.h"
+#include "UObject/ConstructorHelpers.h"
+#include "Engine/DataTable.h"
 
 ATowerDefenceGameState::ATowerDefenceGameState()
 {
-	
+	PrimaryActorTick.bCanEverTick = true;
+	//读取DataTable
+	static ConstructorHelpers::FObjectFinder<UDataTable> MyTable_Towers(TEXT("/Game/GameData/TowerData_DT"));
+	static ConstructorHelpers::FObjectFinder<UDataTable> MyTable_Monsters(TEXT("/Game/GameData/MonsterData_DT"));
+
+	AITowerCharacterData = MyTable_Towers.Object;
+	AIMonsterCharacterData = MyTable_Monsters.Object;
 }
 
-ARuleOfTheCharacter* ATowerDefenceGameState::SpawnCharacter(const FVector& Location, const FRotator& Rotator)
+ATowers* ATowerDefenceGameState::SpawnTower(const int32 CharacterID, int32 CharacterLevel, const FVector& Location, FRotator& Rotator)
 {
-	if (GetWorld())
+	return SpawnCharacter<ATowers>(CharacterID, CharacterLevel, AITowerCharacterData, Location, Rotator);
+}
+
+AMonsters* ATowerDefenceGameState::SpawnMonster(const int32 CharacterID, int32 CharacterLevel, const FVector& Location, FRotator& Rotator)
+{
+	return SpawnCharacter<AMonsters>(CharacterID, CharacterLevel, AIMonsterCharacterData, Location, Rotator);
+}
+
+ARuleOfTheCharacter* ATowerDefenceGameState::SpawnCharacter(
+	const int32 CharacterID, 
+	int32 CharacterLevel, 
+	const UDataTable* InCharacterData,
+	const FVector& Location, 
+	FRotator& Rotator)
+{
+	if (InCharacterData)
 	{
-		if (ARuleOfTheCharacter* RuleOfTheCharacter = GetWorld()->SpawnActor<ARuleOfTheCharacter>(ARuleOfTheCharacter::StaticClass(), Location, Rotator))
+		TArray<FCharacterData*> Datas;
+		InCharacterData->GetAllRows(TEXT("Character Data"), Datas);
+
+		auto GetCharacterData = [&](int32 ID) ->FCharacterData* 
+			{
+				for (auto &Temp : Datas)
+				{
+					if (Temp->ID == ID)
+					{
+						return Temp;
+					}
+				}
+				return nullptr;
+			};
+
+
+		if (FCharacterData* CharacterData = GetCharacterData(CharacterID))
 		{
-			RuleOfTheCharacter->GUID = FGuid::NewGuid();
-			FCharacterData CharacterData;
-			AddCharacterData(RuleOfTheCharacter->GUID, CharacterData);
+			UClass* NewClass = CharacterData->CharacterBlueprintKey.LoadSynchronous();//LoadSynchronous读取
+			if (GetWorld() && NewClass)
+			{
+				if (ARuleOfTheCharacter* RuleOfTheCharacter = GetWorld()->SpawnActor<ARuleOfTheCharacter>(NewClass, Location, Rotator))
+				{
+					RuleOfTheCharacter->GUID = FGuid::NewGuid();
+					//FCharacterData CharacterData;
+					AddCharacterData(RuleOfTheCharacter->GUID, *CharacterData);
+				}
+			}
 		}
 	}
-
 	return nullptr;
 }
 

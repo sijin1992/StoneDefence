@@ -31,7 +31,7 @@ public:
 	//是否在攻击
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "CharacterAttribute")
 	bool bAttack;
-	//角色ID
+	//UE生成的角色ID
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "CharacterID")
 	FGuid GUID;
 public:	

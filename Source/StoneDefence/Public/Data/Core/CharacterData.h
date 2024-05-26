@@ -11,13 +11,27 @@ USTRUCT(BlueprintType)
 struct FCharacterData : public FTableRowBase
 {
 	GENERATED_BODY()
+	/////////////////////////////函数/////////////////////////////////////////////
 
 public:
 	FCharacterData();
+
+	bool IsValid();//判断角色数据是否有效
+
+public:
+	//////////////////////////////资源/////////////////////////////////////////
+	//角色蓝图类
+	UPROPERTY(EditDefaultsOnly, Category = "Table Class")
+	TAssetSubclassOf<class ARuleOfTheCharacter> CharacterBlueprintKey;//也可以用TSubclassOf，因为保存的是路径，所以很占内存
+
+	//角色图片
+	UPROPERTY(EditDefaultsOnly, Category = "Table Icon")
+	TAssetPtr<class UTexture2D> Icon;
+	
 	//////////////////////////////////基础属性////////////////////////////////////////
-	////玩家ID
-	//UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Table ID")
-	//FString GUID;
+	//配置表的角色ID
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Table ID")
+	int32 ID;
 
 	//角色名字
 	UPROPERTY(EditDefaultsOnly, Category = "Table Attribute")

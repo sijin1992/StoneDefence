@@ -4,8 +4,8 @@
 #include "Data/Core/CharacterData.h"
 
 FCharacterData::FCharacterData()
-	:Name(NAME_None),
-	//GUID(FGuid::NewGuid().ToString()),
+	: ID(INDEX_NONE),//-1
+	Name(NAME_None),
 	Lv(1),
 	MaxHealth(100),
 	Health(MaxHealth),
@@ -34,4 +34,9 @@ FCharacterData::FCharacterData()
 	ConstructionTime(5)
 {
 
+}
+
+bool FCharacterData::IsValid()
+{
+	return ID != INDEX_NONE;
 }
