@@ -18,12 +18,12 @@ ATowerDefenceGameState::ATowerDefenceGameState()
 	AIMonsterCharacterData = MyTable_Monsters.Object;
 }
 
-ATowers* ATowerDefenceGameState::SpawnTower(const int32 CharacterID, int32 CharacterLevel, const FVector& Location, FRotator& Rotator)
+ATowers* ATowerDefenceGameState::SpawnTower(const int32 CharacterID, int32 CharacterLevel, const FVector& Location, const FRotator& Rotator)
 {
 	return SpawnCharacter<ATowers>(CharacterID, CharacterLevel, AITowerCharacterData, Location, Rotator);
 }
 
-AMonsters* ATowerDefenceGameState::SpawnMonster(const int32 CharacterID, int32 CharacterLevel, const FVector& Location, FRotator& Rotator)
+AMonsters* ATowerDefenceGameState::SpawnMonster(const int32 CharacterID, int32 CharacterLevel, const FVector& Location, const FRotator& Rotator)
 {
 	return SpawnCharacter<AMonsters>(CharacterID, CharacterLevel, AIMonsterCharacterData, Location, Rotator);
 }
@@ -33,7 +33,7 @@ ARuleOfTheCharacter* ATowerDefenceGameState::SpawnCharacter(
 	int32 CharacterLevel, 
 	const UDataTable* InCharacterData,
 	const FVector& Location, 
-	FRotator& Rotator)
+	const FRotator& Rotator)
 {
 	if (InCharacterData)
 	{

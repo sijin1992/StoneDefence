@@ -30,7 +30,7 @@ public:
 	
 	//////////////////////////////////基础属性////////////////////////////////////////
 	//配置表的角色ID
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Table ID")
+	UPROPERTY(EditDefaultsOnly, Category = "Table ID")
 	int32 ID;
 
 	//角色名字

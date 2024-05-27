@@ -30,10 +30,10 @@ class STONEDEFENCE_API ATowerDefenceGameState : public AGameState
 
 public:
 	ATowerDefenceGameState();
-
-	ATowers* SpawnTower(const int32 CharacterID, int32 CharacterLevel, const FVector& Location, FRotator& Rotator);
-
-	AMonsters* SpawnMonster(const int32 CharacterID, int32 CharacterLevel, const FVector& Location, FRotator& Rotator);
+	UFUNCTION(BlueprintCallable, Category = Spawn)
+	ATowers* SpawnTower(const int32 CharacterID, int32 CharacterLevel, const FVector& Location, const FRotator& Rotator);
+	UFUNCTION(BlueprintCallable, Category = Spawn)
+	AMonsters* SpawnMonster(const int32 CharacterID, int32 CharacterLevel, const FVector& Location, const FRotator& Rotator);
 
 	//增
 	const FCharacterData& AddCharacterData(const FGuid &Hash, const FCharacterData &Data);
@@ -44,10 +44,10 @@ public:
 
 protected:
 	//生成角色
-	ARuleOfTheCharacter* SpawnCharacter(const int32 CharacterID, int32 CharacterLevel, const UDataTable* InCharacterData, const FVector& Location, FRotator& Rotator);
+	ARuleOfTheCharacter* SpawnCharacter(const int32 CharacterID, int32 CharacterLevel, const UDataTable* InCharacterData, const FVector& Location, const FRotator& Rotator);
 	//生成角色的模板函数
 	template<class T>
-	T* SpawnCharacter(const int32 CharacterID, int32 CharacterLevel, const UDataTable* InCharacterData, const FVector& Location, FRotator& Rotator)
+	T* SpawnCharacter(const int32 CharacterID, int32 CharacterLevel, const UDataTable* InCharacterData, const FVector& Location, const FRotator& Rotator)
 	{
 		return Cast<T>(SpawnCharacter(CharacterID, CharacterLevel, InCharacterData, Location, Rotator));
 	}

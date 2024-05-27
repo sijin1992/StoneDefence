@@ -34,6 +34,11 @@ void ARuleOfTheCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 	
+	//生成角色需要生成一个默认的控制
+	if (!GetController())
+	{
+		SpawnDefaultController();
+	}
 }
 
 // Called every frame
