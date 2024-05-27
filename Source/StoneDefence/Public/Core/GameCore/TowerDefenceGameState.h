@@ -36,11 +36,11 @@ public:
 	AMonsters* SpawnMonster(const int32 CharacterID, int32 CharacterLevel, const FVector& Location, const FRotator& Rotator);
 
 	//增
-	const FCharacterData& AddCharacterData(const FGuid &Hash, const FCharacterData &Data);
+	const FCharacterData& AddCharacterData(const uint32& ID, const FCharacterData &Data);
 	//删
-	bool RemoveCharacterData(const FGuid &Hash);//Hash即ID
+	bool RemoveCharacterData(const uint32& ID);
 	//改
-	FCharacterData& GetCharacterData(const FGuid &Hash);
+	FCharacterData& GetCharacterData(const uint32& ID);
 
 protected:
 	//生成角色
@@ -54,5 +54,5 @@ protected:
 
 private:
 	UPROPERTY()
-	TMap<FGuid, FCharacterData> CharacterDatas;
+	TMap<uint32, FCharacterData> CharacterDatas;
 };

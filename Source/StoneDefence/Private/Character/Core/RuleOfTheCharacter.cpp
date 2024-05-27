@@ -6,6 +6,7 @@
 #include "Components/ArrowComponent.h"
 #include "Components/BoxComponent.h"
 #include "UMG/Public/Components/WidgetComponent.h"
+#include "UI/Character/UI_Health.h"
 
 // Sets default values
 ARuleOfTheCharacter::ARuleOfTheCharacter()
@@ -39,6 +40,8 @@ void ARuleOfTheCharacter::BeginPlay()
 	{
 		SpawnDefaultController();
 	}
+
+	UpdateUI();
 }
 
 // Called every frame
@@ -46,6 +49,18 @@ void ARuleOfTheCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+}
+
+void ARuleOfTheCharacter::UpdateUI()
+{
+	if (Widget)
+	{
+		if (UUI_Health* HealthUI = Cast<UUI_Health>(Widget->GetUserWidgetObject()))
+		{
+			HealthUI->SetTitle(GetCharacterData().Name.ToString());
+			HealthUI->SetHealth(GetHealth() / GetMaxHealth());
+		}
+	}
 }
 
 EGameCharacterType::Type ARuleOfTheCharacter::GetType()
@@ -56,7 +71,12 @@ EGameCharacterType::Type ARuleOfTheCharacter::GetType()
 float ARuleOfTheCharacter::TakeDamage(float Damage, struct FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
 {
 	Super::TakeDamage(Damage, DamageEvent, EventInstigator, DamageCauser);
-	return 0;
+
+	GetCharacterData().Health -= Damage / 10.0f;
+
+	UpdateUI();
+
+	return 0.0f;
 }
 
 bool ARuleOfTheCharacter::IsDeath()
@@ -83,7 +103,7 @@ FCharacterData& ARuleOfTheCharacter::GetCharacterData()
 {
 	if (GetGameState())
 	{
-		return GetGameState()->GetCharacterData(GUID);
+		return GetGameState()->GetCharacterData(GetUniqueID());
 	}
 	return CharacterDataNULL;
 }

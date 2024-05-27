@@ -31,15 +31,14 @@ public:
 	//是否在攻击
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "CharacterAttribute")
 	bool bAttack;
-	//UE生成的角色ID
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "CharacterID")
-	FGuid GUID;
 public:	
 	// Sets default values for this character's properties
 	ARuleOfTheCharacter();
 
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
+
+	void UpdateUI();
 
 	virtual EGameCharacterType::Type GetType();
 
