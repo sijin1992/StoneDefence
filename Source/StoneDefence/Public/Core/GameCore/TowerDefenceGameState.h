@@ -13,6 +13,7 @@ class UDataTable;
 class AMonsters;
 class ATowers;
 class UGameSaveData;
+class UGameSaveSlotList;
 /**
  * 
  */
@@ -52,8 +53,10 @@ public:
 
 protected:
 	virtual void BeginPlay() override;
-
+	//获取游戏数据
 	UGameSaveData* GetSaveData();
+	//获取存档数据
+	UGameSaveSlotList* GetGameSaveSlotList();
 
 	//生成角色
 	ARuleOfTheCharacter* SpawnCharacter(const int32 CharacterID, int32 CharacterLevel, const UDataTable* InCharacterData, const FVector& Location, const FRotator& Rotator);
@@ -65,6 +68,10 @@ protected:
 	}
 
 private:
+	//游戏数据
 	UPROPERTY()
 	UGameSaveData* SaveData;
+	//存档数据
+	UPROPERTY()
+	UGameSaveSlotList* SlotList;
 };

@@ -8,6 +8,7 @@
 #include "Engine/DataTable.h"
 #include "Kismet/GameplayStatics.h"
 #include "Data/Save/GameSaveData.h"
+#include "Data/Save/GameSaveSlotList.h"
 
 ATowerDefenceGameState::ATowerDefenceGameState()
 {
@@ -32,9 +33,11 @@ AMonsters* ATowerDefenceGameState::SpawnMonster(const int32 CharacterID, int32 C
 
 bool ATowerDefenceGameState::SaveGameData(int32 SaveNumber)
 {
-	if (SaveData)
+	if (SaveData && SlotList)
 	{
-		return UGameplayStatics::SaveGameToSlot(SaveData, FString::Printf(TEXT("SaveSlot_%i"),SaveNumber), 0);
+		SlotList->SlotList.AddGameDataByNumber(SaveNumber);
+		return UGameplayStatics::SaveGameToSlot(SaveData, FString::Printf(TEXT("SaveSlot_%i"), SaveNumber), 0)
+			&& UGameplayStatics::SaveGameToSlot(SlotList, FString::Printf(TEXT("SlotList")), 0);
 	}
 	return false;
 }
@@ -64,6 +67,20 @@ UGameSaveData* ATowerDefenceGameState::GetSaveData()
 	}
 
 	return SaveData;
+}
+
+UGameSaveSlotList* ATowerDefenceGameState::GetGameSaveSlotList()
+{
+	if (!SlotList)
+	{
+		SlotList = Cast<UGameSaveSlotList>(UGameplayStatics::LoadGameFromSlot(FString::Printf(TEXT("SlotList")), 0));
+		if (!SlotList)
+		{
+			SlotList = Cast<UGameSaveSlotList>(UGameplayStatics::CreateSaveGameObject(UGameSaveSlotList::StaticClass()));
+		}
+	}
+
+	return SlotList;
 }
 
 ARuleOfTheCharacter* ATowerDefenceGameState::SpawnCharacter(

@@ -3,6 +3,8 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "GameFramework/SaveGame.h"
+#include "../Core/CharacterData.h"
 #include "GameSaveSlotList.generated.h"
 
 
@@ -17,9 +19,9 @@ struct FSaveSlot
 	UPROPERTY(SaveGame)
 	FText DataText;
 
-	//存档下标
+	//是否有存档
 	UPROPERTY(SaveGame)
-	int32 SaveGameBoxNumber;
+	bool bSave;
 
 };
 
@@ -29,5 +31,30 @@ struct FSaveSlotList
 {
 	GENERATED_USTRUCT_BODY()
 
-	TArray<FSaveSlot> Slots;
+	FSaveSlotList();
+
+	UPROPERTY(SaveGame)
+	TMap<int32, FSaveSlot> Slots;//存档列表
+	UPROPERTY(SaveGame)
+	TMap<int32, float> DegreeOfCompletion;//关卡完成度
+	//获得空闲存档的下标
+	int32 GetSerialNumber();
+	//删除存档
+	bool RemoveAtGameData(int32 SlotNumber);
+	//添加存档
+	bool AddGameDataByNumber(int32 SlotNumber);
+};
+
+
+/**
+ *
+ */
+UCLASS()
+class STONEDEFENCE_API UGameSaveSlotList : public USaveGame
+{
+	GENERATED_BODY()
+
+public:
+	UPROPERTY(SaveGame)
+	FSaveSlotList SlotList;
 };
