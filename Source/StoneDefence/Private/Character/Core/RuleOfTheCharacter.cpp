@@ -72,7 +72,7 @@ EGameCharacterType::Type ARuleOfTheCharacter::GetType()
 float ARuleOfTheCharacter::TakeDamage(float Damage, struct FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
 {
 	Super::TakeDamage(Damage, DamageEvent, EventInstigator, DamageCauser);
-
+	//计算伤害
 	float DamageValue = Expression::GetDamage(Cast<ARuleOfTheCharacter>(DamageCauser), this);
 
 	GetCharacterData().Health -= DamageValue;

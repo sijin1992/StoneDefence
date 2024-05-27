@@ -43,6 +43,7 @@ ARuleOfTheBullet::ARuleOfTheBullet()
 	SplineOffset = 0.0f;
 	Spline = nullptr;
 	CurrentSplineTime = 0.0f;
+	ChainAttackCount = 3;
 }
 
 // Called when the game starts or when spawned
@@ -117,6 +118,7 @@ void ARuleOfTheBullet::BeginPlay()
 					}
 					case EBulletType::BULLET_RANGE://范围伤害
 						ProjectileMoement->StopMovementImmediately();//移动立即停止
+						BoxDamage->SetCollisionEnabled(ECollisionEnabled::NoCollision);//设置没有任何碰撞,因为通过其他点对点的方式造成伤害，没有必要通过碰撞造成伤害
 						RadialDamage(GetActorLocation(), GetInstigator<ARuleOfTheCharacter>());
 						break;
 					case EBulletType::BULLET_CHAIN://链式子弹
@@ -124,6 +126,9 @@ void ARuleOfTheBullet::BeginPlay()
 						ProjectileMoement->StopMovementImmediately();
 						BoxDamage->SetCollisionEnabled(ECollisionEnabled::NoCollision);//设置没有任何碰撞,因为通过其他点对点的方式造成伤害，没有必要通过碰撞造成伤害
 						UGameplayStatics::SpawnEmitterAttached(DamgeParticle, TargetCharacter->GetHomingPoint());//生成特效，只不过链式特效需要绑定到敌人身上的追踪点
+
+						//绑定计时器函数
+						GetWorld()->GetTimerManager().SetTimer(ChainAttackHandle, this, &ARuleOfTheBullet::ChainAttack, 0.1f);
 						break;
 					}
 				}
@@ -240,7 +245,9 @@ void ARuleOfTheBullet::RadialDamage(const FVector& Origin, ARuleOfTheCharacter* 
 			400.0f, 1000.0f, 1.0f, 
 			UDamageType::StaticClass(), 
 			IgnoreActors, 
-			GetInstigator());
+			GetInstigator(),
+			GetInstigator()->GetController(),
+			ECollisionChannel::ECC_MAX);
 	}
 }
 
@@ -260,8 +267,6 @@ void ARuleOfTheBullet::OnBeginOverlap(UPrimitiveComponent* OverlappedComp, AActo
 				{
 					//生成粒子特效
 					UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), DamgeParticle, SweepResult.Location);
-					//计算伤害
-					float DamageValue = Expression::GetDamage(InstigatorCharacter, OtherCharacter);
 					//处理不同子弹类型碰撞的逻辑
 					switch (BulletType)
 					{
@@ -270,10 +275,10 @@ void ARuleOfTheBullet::OnBeginOverlap(UPrimitiveComponent* OverlappedComp, AActo
 						case EBulletType::BULLET_TRACK_LINE:
 						case EBulletType::BULLET_TRACK_BEZIER:
 						{
-							//造成伤害
+							//造成伤害,伤害计算在RuleOfTheCharacter里进行计算,这里的100没有用
 							UGameplayStatics::ApplyDamage(
 								OtherCharacter, 
-								DamageValue,
+								100.0f,
 								InstigatorCharacter->GetController(), 
 								InstigatorCharacter,
 								UDamageType::StaticClass());
@@ -281,10 +286,52 @@ void ARuleOfTheBullet::OnBeginOverlap(UPrimitiveComponent* OverlappedComp, AActo
 							Destroy();
 							break;
 						}
+						case EBulletType::BULLET_RANGE_LINE:
+						{
+							RadialDamage(OtherCharacter->GetActorLocation(), InstigatorCharacter);
+							Destroy();
+							break;
+						}
 					}
 				}
 			}
 		}
+	}
+}
+
+void ARuleOfTheBullet::ChainAttack()
+{
+	if (ChainAttackHandle.IsValid())
+	{
+		GetWorld()->GetTimerManager().ClearTimer(ChainAttackHandle);
+	} 
+
+	//主要伤害区
+	{
+		//拿到施法者
+		if (ARuleOfTheCharacter* InstigatorCharacter = GetInstigator<ARuleOfTheCharacter>())
+		{
+			//拿到Controller
+			if (ARuleOfTheAIController* InstigatroController = Cast<ARuleOfTheAIController>(InstigatorCharacter->GetController()))
+			{
+				//拿到Target
+				if (ARuleOfTheCharacter* TargetCharacter = InstigatroController->Target.Get())
+				{
+					UGameplayStatics::ApplyDamage(
+						TargetCharacter,
+						100.0f,
+						InstigatorCharacter->GetController(),
+						InstigatorCharacter,
+						UDamageType::StaticClass());
+				}
+			}
+		}
+	}
+
+	ChainAttackCount--;
+	if (ChainAttackCount > 0)
+	{
+		GetWorld()->GetTimerManager().SetTimer(ChainAttackHandle, this, &ARuleOfTheBullet::ChainAttack, 0.3f);
 	}
 }
 

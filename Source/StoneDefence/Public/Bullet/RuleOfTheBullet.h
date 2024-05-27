@@ -50,13 +50,20 @@ public:
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
-	
+	//碰撞
 	UFUNCTION()
 	void OnBeginOverlap(UPrimitiveComponent* OverlappedComp, AActor* Other, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+	//链式子弹攻击
+	UFUNCTION()
+	void ChainAttack();
 
 private:
 	UPROPERTY()
-	USplineComponent *Spline;
-
-	float CurrentSplineTime;
+	USplineComponent *Spline;//贝塞尔曲线组件
+	UPROPERTY()
+	float CurrentSplineTime;//贝塞尔曲线时间
+	UPROPERTY()
+	FTimerHandle ChainAttackHandle;//链式子弹攻击计时器
+	UPROPERTY()
+	uint8 ChainAttackCount;//链式攻击次数
 };
