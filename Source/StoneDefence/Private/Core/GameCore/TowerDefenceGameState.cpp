@@ -6,6 +6,8 @@
 #include "Character/Core/RuleOfTheCharacter.h"
 #include "UObject/ConstructorHelpers.h"
 #include "Engine/DataTable.h"
+#include "Kismet/GameplayStatics.h"
+#include "Data/Save/GameSaveData.h"
 
 ATowerDefenceGameState::ATowerDefenceGameState()
 {
@@ -26,6 +28,42 @@ ATowers* ATowerDefenceGameState::SpawnTower(const int32 CharacterID, int32 Chara
 AMonsters* ATowerDefenceGameState::SpawnMonster(const int32 CharacterID, int32 CharacterLevel, const FVector& Location, const FRotator& Rotator)
 {
 	return SpawnCharacter<AMonsters>(CharacterID, CharacterLevel, AIMonsterCharacterData, Location, Rotator);
+}
+
+bool ATowerDefenceGameState::SaveGameData(int32 SaveNumber)
+{
+	if (SaveData)
+	{
+		return UGameplayStatics::SaveGameToSlot(SaveData, FString::Printf(TEXT("SaveSlot_%i"),SaveNumber), 0);
+	}
+	return false;
+}
+
+bool ATowerDefenceGameState::ReadGameData(int32 SaveNumber)
+{
+	SaveData = Cast<UGameSaveData>(UGameplayStatics::LoadGameFromSlot(FString::Printf(TEXT("SaveSlot_%i"), SaveNumber), 0));
+
+	return SaveData != NULL;
+}
+
+void ATowerDefenceGameState::BeginPlay()
+{
+	Super::BeginPlay();
+	//if (1)//判断是通过读取的方式还是储存
+	//{
+	//	//创建存储数据
+	//	SaveData = Cast<UGameSaveData>(UGameplayStatics::CreateSaveGameObject(UGameSaveData::StaticClass()));
+	//}
+}
+
+UGameSaveData* ATowerDefenceGameState::GetSaveData()
+{
+	if (!SaveData)
+	{
+		SaveData = Cast<UGameSaveData>(UGameplayStatics::CreateSaveGameObject(UGameSaveData::StaticClass()));
+	}
+
+	return SaveData;
 }
 
 ARuleOfTheCharacter* ATowerDefenceGameState::SpawnCharacter(
@@ -73,12 +111,12 @@ ARuleOfTheCharacter* ATowerDefenceGameState::SpawnCharacter(
 
 const FCharacterData& ATowerDefenceGameState::AddCharacterData(const uint32& ID, const FCharacterData &Data)
 {
-	return CharacterDatas.Add(ID, Data);
+	return GetSaveData()->CharacterDatas.Add(ID, Data);
 }
 
 bool ATowerDefenceGameState::RemoveCharacterData(const uint32& ID)
 {
-	if (CharacterDatas.Remove(ID))
+	if (GetSaveData()->CharacterDatas.Remove(ID))
 	{
 		return true;
 	}
@@ -102,9 +140,9 @@ bool ATowerDefenceGameState::RemoveCharacterData(const uint32& ID)
 
 FCharacterData& ATowerDefenceGameState::GetCharacterData(const uint32& ID)
 {
-	if (CharacterDatas.Contains(ID))
+	if (GetSaveData()->CharacterDatas.Contains(ID))
 	{
-		return CharacterDatas[ID];
+		return GetSaveData()->CharacterDatas[ID];
 	}
 
 	SD_print_r(Error, "The current [%i] is invalid", ID);

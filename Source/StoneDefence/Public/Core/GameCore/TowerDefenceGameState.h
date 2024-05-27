@@ -12,6 +12,7 @@ class ARuleOfTheCharacter;
 class UDataTable;
 class AMonsters;
 class ATowers;
+class UGameSaveData;
 /**
  * 
  */
@@ -30,10 +31,17 @@ class STONEDEFENCE_API ATowerDefenceGameState : public AGameState
 
 public:
 	ATowerDefenceGameState();
+
 	UFUNCTION(BlueprintCallable, Category = Spawn)
 	ATowers* SpawnTower(const int32 CharacterID, int32 CharacterLevel, const FVector& Location, const FRotator& Rotator);
 	UFUNCTION(BlueprintCallable, Category = Spawn)
 	AMonsters* SpawnMonster(const int32 CharacterID, int32 CharacterLevel, const FVector& Location, const FRotator& Rotator);
+
+	UFUNCTION(BlueprintCallable, Category = SaveData)
+	bool SaveGameData(int32 SaveNumber);
+
+	UFUNCTION(BlueprintCallable, Category = SaveData)
+	bool ReadGameData(int32 SaveNumber);
 
 	//增
 	const FCharacterData& AddCharacterData(const uint32& ID, const FCharacterData &Data);
@@ -43,6 +51,10 @@ public:
 	FCharacterData& GetCharacterData(const uint32& ID);
 
 protected:
+	virtual void BeginPlay() override;
+
+	UGameSaveData* GetSaveData();
+
 	//生成角色
 	ARuleOfTheCharacter* SpawnCharacter(const int32 CharacterID, int32 CharacterLevel, const UDataTable* InCharacterData, const FVector& Location, const FRotator& Rotator);
 	//生成角色的模板函数
@@ -54,5 +66,5 @@ protected:
 
 private:
 	UPROPERTY()
-	TMap<uint32, FCharacterData> CharacterDatas;
+	UGameSaveData* SaveData;
 };
