@@ -1,5 +1,10 @@
 #include "StoneDefenceUtils.h"
 #include "Public/Character/Core/RuleOfTheCharacter.h"
+#include "Interface/Character/RuleCharacter.h"
+//关闭优化
+#if PLATFORM_WINDOWS
+#pragma optimize("",off)
+#endif
 
 ARuleOfTheCharacter* StoneDefenceUtils::FindTargetRecently(const TArray<ARuleOfTheCharacter*> &InCharacters, const FVector& CompareLocation)
 {
@@ -32,3 +37,16 @@ ARuleOfTheCharacter* StoneDefenceUtils::FindTargetRecently(const TArray<ARuleOfT
 	return NULL;
 }
 
+float Expression::GetDamage(IRuleCharacter* Enemy, IRuleCharacter* Owner)
+{
+	if (Enemy && Owner)
+	{
+		return Enemy->GetCharacterData().PhysicalAttack / ((Owner->GetCharacterData().Armor / 100.0f) + 1);
+	}
+	return 0.0f;
+}
+
+//打开优化
+#if PLATFORM_WINDOWS
+#pragma optimize("",on)
+#endif

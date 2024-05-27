@@ -12,6 +12,12 @@
 #include "EngineUtils.h"
 #include "Components/ArrowComponent.h"
 #include "Components/SplineComponent.h"
+#include "../StoneDefenceUtils.h"
+
+//关闭优化
+#if PLATFORM_WINDOWS
+#pragma optimize("", off)
+#endif
 
 // Sets default values
 ARuleOfTheBullet::ARuleOfTheBullet()
@@ -254,7 +260,8 @@ void ARuleOfTheBullet::OnBeginOverlap(UPrimitiveComponent* OverlappedComp, AActo
 				{
 					//生成粒子特效
 					UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), DamgeParticle, SweepResult.Location);
-
+					//计算伤害
+					float DamageValue = Expression::GetDamage(InstigatorCharacter, OtherCharacter);
 					//处理不同子弹类型碰撞的逻辑
 					switch (BulletType)
 					{
@@ -266,7 +273,7 @@ void ARuleOfTheBullet::OnBeginOverlap(UPrimitiveComponent* OverlappedComp, AActo
 							//造成伤害
 							UGameplayStatics::ApplyDamage(
 								OtherCharacter, 
-								100.f, 
+								DamageValue,
 								InstigatorCharacter->GetController(), 
 								InstigatorCharacter,
 								UDamageType::StaticClass());
@@ -280,4 +287,9 @@ void ARuleOfTheBullet::OnBeginOverlap(UPrimitiveComponent* OverlappedComp, AActo
 		}
 	}
 }
+
+//打开优化
+#if PLATFORM_WINDOWS
+#pragma optimize("", on)
+#endif
 

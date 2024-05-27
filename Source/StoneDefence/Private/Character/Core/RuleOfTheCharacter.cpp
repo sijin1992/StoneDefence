@@ -7,6 +7,7 @@
 #include "Components/BoxComponent.h"
 #include "UMG/Public/Components/WidgetComponent.h"
 #include "UI/Character/UI_Health.h"
+#include "../StoneDefenceUtils.h"
 
 // Sets default values
 ARuleOfTheCharacter::ARuleOfTheCharacter()
@@ -72,11 +73,18 @@ float ARuleOfTheCharacter::TakeDamage(float Damage, struct FDamageEvent const& D
 {
 	Super::TakeDamage(Damage, DamageEvent, EventInstigator, DamageCauser);
 
-	GetCharacterData().Health -= Damage / 10.0f;
+	float DamageValue = Expression::GetDamage(Cast<ARuleOfTheCharacter>(DamageCauser), this);
+
+	GetCharacterData().Health -= DamageValue;
+
+	if (!IsActive())
+	{
+		GetCharacterData().Health = 0.0f;
+	}
 
 	UpdateUI();
 
-	return 0.0f;
+	return DamageValue;
 }
 
 bool ARuleOfTheCharacter::IsDeath()
