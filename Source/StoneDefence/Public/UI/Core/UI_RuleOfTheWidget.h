@@ -13,5 +13,11 @@ UCLASS()
 class STONEDEFENCE_API UUI_RuleOfTheWidget : public UUserWidget
 {
 	GENERATED_BODY()
-	
+
+public:
+	UUI_RuleOfTheWidget(const FObjectInitializer& ObjectInitializer);
+
+	//角色ID
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = UI)
+	FGuid GUID;
 };

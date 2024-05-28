@@ -45,11 +45,11 @@ public:
 	bool ReadGameData(int32 SaveNumber);
 
 	//增
-	const FCharacterData& AddCharacterData(const uint32& ID, const FCharacterData &Data);
+	const FCharacterData& AddCharacterData(const FGuid& ID, const FCharacterData &Data);
 	//删
-	bool RemoveCharacterData(const uint32& ID);
+	bool RemoveCharacterData(const FGuid& ID);
 	//改
-	FCharacterData& GetCharacterData(const uint32& ID);
+	FCharacterData& GetCharacterData(const FGuid& ID);
 
 protected:
 	virtual void BeginPlay() override;

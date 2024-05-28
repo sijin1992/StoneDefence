@@ -31,6 +31,9 @@ public:
 	TSubclassOf<class ADrawText> DrawTextClass;
 
 public:
+	//角色ID
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "CharacterAttribute")
+	FGuid GUID;
 	//是否在攻击
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "CharacterAttribute")
 	bool bAttack;

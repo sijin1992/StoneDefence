@@ -84,7 +84,7 @@ UGameSaveSlotList* ATowerDefenceGameState::GetGameSaveSlotList()
 }
 
 ARuleOfTheCharacter* ATowerDefenceGameState::SpawnCharacter(
-	const int32 CharacterID, 
+	const int32 CharacterID,
 	int32 CharacterLevel, 
 	const UDataTable* InCharacterData,
 	const FVector& Location, 
@@ -95,7 +95,7 @@ ARuleOfTheCharacter* ATowerDefenceGameState::SpawnCharacter(
 		TArray<FCharacterData*> Datas;
 		InCharacterData->GetAllRows(TEXT("Character Data"), Datas);
 
-		auto GetCharacterData = [&](int32 ID) ->FCharacterData* 
+		auto GetCharacterData = [&](int32 ID) ->FCharacterData*
 			{
 				for (auto &Temp : Datas)
 				{
@@ -115,10 +115,10 @@ ARuleOfTheCharacter* ATowerDefenceGameState::SpawnCharacter(
 			{
 				if (ARuleOfTheCharacter* RuleOfTheCharacter = GetWorld()->SpawnActor<ARuleOfTheCharacter>(NewClass, Location, Rotator))
 				{
-					CharacterData->UpdateHealth();
-					AddCharacterData(RuleOfTheCharacter->GetUniqueID(), *CharacterData);
 					//RuleOfTheCharacter->GUID = FGuid::NewGuid();
-					//AddCharacterData(RuleOfTheCharacter->GUID, *CharacterData);
+					CharacterData->UpdateHealth();
+					AddCharacterData(RuleOfTheCharacter->GUID, *CharacterData);
+					//AddCharacterData(RuleOfTheCharacter->GetUniqueID(), *CharacterData);
 				}
 			}
 		}
@@ -126,12 +126,12 @@ ARuleOfTheCharacter* ATowerDefenceGameState::SpawnCharacter(
 	return nullptr;
 }
 
-const FCharacterData& ATowerDefenceGameState::AddCharacterData(const uint32& ID, const FCharacterData &Data)
+const FCharacterData& ATowerDefenceGameState::AddCharacterData(const FGuid& ID, const FCharacterData &Data)
 {
 	return GetSaveData()->CharacterDatas.Add(ID, Data);
 }
 
-bool ATowerDefenceGameState::RemoveCharacterData(const uint32& ID)
+bool ATowerDefenceGameState::RemoveCharacterData(const FGuid& ID)
 {
 	if (GetSaveData()->CharacterDatas.Remove(ID))
 	{
@@ -155,14 +155,14 @@ bool ATowerDefenceGameState::RemoveCharacterData(const uint32& ID)
 	*/
 }
 
-FCharacterData& ATowerDefenceGameState::GetCharacterData(const uint32& ID)
+FCharacterData& ATowerDefenceGameState::GetCharacterData(const FGuid& ID)
 {
 	if (GetSaveData()->CharacterDatas.Contains(ID))
 	{
 		return GetSaveData()->CharacterDatas[ID];
 	}
 
-	SD_print_r(Error, "The current [%i] is invalid", ID);
+	SD_print_r(Error, "The current [%i] is invalid", *ID.ToString());
 	return CharacterDataNULL;
 	/*
 	for (auto &Tmp : CharacterDatas)
