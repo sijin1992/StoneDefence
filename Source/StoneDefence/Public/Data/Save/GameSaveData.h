@@ -48,6 +48,9 @@ struct FBuildingTower
 	UPROPERTY(SaveGame)
 	bool bLockCD;
 
+	UPROPERTY(SaveGame)
+	bool bCallUpdateTowersInfo;
+
 public:
 	FBuildingTower();
 
@@ -57,6 +60,8 @@ public:
 	float GetTowerConstructionTimePercentage();
 
 	bool IsValid();
+
+	void ResetCD();
 };
 
 /**

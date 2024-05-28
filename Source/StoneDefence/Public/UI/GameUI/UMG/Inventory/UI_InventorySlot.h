@@ -21,7 +21,7 @@ class STONEDEFENCE_API UUI_InventorySlot : public UUI_Slot
 	UImage* TowersIcon;//塔的图标
 
 	UPROPERTY(meta = (BindWidget))
-	UImage* TowersCD;//塔技能CD蒙版
+	UImage* TowersCDMask;//塔技能CD蒙版
 
 	UPROPERTY(meta = (BindWidget))
 	UTextBlock* TPBNumber;//Towers Prepare Building Number准备构建的数量
@@ -35,8 +35,20 @@ class STONEDEFENCE_API UUI_InventorySlot : public UUI_Slot
 	UPROPERTY(meta = (BindWidget))
 	UButton* TISButton;//Towers Inventory Slot Button
 
+	UPROPERTY(EditDefaultsOnly, Category = UI)
+	FName TowersMatCDName;
+
+	UPROPERTY(EditDefaultsOnly, Category = UI)
+	FName TowersClearValueName;
+
+	//CD动态材质
+	UPROPERTY()
+	class UMaterialInstanceDynamic* CDMaterialDynamic;
+
 public:
 	virtual void NativeConstruct();
+
+	virtual void NativeTick(const FGeometry& MyGeometry, float InDeltaTime) override;
 
 	UFUNCTION()
 	void OnClickedWidget();
@@ -44,4 +56,13 @@ public:
 	void UpdateUI();
 
 	FBuildingTower& GetBuildingTower();
+
+private:
+	void UpdateTowerCD(float InDeltaTime);
+
+	void DrawTowersCD(float InTowersCD);
+
+	void DisplayNumber(UTextBlock* TextNumberBlock, int32 TextNumber);
+
+	void UpdateTowersBuildingInfo();
 };

@@ -19,6 +19,7 @@ void FBuildingTower::Init()
 	Icon = NULL;
 	bDragIcon = false;
 	bLockCD = false;
+	bCallUpdateTowersInfo = false;
 }
 
 float FBuildingTower::GetTowerConstructionTimePercentage()
@@ -29,4 +30,9 @@ float FBuildingTower::GetTowerConstructionTimePercentage()
 bool FBuildingTower::IsValid()
 {
 	return TowerID != INDEX_NONE;
+}
+
+void FBuildingTower::ResetCD()
+{
+	CurrentConstructionTowersCD = MaxConstructionTowersCD;
 }
