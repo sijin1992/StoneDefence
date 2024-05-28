@@ -26,6 +26,9 @@ class STONEDEFENCE_API ARuleOfTheCharacter : public ACharacter, public IRuleChar
 	//碰撞盒
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "CharacterComponent", meta = (AllowPrivateAccess = "true"))
 	class UBoxComponent* TraceShowCharacterInformation;
+public:
+	UPROPERTY(EditDefaultsOnly,Category = UI)
+	TSubclassOf<class ADrawText> DrawTextClass;
 
 public:
 	//是否在攻击

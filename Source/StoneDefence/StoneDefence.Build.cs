@@ -24,7 +24,8 @@ public class StoneDefence : ModuleRules
 			"SimpleScreenLoading", 
 			"SimpleTutoria", 
 			"SimpleGameSettings", 
-			"SimpleArchives"
+			"SimpleArchives",
+			"SimpleDrawText"
         });
 
         PrivateDependencyModuleNames.AddRange(new string[] {  });
