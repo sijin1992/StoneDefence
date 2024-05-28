@@ -20,4 +20,6 @@ public:
 	//角色ID
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = UI)
 	FGuid GUID;
+
+	class ATowerDefenceGameState* GetGameState();
 };

@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "UI/Core/UI_RuleOfTheWidget.h"
+#include "../Core/UI_Slot.h"
 #include "UI_InventorySlot.generated.h"
 
 class UImage;
@@ -13,7 +13,7 @@ class UButton;
  * 
  */
 UCLASS()
-class STONEDEFENCE_API UUI_InventorySlot : public UUI_RuleOfTheWidget
+class STONEDEFENCE_API UUI_InventorySlot : public UUI_Slot
 {
 	GENERATED_BODY()
 	
@@ -40,4 +40,6 @@ public:
 
 	UFUNCTION()
 	void OnClickedWidget();
+
+	FBuildingTower& GetBuildingTower();
 };

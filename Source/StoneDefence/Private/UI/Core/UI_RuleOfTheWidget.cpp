@@ -2,9 +2,19 @@
 
 
 #include "UI/Core/UI_RuleOfTheWidget.h"
+#include "Core/GameCore/TowerDefenceGameState.h"
 
 UUI_RuleOfTheWidget::UUI_RuleOfTheWidget(const FObjectInitializer& ObjectInitializer)
 	:Super(ObjectInitializer)
 {
 	GUID = FGuid::NewGuid();
+}
+
+ATowerDefenceGameState* UUI_RuleOfTheWidget::GetGameState()
+{
+	if (GetWorld())
+	{
+		return GetWorld()->GetGameState<ATowerDefenceGameState>();
+	}
+	return nullptr;
 }

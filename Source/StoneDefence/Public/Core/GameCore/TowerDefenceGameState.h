@@ -5,18 +5,19 @@
 #include "CoreMinimal.h"
 #include "GameFramework/GameState.h"
 #include "Data/Core/CharacterData.h"
+#include "Data/Save/GameSaveData.h"
 #include "TowerDefenceGameState.generated.h"
 
-FCharacterData CharacterDataNULL;
+extern FCharacterData CharacterDataNULL;
+extern FBuildingTower BuildingTowerNULL;
+
 class ARuleOfTheCharacter;
 class UDataTable;
 class AMonsters;
 class ATowers;
 class UGameSaveData;
 class UGameSaveSlotList;
-/**
- * 
- */
+
 UCLASS()
 class STONEDEFENCE_API ATowerDefenceGameState : public AGameState
 {
@@ -50,6 +51,10 @@ public:
 	bool RemoveCharacterData(const FGuid& ID);
 	//改
 	FCharacterData& GetCharacterData(const FGuid& ID);
+
+	const FBuildingTower& AddBuildingTower(const FGuid& ID, const FBuildingTower& Data);
+	FBuildingTower& GetBuildingTower(const FGuid& ID);
+	const TArray<const FGuid*> GetBuildingTowerIDs();
 
 protected:
 	virtual void BeginPlay() override;

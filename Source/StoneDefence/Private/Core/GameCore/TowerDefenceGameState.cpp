@@ -10,6 +10,9 @@
 #include "Data/Save/GameSaveData.h"
 #include "Data/Save/GameSaveSlotList.h"
 
+FCharacterData CharacterDataNULL;
+FBuildingTower BuildingTowerNULL;
+
 ATowerDefenceGameState::ATowerDefenceGameState()
 {
 	PrimaryActorTick.bCanEverTick = true;
@@ -19,6 +22,21 @@ ATowerDefenceGameState::ATowerDefenceGameState()
 
 	AITowerCharacterData = MyTable_Towers.Object;
 	AIMonsterCharacterData = MyTable_Monsters.Object;
+
+	for (int32 i = 0; i < 21; i++)
+	{
+		GetSaveData()->BuildingTowers.Add(FGuid::NewGuid(), FBuildingTower());
+	}
+}
+
+void ATowerDefenceGameState::BeginPlay()
+{
+	Super::BeginPlay();
+	//if (1)//判断是通过读取的方式还是储存
+	//{
+	//	//创建存储数据
+	//	SaveData = Cast<UGameSaveData>(UGameplayStatics::CreateSaveGameObject(UGameSaveData::StaticClass()));
+	//}
 }
 
 ATowers* ATowerDefenceGameState::SpawnTower(const int32 CharacterID, int32 CharacterLevel, const FVector& Location, const FRotator& Rotator)
@@ -47,16 +65,6 @@ bool ATowerDefenceGameState::ReadGameData(int32 SaveNumber)
 	SaveData = Cast<UGameSaveData>(UGameplayStatics::LoadGameFromSlot(FString::Printf(TEXT("SaveSlot_%i"), SaveNumber), 0));
 
 	return SaveData != NULL;
-}
-
-void ATowerDefenceGameState::BeginPlay()
-{
-	Super::BeginPlay();
-	//if (1)//判断是通过读取的方式还是储存
-	//{
-	//	//创建存储数据
-	//	SaveData = Cast<UGameSaveData>(UGameplayStatics::CreateSaveGameObject(UGameSaveData::StaticClass()));
-	//}
 }
 
 UGameSaveData* ATowerDefenceGameState::GetSaveData()
@@ -173,4 +181,30 @@ FCharacterData& ATowerDefenceGameState::GetCharacterData(const FGuid& ID)
 		}
 	}
 	*/
+}
+
+const FBuildingTower& ATowerDefenceGameState::AddBuildingTower(const FGuid& ID, const FBuildingTower& Data)
+{
+	return GetSaveData()->BuildingTowers.Add(ID, Data);
+}
+
+FBuildingTower& ATowerDefenceGameState::GetBuildingTower(const FGuid& ID)
+{
+	if (GetSaveData()->BuildingTowers.Contains(ID))
+	{
+		return GetSaveData()->BuildingTowers[ID];
+	}
+
+	SD_print_r(Error, "The current [%i] is invalid", *ID.ToString());
+	return BuildingTowerNULL;
+}
+
+const TArray<const FGuid*> ATowerDefenceGameState::GetBuildingTowerIDs()
+{
+	TArray<const FGuid*> TowerIDs;
+	for (auto &Temp : GetSaveData()->BuildingTowers)
+	{
+		TowerIDs.Add(&Temp.Key);
+	}
+	return TowerIDs;
 }

@@ -15,3 +15,8 @@ void UUI_InventorySlot::OnClickedWidget()
 {
 
 }
+
+FBuildingTower& UUI_InventorySlot::GetBuildingTower()
+{
+	return GetGameState()->GetBuildingTower(GUID);
+}
