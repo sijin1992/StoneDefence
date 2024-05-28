@@ -40,11 +40,27 @@ void UUI_Inventory::LayoutInventorySlot(int32 ColumnNumber, int32 RowNumber)
 			}
 		}
 
-		//处理数据
+		//处理炮塔数据
+		//拿到所有塔的ID
 		const TArray<const FGuid*> IDs = GetGameState()->GetBuildingTowerIDs();
 		for (int32 i = 0; i < ColumnNumber * RowNumber; i++)
 		{
 			InventorySlotArray[i]->GUID = *IDs[i];
+		}
+		//拿到塔数据
+		TArray<const FCharacterData*> Datas;
+		if (GetGameState()->GetCharacterDataFromTable(Datas))
+		{
+			//默认把塔都送给玩家,实际项目中会根据玩家解锁的塔生成
+			for (int32 i = 0; i < Datas.Num(); i++)
+			{
+				InventorySlotArray[i]->GetBuildingTower().TowerID = Datas[i]->ID;
+				InventorySlotArray[i]->GetBuildingTower().NeedGold = Datas[i]->Gold;
+				InventorySlotArray[i]->GetBuildingTower().MaxConstructionTowersCD = Datas[i]->ConstructionTime;
+				InventorySlotArray[i]->GetBuildingTower().Icon = Datas[i]->Icon.LoadSynchronous();
+
+				InventorySlotArray[i]->UpdateUI();
+			}
 		}
 	}
 }

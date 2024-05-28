@@ -13,6 +13,9 @@ struct FBuildingTower
 {
 	GENERATED_USTRUCT_BODY()
 
+	UPROPERTY(SaveGame)
+	int32 TowerID;
+
 	//需要花费的金币
 	UPROPERTY(SaveGame)
 	int32 NeedGold;
@@ -44,6 +47,16 @@ struct FBuildingTower
 	//是否锁CD
 	UPROPERTY(SaveGame)
 	bool bLockCD;
+
+public:
+	FBuildingTower();
+
+	void Init();
+
+	//获取塔建造的百分比
+	float GetTowerConstructionTimePercentage();
+
+	bool IsValid();
 };
 
 /**

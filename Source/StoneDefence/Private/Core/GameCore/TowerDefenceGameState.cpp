@@ -208,3 +208,9 @@ const TArray<const FGuid*> ATowerDefenceGameState::GetBuildingTowerIDs()
 	}
 	return TowerIDs;
 }
+
+bool ATowerDefenceGameState::GetCharacterDataFromTable(TArray<const FCharacterData*>& Datas)
+{
+	AITowerCharacterData->GetAllRows(TEXT("Character Data"), Datas);
+	return Datas.Num() > 0;
+}

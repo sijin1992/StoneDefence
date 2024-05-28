@@ -41,5 +41,7 @@ public:
 	UFUNCTION()
 	void OnClickedWidget();
 
+	void UpdateUI();
+
 	FBuildingTower& GetBuildingTower();
 };

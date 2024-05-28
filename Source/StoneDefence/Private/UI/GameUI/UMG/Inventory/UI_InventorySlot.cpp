@@ -3,6 +3,7 @@
 
 #include "UI/GameUI/UMG/Inventory/UI_InventorySlot.h"
 #include "UMG/Public/Components/Button.h"
+#include "UMG/Public/Components/Image.h"
 
 void UUI_InventorySlot::NativeConstruct()
 {
@@ -14,6 +15,20 @@ void UUI_InventorySlot::NativeConstruct()
 void UUI_InventorySlot::OnClickedWidget()
 {
 
+}
+
+void UUI_InventorySlot::UpdateUI()
+{
+	if (GetBuildingTower().Icon)
+	{
+		TowersIcon->SetBrushFromTexture(GetBuildingTower().Icon);
+		TowersIcon->SetVisibility(ESlateVisibility::HitTestInvisible);
+	}
+	else
+	{ 
+		TowersIcon->SetVisibility(ESlateVisibility::Hidden);
+	}
+	//TowersIcon->SetBrushFromSoftTexture(GetBuildingTower().Icon);
 }
 
 FBuildingTower& UUI_InventorySlot::GetBuildingTower()

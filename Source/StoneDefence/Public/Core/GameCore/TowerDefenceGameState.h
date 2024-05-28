@@ -51,10 +51,15 @@ public:
 	bool RemoveCharacterData(const FGuid& ID);
 	//改
 	FCharacterData& GetCharacterData(const FGuid& ID);
-
+	//增加塔数据
 	const FBuildingTower& AddBuildingTower(const FGuid& ID, const FBuildingTower& Data);
+	//获取塔的数据
 	FBuildingTower& GetBuildingTower(const FGuid& ID);
+	//获取所有塔的ID
 	const TArray<const FGuid*> GetBuildingTowerIDs();
+	//
+	bool GetCharacterDataFromTable(TArray<const FCharacterData*>& Datas);
+
 
 protected:
 	virtual void BeginPlay() override;
