@@ -40,7 +40,7 @@ struct FBuildingTower
 	UPROPERTY(SaveGame)
 	UTexture2D* Icon;
 
-	//是否拖拽图标
+	//是否正在被拖拽
 	UPROPERTY(SaveGame)
 	bool bDragIcon;
 

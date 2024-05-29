@@ -9,6 +9,10 @@
 #include "Kismet/GameplayStatics.h"
 #include "Data/Save/GameSaveData.h"
 #include "Data/Save/GameSaveSlotList.h"
+//关闭优化optimize
+#if PLATFORM_WINDOWS
+#pragma optimize("",off)
+#endif
 
 FCharacterData CharacterDataNULL;
 FBuildingTower BuildingTowerNULL;
@@ -214,3 +218,26 @@ bool ATowerDefenceGameState::GetCharacterDataFromTable(TArray<const FCharacterDa
 	AITowerCharacterData->GetAllRows(TEXT("Character Data"), Datas);
 	return Datas.Num() > 0;
 }
+
+void ATowerDefenceGameState::RequestInventorySlotSwap(const FGuid& A, const FGuid& B)
+{
+	FBuildingTower& ASlot = GetBuildingTower(A);
+	FBuildingTower& BSlot = GetBuildingTower(B);
+
+	if (ASlot.IsValid())//如果A里有数据则进行交换
+	{
+		FBuildingTower TmpSlot = ASlot;
+		ASlot = BSlot;
+		BSlot = TmpSlot;
+	}
+	else//否则，直接移动B到A
+	{
+		ASlot = BSlot;
+		BSlot.Init();//将B初始化，也可以达到清空效果
+	}
+}
+
+//打开优化
+#if PLATFORM_WINDOWS
+#pragma optimize("",on)
+#endif

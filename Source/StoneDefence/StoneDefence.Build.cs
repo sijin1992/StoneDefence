@@ -12,8 +12,10 @@ public class StoneDefence : ModuleRules
 			"Core", 
 			"CoreUObject", 
 			"Engine", 
-			"InputCore", 
-			"UMG",
+			"InputCore",
+            "Slate",
+            "SlateCore",
+            "UMG",
 			"ApexDestruction",
             "AIModule",
 			"GameplayTasks"

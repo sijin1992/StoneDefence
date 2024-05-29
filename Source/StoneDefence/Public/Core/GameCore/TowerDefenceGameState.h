@@ -57,9 +57,10 @@ public:
 	FBuildingTower& GetBuildingTower(const FGuid& ID);
 	//获取所有塔的ID
 	const TArray<const FGuid*> GetBuildingTowerIDs();
-	//
+	//获取角色数据表
 	bool GetCharacterDataFromTable(TArray<const FCharacterData*>& Datas);
-
+	//建造列表单元格数据交换
+	void RequestInventorySlotSwap(const FGuid& A, const FGuid& B);
 
 protected:
 	virtual void BeginPlay() override;

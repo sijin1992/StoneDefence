@@ -41,6 +41,12 @@ class STONEDEFENCE_API UUI_InventorySlot : public UUI_Slot
 	UPROPERTY(EditDefaultsOnly, Category = UI)
 	FName TowersClearValueName;
 
+	//UPROPERTY(EditDefaultsOnly, Category = UI)
+	//TSubclassOf<class UStoneDefenceDragDropOperation> IconDragDrop;//拖拽实例
+
+	UPROPERTY(EditDefaultsOnly, Category = UI)
+	TSubclassOf<class UUI_IconDragDrop> IconDragDropClass;
+
 	//CD动态材质
 	UPROPERTY()
 	class UMaterialInstanceDynamic* CDMaterialDynamic;
@@ -57,12 +63,28 @@ public:
 
 	FBuildingTower& GetBuildingTower();
 
+	//只是显示清除
+	void ClearSlot();
+
+protected:
+	//点击时触发
+	virtual FReply NativeOnMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent) override;
+	//拖拽时触发
+	virtual void NativeOnDragDetected(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent, UDragDropOperation*& OutOperation) override;
+	//拖拽松手时触发
+	virtual bool NativeOnDrop(const FGeometry& InGeometry, const FDragDropEvent& InDragDropEvent, UDragDropOperation* InOperation) override;
+
+	virtual void NativeOnMouseEnter(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent) override;
+
+	virtual void NativeOnMouseLeave(const FPointerEvent& InMouseEvent) override;
+
 private:
+	//更新炮塔CD
 	void UpdateTowerCD(float InDeltaTime);
-
+	//绘制CD
 	void DrawTowersCD(float InTowersCD);
-
+	//显示数字到Text组件上
 	void DisplayNumber(UTextBlock* TextNumberBlock, int32 TextNumber);
-
+	//更新炮塔信息
 	void UpdateTowersBuildingInfo();
 };

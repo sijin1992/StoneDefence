@@ -1,7 +1,7 @@
 #include "StoneDefenceUtils.h"
 #include "Public/Character/Core/RuleOfTheCharacter.h"
 #include "Interface/Character/RuleCharacter.h"
-//关闭优化
+//关闭优化optimize
 #if PLATFORM_WINDOWS
 #pragma optimize("",off)
 #endif
