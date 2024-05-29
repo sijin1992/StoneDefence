@@ -49,7 +49,7 @@ void UUI_Inventory::LayoutInventorySlot(int32 ColumnNumber, int32 RowNumber)
 		}
 		//拿到塔数据
 		TArray<const FCharacterData*> Datas;
-		if (GetGameState()->GetCharacterDataFromTable(Datas))
+		if (GetGameState()->GetTowerDataFromTable(Datas))
 		{
 			//默认把塔都送给玩家,实际项目中会根据玩家解锁的塔生成
 			for (int32 i = 0; i < Datas.Num(); i++)

@@ -51,12 +51,15 @@ class STONEDEFENCE_API UUI_InventorySlot : public UUI_Slot
 	UPROPERTY()
 	class UMaterialInstanceDynamic* CDMaterialDynamic;
 
+	UPROPERTY(EditDefaultsOnly, Category = UI)
+	TSubclassOf<class UUI_TowerTip> TowerTipClass;//Tips蓝图类
+
 public:
 	virtual void NativeConstruct();
 
 	virtual void NativeTick(const FGeometry& MyGeometry, float InDeltaTime) override;
 
-	UFUNCTION()
+	UFUNCTION(BlueprintCallable)
 	void OnClickedWidget();
 
 	void UpdateUI();
@@ -65,6 +68,9 @@ public:
 
 	//只是显示清除
 	void ClearSlot();
+
+	UFUNCTION(BlueprintCallable, BlueprintPure, Category = Tip)
+	UWidget* GetTowerTip();
 
 protected:
 	//点击时触发

@@ -9,6 +9,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "Data/Save/GameSaveData.h"
 #include "Data/Save/GameSaveSlotList.h"
+
 //关闭优化optimize
 #if PLATFORM_WINDOWS
 #pragma optimize("",off)
@@ -187,6 +188,34 @@ FCharacterData& ATowerDefenceGameState::GetCharacterData(const FGuid& ID)
 	*/
 }
 
+const FCharacterData& ATowerDefenceGameState::GetCharacterDataByID(int32 ID, ECharacterType Type /*= ECharacterType::TOWER*/)
+{
+	TArray<const FCharacterData*> Datas;
+	switch (Type)
+	{
+	case ECharacterType::TOWER:
+	{
+		GetTowerDataFromTable(Datas);
+		break;
+	}
+	case ECharacterType::MONSTER:
+	{
+		GetMonsterDataFromTable(Datas);
+		break;
+	}
+	}
+
+	for (const auto &Temp : Datas)
+	{
+		if (Temp->ID == ID)
+		{
+			return *Temp;
+		}
+	}
+
+	return CharacterDataNULL;
+}
+
 const FBuildingTower& ATowerDefenceGameState::AddBuildingTower(const FGuid& ID, const FBuildingTower& Data)
 {
 	return GetSaveData()->BuildingTowers.Add(ID, Data);
@@ -213,9 +242,33 @@ const TArray<const FGuid*> ATowerDefenceGameState::GetBuildingTowerIDs()
 	return TowerIDs;
 }
 
-bool ATowerDefenceGameState::GetCharacterDataFromTable(TArray<const FCharacterData*>& Datas)
+bool ATowerDefenceGameState::GetTowerDataFromTable(TArray<const FCharacterData*>& Datas)
 {
-	AITowerCharacterData->GetAllRows(TEXT("Character Data"), Datas);
+	if (!CacheTowerDatas.Num())
+	{
+		AITowerCharacterData->GetAllRows(TEXT("Tower Data"), CacheTowerDatas);
+	}
+
+	for (const auto& Tmp : CacheTowerDatas)
+	{
+		Datas.Add(Tmp);
+	}
+
+	return Datas.Num() > 0;
+}
+
+bool ATowerDefenceGameState::GetMonsterDataFromTable(TArray<const FCharacterData*>& Datas)
+{
+	if (!CacheMonsterDatas.Num())
+	{
+		AIMonsterCharacterData->GetAllRows(TEXT("Monster Data"), CacheMonsterDatas);
+	}
+
+	for (const auto& Tmp : CacheMonsterDatas)
+	{
+		Datas.Add(Tmp);
+	}
+
 	return Datas.Num() > 0;
 }
 

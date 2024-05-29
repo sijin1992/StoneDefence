@@ -36,7 +36,7 @@ FCharacterData::FCharacterData()
 
 }
 
-bool FCharacterData::IsValid()
+bool FCharacterData::IsValid() const
 {
 	return ID != INDEX_NONE;
 }

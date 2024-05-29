@@ -57,8 +57,10 @@ public:
 	FBuildingTower& GetBuildingTower(const FGuid& ID);
 	//获取所有塔的ID
 	const TArray<const FGuid*> GetBuildingTowerIDs();
-	//获取角色数据表
-	bool GetCharacterDataFromTable(TArray<const FCharacterData*>& Datas);
+	//获取塔、怪物数据表
+	bool GetTowerDataFromTable(TArray<const FCharacterData*>& Datas);
+	bool GetMonsterDataFromTable(TArray<const FCharacterData*>& Datas);
+	const FCharacterData& GetCharacterDataByID(int32 ID, ECharacterType Type = ECharacterType::TOWER);
 	//建造列表单元格数据交换
 	void RequestInventorySlotSwap(const FGuid& A, const FGuid& B);
 
@@ -85,4 +87,7 @@ private:
 	//存档数据
 	UPROPERTY()
 	UGameSaveSlotList* SlotList;
+	//缓存数据
+	TArray<FCharacterData*> CacheTowerDatas;
+	TArray<FCharacterData*> CacheMonsterDatas;
 };

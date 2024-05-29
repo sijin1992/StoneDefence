@@ -8,6 +8,7 @@
 #include "Materials/MaterialInstanceDynamic.h"
 #include "DragDrop/StoneDefenceDragDropOperation.h"
 #include "UI/GameUI/UMG/Inventory/DragDrop/UI_IconDragDrop.h"
+#include "UI/GameUI/UMG/Tips/UI_TowerTip.h"
 
 void UUI_InventorySlot::NativeConstruct()
 {
@@ -89,6 +90,23 @@ void UUI_InventorySlot::ClearSlot()
 	TPBNumber->SetVisibility(ESlateVisibility::Hidden);
 	TCOCNumber->SetVisibility(ESlateVisibility::Hidden);
 	TowersCDValue->SetVisibility(ESlateVisibility::Hidden);
+}
+
+UWidget* UUI_InventorySlot::GetTowerTip()
+{
+	if (TowerTipClass)
+	{
+		if (UUI_TowerTip* TowerTip = CreateWidget<UUI_TowerTip>(GetWorld(), TowerTipClass))
+		{
+			const FCharacterData& TowerDataInfo = GetGameState()->GetCharacterDataByID(GetBuildingTower().TowerID);
+			if (TowerDataInfo.IsValid())
+			{
+				TowerTip->InitTip(GetGameState()->GetCharacterDataByID(GetBuildingTower().TowerID));
+				return TowerTip;
+			}
+		}
+	}
+	return nullptr;
 }
 
 FReply UUI_InventorySlot::NativeOnMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent)

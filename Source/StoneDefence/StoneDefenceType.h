@@ -30,3 +30,10 @@ enum class EBulletType :uint8
 	BULLET_RANGE,			//范围伤害
 	BULLET_CHAIN,			//链条类型，持续伤害类型
 };
+
+UENUM(BlueprintType)
+enum class ECharacterType : uint8
+{
+	TOWER,
+	MONSTER,
+};

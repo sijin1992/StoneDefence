@@ -16,7 +16,7 @@ struct FCharacterData : public FTableRowBase
 public:
 	FCharacterData();
 
-	bool IsValid();//判断角色数据是否有效
+	bool IsValid() const;//判断角色数据是否有效
 
 	void UpdateHealth();
 
