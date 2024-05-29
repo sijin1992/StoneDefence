@@ -9,6 +9,12 @@
 #include "UI/Character/UI_Health.h"
 #include "../StoneDefenceUtils.h"
 #include "Actor/DrawText.h"
+#include "Components/StaticMeshComponent.h"
+#include "Particles/ParticleSystemComponent.h"
+#include "Components/SkeletalMeshComponent.h"
+#include "Particles/TypeData/ParticleModuleTypeDataMesh.h"
+#include "Particles/ParticleEmitter.h"
+#include "Particles/ParticleLODLevel.h"
 
 // Sets default values
 ARuleOfTheCharacter::ARuleOfTheCharacter()
@@ -125,4 +131,41 @@ FCharacterData& ARuleOfTheCharacter::GetCharacterData()
 		return GetGameState()->GetCharacterData(GUID);
 	}
 	return CharacterDataNULL;
+}
+
+UStaticMesh* ARuleOfTheCharacter::GetDollMesh()
+{
+	TArray<USceneComponent*> SceneComponents;
+	RootComponent->GetChildrenComponents(true, SceneComponents);
+	for (auto &TempScene : SceneComponents)
+	{
+		if (UStaticMeshComponent* NewMeshComponent = Cast<UStaticMeshComponent>(TempScene))
+		{
+			return NewMeshComponent->GetStaticMesh();
+		}
+		else if(UParticleSystemComponent* NewParticleSystemComponent = Cast<UParticleSystemComponent>(TempScene))
+		{
+			//如果粒子特效的Template有效且发射器数量大于0
+			if (NewParticleSystemComponent->Template && NewParticleSystemComponent->Template->Emitters.Num() > 0)
+			{
+				//遍历发射器
+				for (const UParticleEmitter* TempEmitter : NewParticleSystemComponent->Template->Emitters)
+				{
+					if (TempEmitter->LODLevels[0]->bEnabled)//细节层次是否开启
+					{
+						//获取粒子特效的数据类型，看看是否可以转成模型
+						if (UParticleModuleTypeDataMesh* MyParticleDataMesh = Cast<UParticleModuleTypeDataMesh>(TempEmitter->LODLevels[0]->TypeDataModule))
+						{
+							return MyParticleDataMesh->Mesh;
+						}
+					}
+				}
+			}
+		}
+		else if (USkeletalMeshComponent* NewSkeletalMeshComponent = Cast<USkeletalMeshComponent>(TempScene))
+		{
+			break;
+		}
+	}
+	return NULL;
 }

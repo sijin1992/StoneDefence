@@ -14,6 +14,11 @@ UCLASS()
 class STONEDEFENCE_API ATowerDefencePlayerController : public APlayerController
 {
 	GENERATED_BODY()
+public:
+	//按下鼠标的代理
+	FSimpleDelegate EventMouseMiddlePressed;
+	//松开鼠标的代理
+	FSimpleDelegate EventMouseMiddleReleased;
 
 public:
 	//构建函数
@@ -32,9 +37,13 @@ public:
 	* @return:		
 	*/
 	virtual void SetupInputComponent() override;
-
+	//鼠标滚轮
 	void MouseWheelUp();
 	void MouseWheelDown();
+
+	//鼠标中键控制
+	void MouseMiddleButtonPressed();
+	void MouseMiddleButtonReleased();
 
 protected:
 

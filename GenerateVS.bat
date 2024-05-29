@@ -1,0 +1,1 @@
+D:/Program Files/Epic Games/UE_5.1/Engine/Binaries/DotNET/UnrealBuildTool/UnrealBuildTool.exe -projectfiles -project="%~dp0StoneDefence.uproject"

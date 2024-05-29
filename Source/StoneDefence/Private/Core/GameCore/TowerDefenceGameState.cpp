@@ -9,6 +9,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "Data/Save/GameSaveData.h"
 #include "Data/Save/GameSaveSlotList.h"
+#include "Engine/StaticMeshActor.h"
 
 //关闭优化optimize
 #if PLATFORM_WINDOWS
@@ -70,6 +71,50 @@ bool ATowerDefenceGameState::ReadGameData(int32 SaveNumber)
 	SaveData = Cast<UGameSaveData>(UGameplayStatics::LoadGameFromSlot(FString::Printf(TEXT("SaveSlot_%i"), SaveNumber), 0));
 
 	return SaveData != NULL;
+}
+
+AActor* ATowerDefenceGameState::SpawnTowersDoll(int32 ID)
+{
+	AActor* OutActor = nullptr;
+	TArray<const FCharacterData*> InDatas;
+	GetTowerDataFromTable(InDatas);
+	//遍历塔的数据列表
+	for (const auto &Temp : InDatas)
+	{
+		if (Temp->ID == ID)
+		{
+			//生成一个炮塔实例
+			UClass* NewClass = Temp->CharacterBlueprintKey.LoadSynchronous();
+			if (GetWorld() && NewClass)
+			{
+				if (ARuleOfTheCharacter* RuleOfTheCharacter = GetWorld()->SpawnActor<ARuleOfTheCharacter>(NewClass, FVector::ZeroVector, FRotator::ZeroRotator))
+				{
+					//生成替代模型
+					if (AStaticMeshActor* MeshActor = GetWorld()->SpawnActor<AStaticMeshActor>(AStaticMeshActor::StaticClass(), FVector::ZeroVector, FRotator::ZeroRotator))
+					{
+						//获取StaticMesh
+						if (UStaticMesh* InMesh = RuleOfTheCharacter->GetDollMesh())
+						{
+							MeshActor->GetStaticMeshComponent()->SetStaticMesh(InMesh);//将获取的StaticMesh设置给替代模型
+							OutActor = MeshActor;
+						}
+						else
+						{
+							MeshActor->Destroy();
+							RuleOfTheCharacter->Destroy();
+						}
+					}
+					else
+					{
+						RuleOfTheCharacter->Destroy();
+					}
+				}
+			}
+			break;
+		}
+	}
+
+	return nullptr;
 }
 
 UGameSaveData* ATowerDefenceGameState::GetSaveData()

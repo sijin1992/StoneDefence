@@ -5,12 +5,22 @@
 #include "UI/GameUI/UMG/Inventory/UI_InventorySlot.h"
 #include "Components/UniformGridSlot.h"
 #include "Components/UniformGridPanel.h"
+#include "Core/GameCore/TowerDefencePlayerController.h"
+#include "UI/Core/UI_Datas.h"
 
 void UUI_Inventory::NativeConstruct()
 {
 	Super::NativeConstruct();
 
 	LayoutInventorySlot(3, 7);
+
+	GetPlayerController()->EventMouseMiddlePressed.BindUObject(this, &UUI_Inventory::SpawnTowersDollPressed);
+	GetPlayerController()->EventMouseMiddleReleased.BindUObject(this, &UUI_Inventory::SpawnTowersDollReleased);
+}
+
+FBuildingTower& UUI_Inventory::GetBuildingTower()
+{
+	return GetGameState()->GetBuildingTower(TowerIconGUID);
 }
 
 void UUI_Inventory::LayoutInventorySlot(int32 ColumnNumber, int32 RowNumber)
@@ -63,4 +73,24 @@ void UUI_Inventory::LayoutInventorySlot(int32 ColumnNumber, int32 RowNumber)
 			}
 		}
 	}
+}
+
+void UUI_Inventory::SpawnTowersDollPressed()
+{
+	if (GetBuildingTower().IsValid())
+	{
+		if (GetBuildingTower().TowersConstructionNumber >= 1)//只有建造数量大于等于1才可以生成炮塔
+		{
+			int32 TowersID = GetBuildingTower().TowerID;
+			AActor* DollActor = GetGameState()->SpawnTowersDoll(TowersID);//生成绿色模型
+		}
+	}
+}
+
+void UUI_Inventory::SpawnTowersDollReleased()
+{
+	if (GetBuildingTower().IsValid())//释放鼠标中键后生成绿色模型
+	{
+	}
+	TowerIconGUID = FGuid();//置空GUID
 }

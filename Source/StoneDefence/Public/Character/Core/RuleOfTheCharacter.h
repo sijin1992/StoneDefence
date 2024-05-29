@@ -60,6 +60,9 @@ public:
 	virtual bool IsTeam();
 
 	virtual FCharacterData& GetCharacterData();
+	//获取静态模型组件
+	UFUNCTION(Blueprintable, BlueprintPure, Category = "Towers|Test")
+	UStaticMesh* GetDollMesh();
 
 public:
 	FORCEINLINE ATowerDefencePlayerController* GetGameController() { return GetWorld() ? (GetWorld()->GetFirstPlayerController<ATowerDefencePlayerController>()) : NULL; }

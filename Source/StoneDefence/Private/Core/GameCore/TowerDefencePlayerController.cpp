@@ -38,6 +38,9 @@ void ATowerDefencePlayerController::SetupInputComponent()
 	//鼠标滚轮
 	InputComponent->BindAction("MouseWheelUp", IE_Pressed, this, &ATowerDefencePlayerController::MouseWheelUp);
 	InputComponent->BindAction("MouseWheelDown", IE_Pressed, this, &ATowerDefencePlayerController::MouseWheelDown);
+
+	InputComponent->BindAction("MouseMiddle", IE_Pressed, this, &ATowerDefencePlayerController::MouseMiddleButtonPressed);
+	InputComponent->BindAction("MouseMiddle", IE_Released, this, &ATowerDefencePlayerController::MouseMiddleButtonReleased);
 }
 
 static float WheelValue = 15.f;
@@ -57,4 +60,14 @@ void ATowerDefencePlayerController::MouseWheelDown()
 	{
 		ZoomCamera->Zoom(false, WheelValue);
 	}
+}
+
+void ATowerDefencePlayerController::MouseMiddleButtonPressed()
+{
+	EventMouseMiddlePressed.ExecuteIfBound();
+}
+
+void ATowerDefencePlayerController::MouseMiddleButtonReleased()
+{
+	EventMouseMiddleReleased.ExecuteIfBound();
 }
