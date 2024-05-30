@@ -105,6 +105,13 @@ void UUI_Inventory::SpawnTowersDollReleased()
 	{
 		if (TowerDoll)
 		{
+			if (GetBuildingTower().TowersConstructionNumber >= 1)
+			{
+				if (AActor* CharacterActor = GetGameState()->SpawnTower(GetBuildingTower().TowerID,1, TowerDoll->GetActorLocation(), TowerDoll->GetActorRotation()))
+				{
+					GetBuildingTower().TowersConstructionNumber--;
+				}
+			}
 			TowerDoll->Destroy();
 			TowerDoll = nullptr;
 		}
