@@ -48,4 +48,6 @@ public:
 protected:
 
 	FScreenMoveUnits ScreenMoveUnits;
+
+	FHitResult MouseTraceHit;
 };

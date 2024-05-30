@@ -7,6 +7,8 @@
 #include "Components/UniformGridPanel.h"
 #include "Core/GameCore/TowerDefencePlayerController.h"
 #include "UI/Core/UI_Datas.h"
+#include "Engine/StaticMeshActor.h"
+#include "Components/StaticMeshComponent.h"
 
 void UUI_Inventory::NativeConstruct()
 {
@@ -79,10 +81,20 @@ void UUI_Inventory::SpawnTowersDollPressed()
 {
 	if (GetBuildingTower().IsValid())
 	{
+		bLockGUID = true;
 		if (GetBuildingTower().TowersConstructionNumber >= 1)//只有建造数量大于等于1才可以生成炮塔
 		{
 			int32 TowersID = GetBuildingTower().TowerID;
-			AActor* DollActor = GetGameState()->SpawnTowersDoll(TowersID);//生成绿色模型
+			//生成绿色模型
+			if (AStaticMeshActor* MeshActor = GetGameState()->SpawnTowersDoll(TowersID))
+			{
+				//替换所有材质为绿色
+				for (int32 i = 0; i < MeshActor->GetStaticMeshComponent()->GetNumMaterials(); i++)
+				{
+					MeshActor->GetStaticMeshComponent()->SetMaterial(i, DollMaterial);
+				}
+				TowerDoll = MeshActor;
+			}
 		}
 	}
 }
@@ -91,6 +103,12 @@ void UUI_Inventory::SpawnTowersDollReleased()
 {
 	if (GetBuildingTower().IsValid())//释放鼠标中键后生成绿色模型
 	{
+		if (TowerDoll)
+		{
+			TowerDoll->Destroy();
+			TowerDoll = nullptr;
+		}
 	}
+	bLockGUID = false;
 	TowerIconGUID = FGuid();//置空GUID
 }

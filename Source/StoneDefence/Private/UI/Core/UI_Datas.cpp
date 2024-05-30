@@ -3,3 +3,5 @@
 #include "UI/Core/UI_Datas.h"
 
 FGuid TowerIconGUID;
+AActor* TowerDoll;
+bool bLockGUID = false;

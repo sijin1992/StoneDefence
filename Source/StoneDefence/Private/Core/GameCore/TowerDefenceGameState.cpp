@@ -73,9 +73,9 @@ bool ATowerDefenceGameState::ReadGameData(int32 SaveNumber)
 	return SaveData != NULL;
 }
 
-AActor* ATowerDefenceGameState::SpawnTowersDoll(int32 ID)
+AStaticMeshActor* ATowerDefenceGameState::SpawnTowersDoll(int32 ID)
 {
-	AActor* OutActor = nullptr;
+	AStaticMeshActor* OutActor = nullptr;
 	TArray<const FCharacterData*> InDatas;
 	GetTowerDataFromTable(InDatas);
 	//遍历塔的数据列表
@@ -92,11 +92,16 @@ AActor* ATowerDefenceGameState::SpawnTowersDoll(int32 ID)
 					//生成替代模型
 					if (AStaticMeshActor* MeshActor = GetWorld()->SpawnActor<AStaticMeshActor>(AStaticMeshActor::StaticClass(), FVector::ZeroVector, FRotator::ZeroRotator))
 					{
+						FTransform InTransform;
 						//获取StaticMesh
-						if (UStaticMesh* InMesh = RuleOfTheCharacter->GetDollMesh())
+						if (UStaticMesh* InMesh = RuleOfTheCharacter->GetDollMesh(InTransform))
 						{
+							MeshActor->GetStaticMeshComponent()->SetRelativeTransform(InTransform);
+							MeshActor->SetMobility(EComponentMobility::Movable);//设置为可移动的组件
 							MeshActor->GetStaticMeshComponent()->SetStaticMesh(InMesh);//将获取的StaticMesh设置给替代模型
+							MeshActor->GetStaticMeshComponent()->SetMobility(EComponentMobility::Movable);//设置为可移动的组件
 							OutActor = MeshActor;
+							RuleOfTheCharacter->Destroy();
 						}
 						else
 						{
@@ -114,7 +119,7 @@ AActor* ATowerDefenceGameState::SpawnTowersDoll(int32 ID)
 		}
 	}
 
-	return nullptr;
+	return OutActor;
 }
 
 UGameSaveData* ATowerDefenceGameState::GetSaveData()

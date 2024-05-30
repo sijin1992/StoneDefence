@@ -46,7 +46,7 @@ public:
 	bool ReadGameData(int32 SaveNumber);
 
 	//生成炮塔的绿色模型
-	AActor* SpawnTowersDoll(int32 ID);
+	class AStaticMeshActor* SpawnTowersDoll(int32 ID);
 	//增
 	const FCharacterData& AddCharacterData(const FGuid& ID, const FCharacterData &Data);
 	//删

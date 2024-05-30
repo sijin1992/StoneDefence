@@ -5,3 +5,5 @@
 #include "CoreMinimal.h"
 
 extern FGuid TowerIconGUID;
+extern AActor* TowerDoll;
+extern bool bLockGUID;

@@ -133,7 +133,7 @@ FCharacterData& ARuleOfTheCharacter::GetCharacterData()
 	return CharacterDataNULL;
 }
 
-UStaticMesh* ARuleOfTheCharacter::GetDollMesh()
+UStaticMesh* ARuleOfTheCharacter::GetDollMesh(FTransform& InTransform)
 {
 	TArray<USceneComponent*> SceneComponents;
 	RootComponent->GetChildrenComponents(true, SceneComponents);
@@ -141,7 +141,11 @@ UStaticMesh* ARuleOfTheCharacter::GetDollMesh()
 	{
 		if (UStaticMeshComponent* NewMeshComponent = Cast<UStaticMeshComponent>(TempScene))
 		{
-			return NewMeshComponent->GetStaticMesh();
+			if (NewMeshComponent->GetStaticMesh())
+			{
+				InTransform = NewMeshComponent->GetComponentTransform();
+				return NewMeshComponent->GetStaticMesh();
+			}
 		}
 		else if(UParticleSystemComponent* NewParticleSystemComponent = Cast<UParticleSystemComponent>(TempScene))
 		{
@@ -156,6 +160,7 @@ UStaticMesh* ARuleOfTheCharacter::GetDollMesh()
 						//获取粒子特效的数据类型，看看是否可以转成模型
 						if (UParticleModuleTypeDataMesh* MyParticleDataMesh = Cast<UParticleModuleTypeDataMesh>(TempEmitter->LODLevels[0]->TypeDataModule))
 						{
+							InTransform = NewParticleSystemComponent->GetComponentTransform();
 							return MyParticleDataMesh->Mesh;
 						}
 					}
@@ -164,7 +169,8 @@ UStaticMesh* ARuleOfTheCharacter::GetDollMesh()
 		}
 		else if (USkeletalMeshComponent* NewSkeletalMeshComponent = Cast<USkeletalMeshComponent>(TempScene))
 		{
-			break;
+			InTransform = NewSkeletalMeshComponent->GetComponentTransform();
+			//break;
 		}
 	}
 	return NULL;

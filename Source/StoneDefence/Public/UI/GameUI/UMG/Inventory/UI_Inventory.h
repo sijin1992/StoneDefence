@@ -22,6 +22,9 @@ class STONEDEFENCE_API UUI_Inventory : public UUI_Slot
 	UPROPERTY(EditDefaultsOnly, Category = UI)
 	TSubclassOf<UUI_InventorySlot> InventorySlotClass;
 
+	UPROPERTY(EditDefaultsOnly, Category = UI)
+	UMaterialInterface* DollMaterial;
+
 public:
 	virtual void NativeConstruct();
 
