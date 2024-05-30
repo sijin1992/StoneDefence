@@ -160,8 +160,11 @@ UStaticMesh* ARuleOfTheCharacter::GetDollMesh(FTransform& InTransform)
 						//获取粒子特效的数据类型，看看是否可以转成模型
 						if (UParticleModuleTypeDataMesh* MyParticleDataMesh = Cast<UParticleModuleTypeDataMesh>(TempEmitter->LODLevels[0]->TypeDataModule))
 						{
-							InTransform = NewParticleSystemComponent->GetComponentTransform();
-							return MyParticleDataMesh->Mesh;
+							if (MyParticleDataMesh->Mesh)
+							{
+								InTransform = NewParticleSystemComponent->GetComponentTransform();
+								return MyParticleDataMesh->Mesh;
+							}
 						}
 					}
 				}
@@ -169,8 +172,19 @@ UStaticMesh* ARuleOfTheCharacter::GetDollMesh(FTransform& InTransform)
 		}
 		else if (USkeletalMeshComponent* NewSkeletalMeshComponent = Cast<USkeletalMeshComponent>(TempScene))
 		{
-			InTransform = NewSkeletalMeshComponent->GetComponentTransform();
-			//break;
+			FString SkeletalTargetName = TEXT("CharacterMesh0");
+			if (NewSkeletalMeshComponent->GetName() == SkeletalTargetName)
+			{
+				InTransform = NewSkeletalMeshComponent->GetComponentTransform();
+				//将生成的模型单位化
+				NewSkeletalMeshComponent->SetRelativeTransform(FTransform::Identity);
+				NewSkeletalMeshComponent->SetWorldTransform(FTransform::Identity);
+				NewSkeletalMeshComponent->SetRelativeRotation(InTransform.GetRotation());
+				if (UStaticMesh* NewMesh = MeshUtils::SkeletalMeshToStaticMesh(GetWorld(), NewSkeletalMeshComponent))
+				{
+					return NewMesh;
+				}
+			}
 		}
 	}
 	return NULL;

@@ -18,7 +18,8 @@ public class StoneDefence : ModuleRules
             "UMG",
 			"ApexDestruction",
             "AIModule",
-			"GameplayTasks"
+			"GameplayTasks",
+            "RawMesh"
         });
 		//自定义插件
         PublicDependencyModuleNames.AddRange(new string[] {

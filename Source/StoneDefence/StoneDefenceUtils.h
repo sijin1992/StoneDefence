@@ -6,6 +6,9 @@
 
 class ARuleOfTheCharacter;
 class IRuleCharacter;
+class UStaticMesh;
+class USkeletalMeshComponent;
+class UWorld;
 namespace StoneDefenceUtils
 {
 	//找到最近的敌人
@@ -18,4 +21,16 @@ namespace StoneDefenceUtils
 namespace Expression
 {
 	float GetDamage(IRuleCharacter* Enemy, IRuleCharacter* Owner);
+}
+/// <summary>
+/// 对模型进行操作
+/// </summary>
+namespace MeshUtils
+{
+	/// <summary>
+	/// 将SkeletalMesh转换成StaticMesh
+	/// </summary>
+	/// <param name="SkeletalMeshComponent"></param>
+	/// <returns></returns>
+	UStaticMesh* SkeletalMeshToStaticMesh(UWorld* InWorld, USkeletalMeshComponent* SkeletalMeshComponent);
 }

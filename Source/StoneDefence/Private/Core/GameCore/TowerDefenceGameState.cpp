@@ -182,6 +182,7 @@ ARuleOfTheCharacter* ATowerDefenceGameState::SpawnCharacter(
 					CharacterData->UpdateHealth();
 					AddCharacterData(RuleOfTheCharacter->GUID, *CharacterData);
 					//AddCharacterData(RuleOfTheCharacter->GetUniqueID(), *CharacterData);
+					return RuleOfTheCharacter;
 				}
 			}
 		}
