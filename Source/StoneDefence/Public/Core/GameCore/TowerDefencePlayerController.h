@@ -45,6 +45,8 @@ public:
 	void MouseMiddleButtonPressed();
 	void MouseMiddleButtonReleased();
 
+	const FHitResult& GetHitResult();
+
 protected:
 
 	FScreenMoveUnits ScreenMoveUnits;

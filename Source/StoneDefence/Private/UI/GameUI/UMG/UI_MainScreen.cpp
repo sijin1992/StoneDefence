@@ -3,6 +3,10 @@
 
 #include "UI/GameUI/UMG/UI_MainScreen.h"
 #include "UI/GameUI/UMG/Inventory/UI_InventorySlot.h"
+#include "Character/Core/RuleOfTheCharacter.h"
+#include "UI/GameUI/UMG/Tips/UI_TowerTip.h"
+#include "UMG/Public/Blueprint/WidgetLayoutLibrary.h"
+#include "UMG/Public/Components/CanvasPanelSlot.h"
 
 void UUI_MainScreen::NativeConstruct()
 {
@@ -27,4 +31,36 @@ bool UUI_MainScreen::NativeOnDrop(const FGeometry& InGeometry, const FDragDropEv
 		}
 	}
 	return bDrop;
+}
+
+void UUI_MainScreen::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
+{
+	Super::NativeTick(MyGeometry, InDeltaTime);
+	if (ARuleOfTheCharacter* InCharacter = Cast<ARuleOfTheCharacter>(GetPlayerController()->GetHitResult().GetActor()))
+	{
+		const FCharacterData& CharacterData = GetGameState()->GetCharacterData(InCharacter->GUID);
+		if (CharacterData.IsValid())
+		{
+			CharacterTip->InitTip(CharacterData);
+			CharacterTip->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
+			if (UCanvasPanelSlot* NewPanelSlot = Cast<UCanvasPanelSlot>(CharacterTip->Slot))
+			{
+				FVector2D ScreenLocation = FVector2D::ZeroVector;
+				UWidgetLayoutLibrary::ProjectWorldLocationToWidgetPosition(GetPlayerController(), GetPlayerController()->GetHitResult().Location, ScreenLocation,true);
+				NewPanelSlot->SetPosition(ScreenLocation);
+			}
+			else
+			{
+				CharacterTip->SetVisibility(ESlateVisibility::Hidden);
+			}
+		}
+		else
+		{
+			CharacterTip->SetVisibility(ESlateVisibility::Hidden);
+		}
+	}
+	else
+	{
+		CharacterTip->SetVisibility(ESlateVisibility::Hidden);
+	}
 }

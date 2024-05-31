@@ -35,8 +35,16 @@ class STONEDEFENCE_API UUI_MainScreen : public UUI_RuleOfTheWidget
 	UPROPERTY(meta = (Bindwidget))
 	class UUI_ToolBarSystem* ToolBarSystem;
 
+	UPROPERTY(meta = (BindWidget))
+	class UUI_TowerTip* CharacterTip;
+
+	UPROPERTY(meta = (BindWidget))
+	class UImage* FireConcentrationPoint;
+
 public:
-	virtual void NativeConstruct();
+	virtual void NativeConstruct() override;
+
+	virtual void NativeTick(const FGeometry& MyGeometry, float InDeltaTime) override;
 
 protected:
 

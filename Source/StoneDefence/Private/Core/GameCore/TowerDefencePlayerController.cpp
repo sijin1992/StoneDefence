@@ -22,7 +22,7 @@ void ATowerDefencePlayerController::Tick(float DeltaSeconds)
 		//不让MouseTraceHit影响生成的塔,MouseTraceHit是为以后做射线检测用的
 		if (MouseTraceHit.Location != FVector::ZeroVector)
 		{
-			MouseTraceHit.Location = FVector::ZeroVector;
+			MouseTraceHit = FHitResult();
 		}
 
 		FHitResult TraceOutHit;
@@ -31,7 +31,7 @@ void ATowerDefencePlayerController::Tick(float DeltaSeconds)
 	}
 	else
 	{
-		GetHitResultUnderCursor(ECollisionChannel::ECC_WorldStatic, true, MouseTraceHit);
+		GetHitResultUnderCursor(ECollisionChannel::ECC_GameTraceChannel5, true, MouseTraceHit);
 	}
 }
 
@@ -88,4 +88,9 @@ void ATowerDefencePlayerController::MouseMiddleButtonPressed()
 void ATowerDefencePlayerController::MouseMiddleButtonReleased()
 {
 	EventMouseMiddleReleased.ExecuteIfBound();
+}
+
+const FHitResult& ATowerDefencePlayerController::GetHitResult()
+{
+	return MouseTraceHit;
 }
