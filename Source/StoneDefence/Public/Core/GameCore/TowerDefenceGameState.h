@@ -6,6 +6,8 @@
 #include "GameFramework/GameState.h"
 #include "Data/Core/CharacterData.h"
 #include "Data/Save/GameSaveData.h"
+#include "Data/Core/PlayerData.h"
+#include "Data/Core/GameData.h"
 #include "TowerDefenceGameState.generated.h"
 
 extern FCharacterData CharacterDataNULL;
@@ -65,10 +67,17 @@ public:
 	const FCharacterData& GetCharacterDataByID(int32 ID, ECharacterType Type = ECharacterType::TOWER);
 	//建造列表单元格数据交换
 	void RequestInventorySlotSwap(const FGuid& A, const FGuid& B);
+	//获取玩家数据
+	FPlayerData& GetPlayerData();
+	//获取游戏数据
+	FGameInstanceDatas& GetGameData();
 
 protected:
 	virtual void BeginPlay() override;
-	//获取游戏数据
+
+	virtual void Tick(float DeltaSeconds) override;
+
+	//获取所有需要保存的数据
 	UGameSaveData* GetSaveData();
 	//获取存档数据
 	UGameSaveSlotList* GetGameSaveSlotList();
@@ -83,7 +92,7 @@ protected:
 	}
 
 private:
-	//游戏数据
+	//需要保存的数据
 	UPROPERTY()
 	UGameSaveData* SaveData;
 	//存档数据

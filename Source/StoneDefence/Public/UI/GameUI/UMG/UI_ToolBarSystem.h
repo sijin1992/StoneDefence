@@ -17,7 +17,7 @@ class STONEDEFENCE_API UUI_ToolBarSystem : public UUI_RuleOfTheWidget
 	GENERATED_BODY()
 	
 	UPROPERTY(meta = (BindWidget))
-	UTextBlock* GameGlob;//金币数量
+	UTextBlock* GameGold;//金币数量
 
 	UPROPERTY(meta = (BindWidget))
 	UTextBlock* TowersDeathNumber;//塔死亡数
@@ -36,4 +36,9 @@ class STONEDEFENCE_API UUI_ToolBarSystem : public UUI_RuleOfTheWidget
 
 public:
 	virtual void NativeConstruct();
+
+	virtual void NativeTick(const FGeometry& MyGeometry, float InDeltaTime) override;
+
+private:
+	FString GetCurrentCount(float NewTimeCount);
 };

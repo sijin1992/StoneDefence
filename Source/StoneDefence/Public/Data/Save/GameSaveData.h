@@ -5,6 +5,8 @@
 #include "CoreMinimal.h"
 #include "GameFramework/SaveGame.h"
 #include "../Core/CharacterData.h"
+#include "../Core/PlayerData.h"
+#include "../Core/GameData.h"
 #include "GameSaveData.generated.h"
 
 //炮塔结构体
@@ -79,4 +81,10 @@ public:
 	//建造列表数据
 	UPROPERTY(SaveGame)
 	TMap<FGuid, FBuildingTower> BuildingTowers;
+	//玩家数据
+	UPROPERTY(SaveGame)
+	FPlayerData PlayerData;
+	//游戏数据
+	UPROPERTY(SaveGame)
+	FGameInstanceDatas GameDatas;
 };

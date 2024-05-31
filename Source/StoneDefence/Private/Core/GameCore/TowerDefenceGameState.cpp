@@ -45,6 +45,13 @@ void ATowerDefenceGameState::BeginPlay()
 	//}
 }
 
+void ATowerDefenceGameState::Tick(float DeltaSeconds)
+{
+	Super::Tick(DeltaSeconds);
+
+	GetGameData().GameCount -= DeltaSeconds;
+}
+
 ATowers* ATowerDefenceGameState::SpawnTower(const int32 CharacterID, int32 CharacterLevel, const FVector& Location, const FRotator& Rotator)
 {
 	return SpawnCharacter<ATowers>(CharacterID, CharacterLevel, AITowerCharacterData, Location, Rotator);
@@ -339,6 +346,16 @@ void ATowerDefenceGameState::RequestInventorySlotSwap(const FGuid& A, const FGui
 		ASlot = BSlot;
 		BSlot.Init();//将B初始化，也可以达到清空效果
 	}
+}
+
+FPlayerData& ATowerDefenceGameState::GetPlayerData()
+{
+	return GetSaveData()->PlayerData;
+}
+
+FGameInstanceDatas& ATowerDefenceGameState::GetGameData()
+{
+	return GetSaveData()->GameDatas;
 }
 
 //打开优化
