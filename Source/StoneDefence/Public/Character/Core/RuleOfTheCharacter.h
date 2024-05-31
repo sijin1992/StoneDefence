@@ -76,4 +76,6 @@ protected:
 	virtual void BeginPlay() override;
 
 	virtual float TakeDamage(float Damage, struct FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
+	UFUNCTION()
+	virtual void OnClicked(UPrimitiveComponent* TouchedComponent, FKey ButtonPressed);
 };

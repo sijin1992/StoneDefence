@@ -15,6 +15,7 @@
 #include "Particles/TypeData/ParticleModuleTypeDataMesh.h"
 #include "Particles/ParticleEmitter.h"
 #include "Particles/ParticleLODLevel.h"
+#include "../StoneDefenceMacro.h"
 
 // Sets default values
 ARuleOfTheCharacter::ARuleOfTheCharacter()
@@ -43,6 +44,8 @@ ARuleOfTheCharacter::ARuleOfTheCharacter()
 void ARuleOfTheCharacter::BeginPlay()
 {
 	Super::BeginPlay();
+
+	TraceShowCharacterInformation->OnClicked.AddDynamic(this, &ARuleOfTheCharacter::OnClicked);
 	
 	//生成角色需要生成一个默认的控制
 	if (!GetController())
@@ -102,6 +105,11 @@ float ARuleOfTheCharacter::TakeDamage(float Damage, struct FDamageEvent const& D
 	UpdateUI();
 
 	return DamageValue;
+}
+
+void ARuleOfTheCharacter::OnClicked(UPrimitiveComponent* TouchedComponent, FKey ButtonPressed)
+{
+	//SD_print_s("Hello");
 }
 
 bool ARuleOfTheCharacter::IsDeath()

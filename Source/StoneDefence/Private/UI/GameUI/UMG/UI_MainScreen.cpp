@@ -7,6 +7,8 @@
 #include "UI/GameUI/UMG/Tips/UI_TowerTip.h"
 #include "UMG/Public/Blueprint/WidgetLayoutLibrary.h"
 #include "UMG/Public/Components/CanvasPanelSlot.h"
+#include "UI/Core/UI_Datas.h"
+#include "UMG/Public/Components/Image.h"
 
 void UUI_MainScreen::NativeConstruct()
 {
@@ -36,6 +38,8 @@ bool UUI_MainScreen::NativeOnDrop(const FGeometry& InGeometry, const FDragDropEv
 void UUI_MainScreen::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
 {
 	Super::NativeTick(MyGeometry, InDeltaTime);
+
+	//显示角色信息
 	if (ARuleOfTheCharacter* InCharacter = Cast<ARuleOfTheCharacter>(GetPlayerController()->GetHitResult().GetActor()))
 	{
 		const FCharacterData& CharacterData = GetGameState()->GetCharacterData(InCharacter->GUID);
@@ -46,6 +50,7 @@ void UUI_MainScreen::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
 			if (UCanvasPanelSlot* NewPanelSlot = Cast<UCanvasPanelSlot>(CharacterTip->Slot))
 			{
 				FVector2D ScreenLocation = FVector2D::ZeroVector;
+				//世界坐标转屏幕坐标
 				UWidgetLayoutLibrary::ProjectWorldLocationToWidgetPosition(GetPlayerController(), GetPlayerController()->GetHitResult().Location, ScreenLocation,true);
 				NewPanelSlot->SetPosition(ScreenLocation);
 			}
@@ -62,5 +67,24 @@ void UUI_MainScreen::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
 	else
 	{
 		CharacterTip->SetVisibility(ESlateVisibility::Hidden);
+	}
+
+	//显示集火对象
+	if (ClickedTargetMonster && ClickedTargetMonster->IsActive())
+	{
+		if (UCanvasPanelSlot* NewPanelSlot = Cast<UCanvasPanelSlot>(FireConcentrationPoint->Slot))
+		{
+			FVector2D ScreenLocation = FVector2D::ZeroVector;
+			//世界坐标转屏幕坐标
+			UWidgetLayoutLibrary::ProjectWorldLocationToWidgetPosition(GetPlayerController(), ClickedTargetMonster->GetActorLocation(), ScreenLocation,true);
+			
+			NewPanelSlot->SetPosition(ScreenLocation);
+			FireConcentrationPoint->SetVisibility(ESlateVisibility::HitTestInvisible);
+		}
+	}
+	else
+	{
+		ClickedTargetMonster = nullptr;
+		FireConcentrationPoint->SetVisibility(ESlateVisibility::Hidden);
 	}
 }

@@ -2,6 +2,7 @@
 
 
 #include "Character/CharacterCore/Monsters.h"
+#include "UI/Core/UI_Datas.h"
 
 void AMonsters::BeginPlay()
 {
@@ -21,4 +22,18 @@ bool AMonsters::IsTeam()
 EGameCharacterType::Type AMonsters::GetType()
 {
 	return EGameCharacterType::Type::MONSTER;
+}
+
+void AMonsters::OnClicked(UPrimitiveComponent* TouchedComponent, FKey ButtonPressed)
+{
+	Super::OnClicked(TouchedComponent, ButtonPressed);
+	if (ClickedTargetMonster)
+	{
+		ClickedTargetMonster = nullptr;
+	}
+	else
+	{
+		ClickedTargetMonster = this;
+	}
+	
 }

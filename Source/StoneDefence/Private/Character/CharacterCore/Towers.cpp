@@ -5,6 +5,7 @@
 #include "Particles/ParticleSystemComponent.h"
 #include "Components/StaticMeshComponent.h"
 #include "DestructibleComponent.h"
+#include "UI/Core/UI_Datas.h"
 
 ATowers::ATowers()
 {
@@ -31,4 +32,17 @@ float ATowers::TakeDamage(float Damage, struct FDamageEvent const& DamageEvent, 
 {
 	Super::TakeDamage(Damage, DamageEvent, EventInstigator, DamageCauser);
 	return 0.f;
+}
+
+void ATowers::OnClicked(UPrimitiveComponent* TouchedComponent, FKey ButtonPressed)
+{
+	Super::OnClicked(TouchedComponent, ButtonPressed);
+	if (ClickedTargetTower)
+	{
+		ClickedTargetTower = nullptr;
+	}
+	else
+	{
+		ClickedTargetTower = this;
+	}
 }

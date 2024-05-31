@@ -7,7 +7,8 @@
 
 ATowerDefencePlayerController::ATowerDefencePlayerController()
 {
-	bShowMouseCursor = true;
+	bShowMouseCursor = true;//显示鼠标
+	bEnableClickEvents = true;//打开敲击事件
 }
 
 void ATowerDefencePlayerController::Tick(float DeltaSeconds)
