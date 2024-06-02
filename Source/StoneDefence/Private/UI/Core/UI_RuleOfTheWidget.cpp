@@ -4,6 +4,7 @@
 #include "UI/Core/UI_RuleOfTheWidget.h"
 #include "Core/GameCore/TowerDefenceGameState.h"
 #include "Core/GameCore/TowerDefencePlayerController.h"
+#include "UMG/Public/Animation/WidgetAnimation.h"
 
 UUI_RuleOfTheWidget::UUI_RuleOfTheWidget(const FObjectInitializer& ObjectInitializer)
 	:Super(ObjectInitializer)
@@ -25,6 +26,18 @@ class ATowerDefencePlayerController* UUI_RuleOfTheWidget::GetPlayerController()
 	if (GetWorld())
 	{
 		return GetWorld()->GetFirstPlayerController<ATowerDefencePlayerController>();
+	}
+	return nullptr;
+}
+
+//通过名字获取蓝图动画
+UWidgetAnimation* UUI_RuleOfTheWidget::GetNameWidgetAnimation(const FString& WidgetAnimationName) const
+{
+	if (UWidgetBlueprintGeneratedClass* WidgetBlueprintGenerated = Cast<UWidgetBlueprintGeneratedClass>(GetClass()))
+	{
+		TArray<UWidgetAnimation*> TArrayAnimations = WidgetBlueprintGenerated->Animations;
+		UWidgetAnimation** MyTempAnimation = TArrayAnimations.FindByPredicate([&](const UWidgetAnimation* OurAnimation) {return OurAnimation->GetFName().ToString() == (WidgetAnimationName + FString("_INST")); });
+		return *MyTempAnimation;
 	}
 	return nullptr;
 }

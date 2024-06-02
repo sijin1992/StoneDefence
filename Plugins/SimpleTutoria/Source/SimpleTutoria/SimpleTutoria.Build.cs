@@ -39,6 +39,7 @@ public class SimpleTutoria : ModuleRules
 				"Slate",
 				"SlateCore",
 				"UMG",
+                "MediaAssets"
 				// ... add private dependencies that you statically link with here ...	
 			}
 			);

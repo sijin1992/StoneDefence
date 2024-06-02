@@ -6,6 +6,7 @@
 #include "Blueprint/UserWidget.h"
 #include "UI_RuleOfTheWidget.generated.h"
 
+class UWidgetAnimation;
 /**
  * 
  */
@@ -23,4 +24,6 @@ public:
 
 	class ATowerDefenceGameState* GetGameState();
 	class ATowerDefencePlayerController* GetPlayerController();
+	//通过名字获取蓝图动画
+	UWidgetAnimation* GetNameWidgetAnimation(const FString& WidgetAnimationName) const;
 };
