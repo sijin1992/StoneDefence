@@ -12,17 +12,30 @@ struct FGameInstanceDatas
 	void Init();
 
 	//bool IsValid();
+	//获取所有阶段一共需要生成的剩余怪物数
+	int32 GetSurplusMonsters();
 	
-	//获取当前最大怪物数量
-	int32 GetMaxMonstersNumber();
-
 	//获取怪物数量百分比
 	float GetPerOfRemMonsters();
 
+	//重新设置SpawnTime
+	void ResetSpawnMonsterTime();
+
+	//每次生成怪物时进行阶段计算
+	void StageDecision();
+
+	//分配怪物数量梯度，由少到多
+	void AssignedMonsterAmount();
+
+	//当前生成怪物的时间是否大于生成怪物的时间间隔
+	FORCEINLINE bool IsAlloSpawnMonster() { return CurrentSpawnMonsterTime > TimeInterval; }
+
 	//SaveGame表示不需要保存的变量，Transient不需要保存的变量
-	//该关卡内怪物数量
+	
+	//当前关卡
 	UPROPERTY(SaveGame)
-	int32 NumberOfMonster;
+	int32 CurrentLevel;
+
 	//游戏难度有关
 	UPROPERTY(SaveGame)
 	int8 GameDifficulty;
@@ -35,28 +48,29 @@ struct FGameInstanceDatas
 	UPROPERTY(Transient)
 	uint8 bGameOver : 1;
 
-	//所有塔死亡，则游戏结束
+	//所有塔死亡或者所有怪物死亡，则游戏结束
 	UPROPERTY(Transient)
 	uint8 bCurrentLevelMissionSuccess : 1;
 
-	//生成怪物阶段
+	//一共有多少个阶段
 	UPROPERTY(SaveGame)
-	int32 SpawnMonsterStage;
+	int32 MaxStagesAreMonsters;
 
-	//当前关卡
+	//每个阶段要生成的怪物数量,每生成一个会减少
 	UPROPERTY(SaveGame)
-	int32 CurrentLevel;
+	TArray<int32> PerNumberOfMonsters;
+
+	//该关卡要生成的怪物总数
+	UPROPERTY(SaveGame)
+	int32 MaxMonsters;
 
 	//时间间隔(多久生成一次怪物)
 	UPROPERTY(SaveGame)
 	float TimeInterval;
 
-	//当前是哪一波怪物
-	int32 CurrentStagesAreMonsters;
-
-	//每波怪物当前数量
+	//生成怪物的时间记录
 	UPROPERTY(SaveGame)
-	TArray<int32> PerNumberOfMonsters;
+	float CurrentSpawnMonsterTime;
 
 	//总时间的倒计时
 	UPROPERTY(SaveGame)

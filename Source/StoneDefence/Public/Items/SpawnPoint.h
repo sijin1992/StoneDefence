@@ -14,6 +14,10 @@ class STONEDEFENCE_API ASpawnPoint : public ATargetPoint
 {
 	GENERATED_BODY()
 
+public:
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = TargetPoint)
+	bool bTeam;
+
 protected:
 	virtual void BeginPlay() override;
 };

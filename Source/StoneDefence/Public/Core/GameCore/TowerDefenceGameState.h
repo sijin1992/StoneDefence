@@ -91,6 +91,9 @@ protected:
 		return Cast<T>(SpawnCharacter(CharacterID, CharacterLevel, InCharacterData, Location, Rotator));
 	}
 
+	//生成怪物
+	void SpawnMonstersRule(float DeltaSeconds);
+
 private:
 	//需要保存的数据
 	UPROPERTY()
