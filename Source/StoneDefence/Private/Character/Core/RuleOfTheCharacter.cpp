@@ -52,8 +52,6 @@ void ARuleOfTheCharacter::BeginPlay()
 	{
 		SpawnDefaultController();
 	}
-
-	UpdateUI();
 }
 
 // Called every frame
@@ -61,16 +59,20 @@ void ARuleOfTheCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	UpdateUI();
 }
 
 void ARuleOfTheCharacter::UpdateUI()
 {
 	if (Widget)
 	{
-		if (UUI_Health* HealthUI = Cast<UUI_Health>(Widget->GetUserWidgetObject()))
+		if (GetCharacterData().IsValid())
 		{
-			HealthUI->SetTitle(GetCharacterData().Name.ToString());
-			HealthUI->SetHealth(GetHealth() / GetMaxHealth());
+			if (UUI_Health* HealthUI = Cast<UUI_Health>(Widget->GetUserWidgetObject()))
+			{
+				HealthUI->SetTitle(GetCharacterData().Name.ToString());
+				HealthUI->SetHealth(GetHealth() / GetMaxHealth());
+			}
 		}
 	}
 }
@@ -80,29 +82,82 @@ EGameCharacterType::Type ARuleOfTheCharacter::GetType()
 	return EGameCharacterType::Type::MAX;
 }
 
+/// <summary>
+/// 造成伤害
+/// </summary>
+/// <param name="Damage">伤害</param>
+/// <param name="DamageEvent"></param>
+/// <param name="EventInstigator"></param>
+/// <param name="DamageCauser">伤害造成者</param>
+/// <returns></returns>
 float ARuleOfTheCharacter::TakeDamage(float Damage, struct FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
 {
 	Super::TakeDamage(Damage, DamageEvent, EventInstigator, DamageCauser);
+	//绘制飘字
+	auto DrawGameText = [&](ARuleOfTheCharacter* InOwer, const TCHAR* InText, float InDamageValue, FLinearColor InColor)
+		{
+			if (DrawTextClass)
+			{
+				if (ADrawText* MyValueText = GetWorld()->SpawnActor<ADrawText>(DrawTextClass, InOwer->GetActorLocation(), FRotator::ZeroRotator))
+				{
+					TCHAR InTextArray[256];
+					FCString::Strcpy(InTextArray, InText);
+					FString DamageText = FString::Printf(InTextArray, InDamageValue);
+					MyValueText->SetTextBlock(DamageText, InColor, InDamageValue / InOwer->GetCharacterData().MaxHealth);
+				}
+			}
+		};
+
 	//计算伤害
 	float DamageValue = Expression::GetDamage(Cast<ARuleOfTheCharacter>(DamageCauser), this);
 
 	GetCharacterData().Health -= DamageValue;
-
+	//死亡判定
 	if (!IsActive())
 	{
 		GetCharacterData().Health = 0.0f;
-	}
+		SetLifeSpan(3.0f);//3秒后把自己销毁
 
-	if (DrawTextClass)
-	{
-		if (ADrawText* MyValueText = GetWorld()->SpawnActor<ADrawText>(DrawTextClass, GetActorLocation(),FRotator::ZeroRotator))
+		//把UI隐藏
+		Widget->SetVisibility(false);
+		//谁把我杀死，我就给谁全部的经验
+		if (ARuleOfTheCharacter* CauserCharacter = Cast<ARuleOfTheCharacter>(DamageCauser))
 		{
-			FString DamageText = FString::Printf(TEXT("-%0.f"), DamageValue);
-			MyValueText->SetTextBlock(DamageText, FLinearColor::Red, DamageValue / GetCharacterData().MaxHealth);
-		}
-	}
+			//升极
+			if (CauserCharacter->IsActive())
+			{
+				if (CauserCharacter->GetCharacterData().UpdateLevel(GetCharacterData().AddEmpiricalValue))
+				{
+					//播放升极特效
+				}
+				//绘制经验值飘字
+				DrawGameText(CauserCharacter, TEXT("+EXP %0.0f"), GetCharacterData().AddEmpiricalValue, FLinearColor::Yellow);
+			}
 
-	UpdateUI();
+			//寻找范围内最近的敌人
+			TArray<ARuleOfTheCharacter*> EnemyCharacters;
+			StoneDefenceUtils::FindRangeTargetRecently(this, 1000.0f, EnemyCharacters);
+			for (ARuleOfTheCharacter* InEnemy : EnemyCharacters)
+			{
+				if (InEnemy != CauserCharacter)
+				{
+					if (InEnemy->IsActive())
+					{
+						if (InEnemy->GetCharacterData().UpdateLevel(GetCharacterData().AddEmpiricalValue * 0.3f))
+						{
+						}
+						//绘制经验值飘字
+						DrawGameText(InEnemy, TEXT("+EXP %0.0f"), GetCharacterData().AddEmpiricalValue, FLinearColor::Yellow);
+					}
+				}
+			}
+		}
+
+		//把当前的角色移除
+		GetGameState()->RemoveCharacterData(GUID);
+	}
+	//绘制受到伤害飘字
+	DrawGameText(this, TEXT("-%0.0f"), DamageValue, FLinearColor::Red);
 
 	return DamageValue;
 }

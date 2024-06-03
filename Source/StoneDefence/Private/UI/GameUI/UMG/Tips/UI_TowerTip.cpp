@@ -5,6 +5,7 @@
 #include "Data/Core/CharacterData.h"
 #include "UMG/Public/Components/TextBlock.h"
 #include "UMG/Public/Components/MultiLineEditableTextBox.h"
+#include "UMG/Public/Components/ProgressBar.h"
 
 void UUI_TowerTip::InitTip(const FCharacterData& InData)
 {
@@ -16,4 +17,5 @@ void UUI_TowerTip::InitTip(const FCharacterData& InData)
 	CharacterArmorBlock->SetText(FText::AsNumber(InData.Armor));
 	CharacterAttackSpeedBlock->SetText(FText::AsNumber(InData.AttackSpeed));
 	IntroductionTextBox->SetText(InData.Introduction);
+	EXPBar->SetPercent(InData.GetEXPPercent());
 }

@@ -18,7 +18,11 @@ public:
 
 	bool IsValid() const;//判断角色数据是否有效
 
-	void UpdateHealth();
+	void UpdateHealth();//更新当前生命值
+
+	bool UpdateLevel(float InExp);//升极
+
+	float GetEXPPercent() const;//获取经验百分比
 
 public:
 	//////////////////////////////资源/////////////////////////////////////////
@@ -59,11 +63,11 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category = "Table Attribute")
 	float Armor;
 
-	//最大经验值
+	//当前等级的最大经验值
 	UPROPERTY(EditDefaultsOnly, Category = "Table Attribute")
 	float MaxEmpircalValue;
 
-	//经验值
+	//当前经验值
 	UPROPERTY()
 	float EmpirceValue;
 

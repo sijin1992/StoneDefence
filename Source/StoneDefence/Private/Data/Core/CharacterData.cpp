@@ -12,17 +12,17 @@ FCharacterData::FCharacterData()
 	PhysicalAttack(10),
 	Armor(10),
 	MaxEmpircalValue(100),
-	EmpirceValue(MaxEmpircalValue),
+	EmpirceValue(0.0f),
 	CD(2.0f),
 	AttackSpeed(0.66),
 	Gold(80),
 
 	AddGold(30),
-	AddHealth(0.0f),
-	AddPhysicalAttack(0.0f),
-	AddArmor(0.0f),
-	AddEmpiricalValue(20),
-	AddAttackSpeed(0.0f),
+	AddHealth(50.0f),
+	AddPhysicalAttack(10.0f),
+	AddArmor(8.0f),
+	AddEmpiricalValue(100),
+	AddAttackSpeed(0.001f),
 	RestoreHealth(0.2f),
 
 	AddPassiveSkillHealth(0.0f),
@@ -44,4 +44,45 @@ bool FCharacterData::IsValid() const
 void FCharacterData::UpdateHealth()
 {
 	Health = MaxHealth;
+}
+
+bool FCharacterData::UpdateLevel(float InExp)
+{
+	EmpirceValue += InExp;
+	if (EmpirceValue >= MaxEmpircalValue)//升极
+	{
+		EmpirceValue -= MaxEmpircalValue;
+
+		//被动技能加成
+		float Coefficient = 0.1f;
+
+		Lv += 1;
+		//属性提升
+		MaxHealth += (Lv - 1) * AddHealth * Coefficient;
+		PhysicalAttack += (Lv - 1) * AddPhysicalAttack * Coefficient;
+		AttackSpeed += (Lv - 1) * AddAttackSpeed * Coefficient;
+		Armor += (Lv - 1) * AddArmor * Coefficient;
+		MaxEmpircalValue += (Lv - 1) * AddEmpiricalValue * Coefficient;
+		RestoreHealth += (RestoreHealth * Lv) / 100;
+
+		//被动技能
+		AddPassiveSkillHealth += ((Lv - 1) * AddPassiveSkillHealth)* (Coefficient - 0.09f);
+		AddPassiveSkillPhysicalAttack += (Lv - 1) * AddPassiveSkillPhysicalAttack * (Coefficient - 0.09f);
+		AddPassiveSkillAttackSpeed += (Lv - 1) * AddPassiveSkillAttackSpeed * (Coefficient - 0.09f);
+		AddPassiveSkilldArmor += (Lv - 1) * AddPassiveSkilldArmor * (Coefficient - 0.09f);
+
+		Health = MaxHealth;
+
+		return true;
+	}
+	return false;
+}
+
+float FCharacterData::GetEXPPercent() const
+{
+	if (MaxEmpircalValue != 0.0F)
+	{
+		return EmpirceValue / MaxEmpircalValue;
+	}
+	return 0.0f;
 }

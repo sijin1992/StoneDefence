@@ -11,6 +11,9 @@ class USkeletalMeshComponent;
 class UWorld;
 namespace StoneDefenceUtils
 {
+	//寻找一定范围内最近的人
+	void FindRangeTargetRecently(ARuleOfTheCharacter* InOwner, float Range, TArray<ARuleOfTheCharacter*> &Targets);
+
 	//找到最近的敌人
 	ARuleOfTheCharacter* FindTargetRecently(const TArray<ARuleOfTheCharacter*>& InCharacters, const FVector &CompareLocation);
 
@@ -32,10 +35,7 @@ namespace StoneDefenceUtils
 	{
 		for (TActorIterator<Type>It(World, Type::StaticClass()); It; ++It)
 		{
-			if (Type* A = Cast<Type>(*It))
-			{
-				Array.Add(A);
-			}
+			Array.Add(*It);
 		}
 	}
 
