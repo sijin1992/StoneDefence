@@ -39,6 +39,11 @@ public:
 
 	UPROPERTY(EditDefaultsOnly, Category = Death)
 	float DelayDeath;
+//主要是防止编辑器崩溃
+#if WITH_EDITOR
+private:
+	FCharacterData NULLCharacterData;
+#endif
 
 public:	
 	// Sets default values for this character's properties
