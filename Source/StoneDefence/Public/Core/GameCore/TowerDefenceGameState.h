@@ -10,8 +10,6 @@
 #include "Data/Core/GameData.h"
 #include "TowerDefenceGameState.generated.h"
 
-extern FCharacterData CharacterDataNULL;
-extern FBuildingTower BuildingTowerNULL;
 
 class ARuleOfTheCharacter;
 class UDataTable;
@@ -72,6 +70,9 @@ public:
 	//获取游戏数据
 	FGameInstanceDatas& GetGameData();
 
+	FCharacterData& GetCharacterDataNULL();
+	FBuildingTower& GetBuildingTowerNULL();
+
 protected:
 	virtual void BeginPlay() override;
 
@@ -104,4 +105,7 @@ private:
 	//缓存数据
 	TArray<FCharacterData*> CacheTowerDatas;
 	TArray<FCharacterData*> CacheMonsterDatas;
+
+	FCharacterData CharacterDataNULL;
+	FBuildingTower BuildingTowerNULL;
 };

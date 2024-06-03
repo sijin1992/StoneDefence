@@ -20,9 +20,11 @@ public:
 
 	void UpdateHealth();//更新当前生命值
 
-	bool UpdateLevel(float InExp);//升极
+	bool UpdateEXP(float InExp);//升级经验
 
 	float GetEXPPercent() const;//获取经验百分比
+
+	void UpdateLevel();//直接升级
 
 public:
 	//////////////////////////////资源/////////////////////////////////////////

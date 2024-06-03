@@ -18,9 +18,6 @@
 #pragma optimize("",off)
 #endif
 
-FCharacterData CharacterDataNULL;
-FBuildingTower BuildingTowerNULL;
-
 ATowerDefenceGameState::ATowerDefenceGameState()
 {
 	PrimaryActorTick.bCanEverTick = true;
@@ -51,6 +48,13 @@ void ATowerDefenceGameState::BeginPlay()
 void ATowerDefenceGameState::Tick(float DeltaSeconds)
 {
 	Super::Tick(DeltaSeconds);
+
+	GetPlayerData().GameGoldTime += DeltaSeconds;
+	if (GetPlayerData().IsAllowIncrease())
+	{
+		GetPlayerData().GameGoldTime = 0.0f;
+		GetPlayerData().GameGold++;
+	}
 
 	if (GetGameData().GameCount <= 0.0f)
 	{
@@ -215,8 +219,17 @@ ARuleOfTheCharacter* ATowerDefenceGameState::SpawnCharacter(
 			{
 				if (ARuleOfTheCharacter* RuleOfTheCharacter = GetWorld()->SpawnActor<ARuleOfTheCharacter>(NewClass, Location, Rotator))
 				{
-					//RuleOfTheCharacter->GUID = FGuid::NewGuid();
 					CharacterData->UpdateHealth();
+
+					if (CharacterLevel > 1)
+					{
+						//升极
+						for (int32 i = 0; i < CharacterLevel; i++)
+						{
+							CharacterData->UpdateLevel();
+						}
+					}
+					//RuleOfTheCharacter->GUID = FGuid::NewGuid();
 					AddCharacterData(RuleOfTheCharacter->GUID, *CharacterData);
 					//AddCharacterData(RuleOfTheCharacter->GetUniqueID(), *CharacterData);
 					OutCharacter = RuleOfTheCharacter;
@@ -505,6 +518,16 @@ FPlayerData& ATowerDefenceGameState::GetPlayerData()
 FGameInstanceDatas& ATowerDefenceGameState::GetGameData()
 {
 	return GetSaveData()->GameDatas;
+}
+
+FCharacterData& ATowerDefenceGameState::GetCharacterDataNULL()
+{
+	return CharacterDataNULL;
+}
+
+FBuildingTower& ATowerDefenceGameState::GetBuildingTowerNULL()
+{
+	return BuildingTowerNULL;
 }
 
 //打开优化

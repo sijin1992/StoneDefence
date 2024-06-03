@@ -46,32 +46,14 @@ void FCharacterData::UpdateHealth()
 	Health = MaxHealth;
 }
 
-bool FCharacterData::UpdateLevel(float InExp)
+bool FCharacterData::UpdateEXP(float InExp)
 {
 	EmpirceValue += InExp;
 	if (EmpirceValue >= MaxEmpircalValue)//升极
 	{
 		EmpirceValue -= MaxEmpircalValue;
 
-		//被动技能加成
-		float Coefficient = 0.1f;
-
-		Lv += 1;
-		//属性提升
-		MaxHealth += (Lv - 1) * AddHealth * Coefficient;
-		PhysicalAttack += (Lv - 1) * AddPhysicalAttack * Coefficient;
-		AttackSpeed += (Lv - 1) * AddAttackSpeed * Coefficient;
-		Armor += (Lv - 1) * AddArmor * Coefficient;
-		MaxEmpircalValue += (Lv - 1) * AddEmpiricalValue * Coefficient;
-		RestoreHealth += (RestoreHealth * Lv) / 100;
-
-		//被动技能
-		AddPassiveSkillHealth += ((Lv - 1) * AddPassiveSkillHealth)* (Coefficient - 0.09f);
-		AddPassiveSkillPhysicalAttack += (Lv - 1) * AddPassiveSkillPhysicalAttack * (Coefficient - 0.09f);
-		AddPassiveSkillAttackSpeed += (Lv - 1) * AddPassiveSkillAttackSpeed * (Coefficient - 0.09f);
-		AddPassiveSkilldArmor += (Lv - 1) * AddPassiveSkilldArmor * (Coefficient - 0.09f);
-
-		Health = MaxHealth;
+		UpdateLevel();
 
 		return true;
 	}
@@ -85,4 +67,29 @@ float FCharacterData::GetEXPPercent() const
 		return EmpirceValue / MaxEmpircalValue;
 	}
 	return 0.0f;
+}
+
+void FCharacterData::UpdateLevel()
+{
+	//被动技能加成
+	float Coefficient = 0.1f;
+
+	Lv += 1;
+	Gold += (Lv - 1) * AddHealth * Coefficient;
+
+	//属性提升
+	MaxHealth += (Lv - 1) * AddHealth * Coefficient;
+	PhysicalAttack += (Lv - 1) * AddPhysicalAttack * Coefficient;
+	AttackSpeed += (Lv - 1) * AddAttackSpeed * Coefficient;
+	Armor += (Lv - 1) * AddArmor * Coefficient;
+	MaxEmpircalValue += (Lv - 1) * AddEmpiricalValue * Coefficient;
+	RestoreHealth += (RestoreHealth * Lv) / 100;
+
+	//被动技能
+	AddPassiveSkillHealth += ((Lv - 1) * AddPassiveSkillHealth) * (Coefficient - 0.09f);
+	AddPassiveSkillPhysicalAttack += (Lv - 1) * AddPassiveSkillPhysicalAttack * (Coefficient - 0.09f);
+	AddPassiveSkillAttackSpeed += (Lv - 1) * AddPassiveSkillAttackSpeed * (Coefficient - 0.09f);
+	AddPassiveSkilldArmor += (Lv - 1) * AddPassiveSkilldArmor * (Coefficient - 0.09f);
+
+	Health = MaxHealth;
 }

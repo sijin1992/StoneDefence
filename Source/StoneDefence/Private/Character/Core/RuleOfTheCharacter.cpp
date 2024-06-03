@@ -20,7 +20,8 @@
 // Sets default values
 ARuleOfTheCharacter::ARuleOfTheCharacter()
 	:GUID(FGuid::NewGuid()),
-	bAttack(false)
+	bAttack(false),
+	DelayDeath(10.0f)
 {
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
@@ -115,8 +116,14 @@ float ARuleOfTheCharacter::TakeDamage(float Damage, struct FDamageEvent const& D
 	//死亡判定
 	if (!IsActive())
 	{
+		//杀掉怪物获取金币
+		if (GetGameState()->GetPlayerData().bTeam != IsTeam())
+		{
+			GetGameState()->GetPlayerData().GameGold += GetCharacterData().Gold;
+		}
+
 		GetCharacterData().Health = 0.0f;
-		SetLifeSpan(3.0f);//3秒后把自己销毁
+		SetLifeSpan(DelayDeath);//防止死亡动画通知没有起作用，给一个安全时间销毁
 
 		//把UI隐藏
 		Widget->SetVisibility(false);
@@ -126,7 +133,7 @@ float ARuleOfTheCharacter::TakeDamage(float Damage, struct FDamageEvent const& D
 			//升极
 			if (CauserCharacter->IsActive())
 			{
-				if (CauserCharacter->GetCharacterData().UpdateLevel(GetCharacterData().AddEmpiricalValue))
+				if (CauserCharacter->GetCharacterData().UpdateEXP(GetCharacterData().AddEmpiricalValue))
 				{
 					//播放升极特效
 				}
@@ -143,7 +150,7 @@ float ARuleOfTheCharacter::TakeDamage(float Damage, struct FDamageEvent const& D
 				{
 					if (InEnemy->IsActive())
 					{
-						if (InEnemy->GetCharacterData().UpdateLevel(GetCharacterData().AddEmpiricalValue * 0.3f))
+						if (InEnemy->GetCharacterData().UpdateEXP(GetCharacterData().AddEmpiricalValue * 0.3f))
 						{
 						}
 						//绘制经验值飘字
@@ -189,11 +196,7 @@ bool ARuleOfTheCharacter::IsTeam()
 
 FCharacterData& ARuleOfTheCharacter::GetCharacterData()
 {
-	if (GetGameState())
-	{
-		return GetGameState()->GetCharacterData(GUID);
-	}
-	return CharacterDataNULL;
+	return GetGameState()->GetCharacterData(GUID);
 }
 
 UStaticMesh* ARuleOfTheCharacter::GetDollMesh(FTransform& InTransform)

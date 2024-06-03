@@ -39,6 +39,8 @@ struct FPlayerData
 	void Init();
 
 	bool IsValid();
+	//是否允许增加金币
+	bool IsAllowIncrease();
 
 	//玩家ID
 	UPROPERTY(SaveGame)
@@ -52,9 +54,21 @@ struct FPlayerData
 	UPROPERTY(SaveGame)
 	FString Account;
 
+	//玩家阵营
+	UPROPERTY(SaveGame)
+	bool bTeam;
+
 	//游戏金币
 	UPROPERTY(SaveGame)
 	int32 GameGold;
+
+	//赠送游戏金币的计时器
+	UPROPERTY(SaveGame)
+	float GameGoldTime;
+
+	//多长时间赠送一次游戏金币
+	UPROPERTY(SaveGame)
+	float MaxGameGoldTime;
 
 	//钻石 需要购买
 	UPROPERTY(SaveGame)

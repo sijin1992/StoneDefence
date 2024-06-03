@@ -27,16 +27,19 @@ class STONEDEFENCE_API ARuleOfTheCharacter : public ACharacter, public IRuleChar
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "CharacterComponent", meta = (AllowPrivateAccess = "true"))
 	class UBoxComponent* TraceShowCharacterInformation;
 public:
-	UPROPERTY(EditDefaultsOnly,Category = UI)
-	TSubclassOf<class ADrawText> DrawTextClass;
-
-public:
 	//角色ID
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "CharacterAttribute")
 	FGuid GUID;
 	//是否在攻击
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "CharacterAttribute")
 	bool bAttack;
+	//飘字
+	UPROPERTY(EditDefaultsOnly, Category = UI)
+	TSubclassOf<class ADrawText> DrawTextClass;
+
+	UPROPERTY(EditDefaultsOnly, Category = Death)
+	float DelayDeath;
+
 public:	
 	// Sets default values for this character's properties
 	ARuleOfTheCharacter();

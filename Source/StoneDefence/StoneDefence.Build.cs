@@ -31,6 +31,14 @@ public class StoneDefence : ModuleRules
 			"SimpleDrawText"
         });
 
+		//如果是编辑器，才包含的模块
+		if (Target.bBuildEditor == true)
+		{
+            PrivateDependencyModuleNames.AddRange(new string[] {
+				"Persona"
+			});
+        }
+
         PrivateDependencyModuleNames.AddRange(new string[] {  });
 
 		// Uncomment if you are using Slate UI

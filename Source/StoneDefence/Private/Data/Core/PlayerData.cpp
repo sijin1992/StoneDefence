@@ -31,9 +31,17 @@ void FPlayerData::Init()
 	GameGold = 0;
 	Diamonds = 0;
 	Copper = 0;
+	bTeam = true;
+	GameGoldTime = 0.0f;
+	MaxGameGoldTime = 1.24f;
 }
 
 bool FPlayerData::IsValid()
 {
 	return PlayID != INDEX_NONE;
+}
+
+bool FPlayerData::IsAllowIncrease()
+{
+	return GameGoldTime >= MaxGameGoldTime;
 }
