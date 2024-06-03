@@ -10,7 +10,7 @@
 /**
  * 
  */
-UCLASS(const, hidecategories = Object, collapsecategories, Config = Game, meta = (DisplayName = "Spawn Bullet"))
+UCLASS(const, hidecategories = Object, collapsecategories, meta = (DisplayName = "Spawn Bullet"))
 class STONEDEFENCE_API UAnimNotify_SpawnBullet : public UAnimNotify
 {
 	GENERATED_BODY()

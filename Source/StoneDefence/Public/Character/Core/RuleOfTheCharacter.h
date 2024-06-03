@@ -77,6 +77,12 @@ public:
 	//通知蓝图攻击结束
 	UFUNCTION(BlueprintImplementableEvent)
 	void AttackEnd();
+	//通知蓝图角色死亡了
+	UFUNCTION(BlueprintImplementableEvent)
+	void CharacterDeath();
+	//通知蓝图动画标签
+	UFUNCTION(BlueprintImplementableEvent)
+	void AnimTag();
 
 public:
 	FORCEINLINE ATowerDefencePlayerController* GetGameController() { return GetWorld() ? (GetWorld()->GetFirstPlayerController<ATowerDefencePlayerController>()) : NULL; }

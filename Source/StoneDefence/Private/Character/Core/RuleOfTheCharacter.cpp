@@ -116,6 +116,8 @@ float ARuleOfTheCharacter::TakeDamage(float Damage, struct FDamageEvent const& D
 	//死亡判定
 	if (!IsActive())
 	{
+		//通知蓝图角色死亡
+		CharacterDeath();
 		//杀掉怪物获取金币
 		if (GetGameState()->GetPlayerData().bTeam != IsTeam())
 		{
