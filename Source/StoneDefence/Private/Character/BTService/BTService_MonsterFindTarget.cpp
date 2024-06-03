@@ -78,6 +78,7 @@ void UBTService_MonsterFindTarget::TickNode(UBehaviorTreeComponent& OwnerComp, u
 					if (ARuleOfTheCharacter* MonsterAI = Cast<ARuleOfTheCharacter>(CharacterAIController->GetPawn()))
 					{
 						//如果大于攻击距离就设置为不攻击
+						MonsterAI->AttackEnd();
 						MonsterAI->bAttack = false;
 					}
 				}

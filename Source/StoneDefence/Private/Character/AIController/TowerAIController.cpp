@@ -60,10 +60,12 @@ void ATowerAIController::AttackTarget(ARuleOfTheCharacter* AttackTarget)
 	{
 		if (TArrayMonsters.Num() > 0)
 		{
+			Towers->AttackBegin();
 			Towers->bAttack = true;
 		}
 		else
 		{
+			Towers->AttackEnd();
 			Towers->bAttack = false;
 		}
 	}

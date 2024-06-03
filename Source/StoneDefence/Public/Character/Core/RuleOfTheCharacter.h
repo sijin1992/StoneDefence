@@ -71,6 +71,12 @@ public:
 	//获取静态模型组件
 	UFUNCTION(Blueprintable, BlueprintPure, Category = "Towers|Test")
 	UStaticMesh* GetDollMesh(FTransform& InTransform);
+	//通知蓝图攻击开始
+	UFUNCTION(BlueprintImplementableEvent)
+	void AttackBegin();
+	//通知蓝图攻击结束
+	UFUNCTION(BlueprintImplementableEvent)
+	void AttackEnd();
 
 public:
 	FORCEINLINE ATowerDefencePlayerController* GetGameController() { return GetWorld() ? (GetWorld()->GetFirstPlayerController<ATowerDefencePlayerController>()) : NULL; }
