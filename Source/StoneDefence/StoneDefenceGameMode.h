@@ -29,7 +29,8 @@ protected:
 	virtual void BeginPlay() override;
 
 	virtual void Tick(float DeltaSeconds) override;
-
+	//生成主塔
+	void SpawnMainTowerRule();
 	//生成怪物
 	void SpawnMonstersRule(float DeltaSeconds);
 

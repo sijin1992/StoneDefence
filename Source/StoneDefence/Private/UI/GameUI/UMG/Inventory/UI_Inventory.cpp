@@ -68,7 +68,7 @@ void UUI_Inventory::LayoutInventorySlot(int32 ColumnNumber, int32 RowNumber)
 			{
 				InventorySlotArray[i]->GetBuildingTower().TowerID = Datas[i]->ID;
 				InventorySlotArray[i]->GetBuildingTower().NeedGold = Datas[i]->Gold;
-				InventorySlotArray[i]->GetBuildingTower().MaxConstructionTowersCD = Datas[i]->ConstructionTime;
+				InventorySlotArray[i]->GetBuildingTower().MaxConstructionTowersCD = Datas[i]->CD;
 				InventorySlotArray[i]->GetBuildingTower().Icon = Datas[i]->Icon.LoadSynchronous();
 
 				InventorySlotArray[i]->UpdateUI();

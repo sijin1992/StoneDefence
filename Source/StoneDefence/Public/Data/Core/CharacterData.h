@@ -146,10 +146,6 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category = "Table Passive")
 	float ReducePassiveSkillCDTime;
 
-	//角色多久建立好
-	UPROPERTY(EditDefaultsOnly, Category = "Table Build")
-	float ConstructionTime;
-
 	/////////////////////////////技能/////////////////////////////////////////////
 	UPROPERTY(EditDefaultsOnly, Category = "Table Skill")
 	TMap<int32, FSkillData> CharacterSkill;

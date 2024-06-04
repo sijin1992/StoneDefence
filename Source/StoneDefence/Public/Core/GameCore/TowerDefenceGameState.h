@@ -50,7 +50,7 @@ public:
 	bool GetMonsterDataFromTable(TArray<const FCharacterData*>& Datas);
 
 	//增
-	const FCharacterData& AddCharacterData(const FGuid& ID, const FCharacterData &Data);
+	FCharacterData& AddCharacterData(const FGuid& ID, const FCharacterData &Data);
 	//删
 	bool RemoveCharacterData(const FGuid& ID);
 	//改

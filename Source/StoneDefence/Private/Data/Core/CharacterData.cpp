@@ -30,8 +30,7 @@ FCharacterData::FCharacterData()
 	AddPassiveSkillPhysicalAttack(0.0f),
 	AddPassiveSkilldArmor(0),
 	AddPassiveSkillAttackSpeed(0),
-	ReducePassiveSkillCDTime(0.45f),
-	ConstructionTime(5)
+	ReducePassiveSkillCDTime(0.45f)
 {
 
 }
@@ -74,7 +73,7 @@ void FCharacterData::UpdateLevel()
 	//被动技能加成
 	float Coefficient = 0.1f;
 
-	Lv += 1;
+	Lv++;
 	Gold += (Lv - 1) * AddHealth * Coefficient;
 
 	//属性提升

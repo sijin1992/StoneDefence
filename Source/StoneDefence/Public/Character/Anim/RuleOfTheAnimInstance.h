@@ -15,13 +15,6 @@ class STONEDEFENCE_API URuleOfTheAnimInstance : public UAnimInstance
 	GENERATED_BODY()
 
 public:
-	URuleOfTheAnimInstance();
-
-	virtual void NativeInitializeAnimation();
-
-	virtual void NativeUpdateAnimation(float DeltaSeconds);
-
-public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "AnimAttribute")
 	bool bDeath;
 
@@ -30,4 +23,18 @@ public:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "AnimAttribute")
 	float Speed;
+
+	URuleOfTheAnimInstance();
+
+	virtual void NativeInitializeAnimation();
+
+	virtual void NativeUpdateAnimation(float DeltaSeconds);
+
+protected:
+	bool IsDelayUpdate(float DeltaSeconds);
+
+private:
+
+	float CurrentTime;
+	bool bDelayTime;//是否初始化成功
 };

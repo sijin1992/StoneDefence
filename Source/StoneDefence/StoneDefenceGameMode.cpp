@@ -38,6 +38,8 @@ void AStoneDefenceGameMode::BeginPlay()
 	{
 		InGameState->GetGameData().AssignedMonsterAmount();//计算每一波的怪物数量
 	}
+	//生成主塔
+	SpawnMainTowerRule();
 }
 
 void AStoneDefenceGameMode::Tick(float DeltaSeconds)
@@ -93,52 +95,16 @@ void AStoneDefenceGameMode::Tick(float DeltaSeconds)
 	SpawnMonstersRule(DeltaSeconds);
 }
 
-void AStoneDefenceGameMode::SpawnMonstersRule(float DeltaSeconds)
+void AStoneDefenceGameMode::SpawnMainTowerRule()
 {
-	if (ATowerDefenceGameState* InGameState = GetGameState<ATowerDefenceGameState>())
+	for (ASpawnPoint* TargetPoint : StoneDefenceUtils::GetAllActor<ASpawnPoint>(GetWorld()))
 	{
-		//判断当前关卡是否胜利
-		if (!InGameState->GetGameData().bCurrentLevelMissionSuccess)
+		if (TargetPoint->bTeam)
 		{
-			//是否输掉比赛
-			if (!InGameState->GetGameData().bGameOver)
-			{
-				//怪物数量是否为0
-				if (InGameState->GetGameData().PerNumberOfMonsters.Num())
-				{
-					InGameState->GetGameData().CurrentSpawnMonsterTime += DeltaSeconds;
-					if (InGameState->GetGameData().IsAlloSpawnMonster())
-					{
-						InGameState->GetGameData().ResetSpawnMonsterTime();
-
-						int32 MonsterLevel = 1;//GetMonsterLevel(GetWorld());
-						if (ARuleOfTheCharacter* MyMonster = SpawnMonster(0, MonsterLevel, FVector::ZeroVector, FRotator::ZeroRotator))
-						{
-							TArray<ASpawnPoint*> MonsterSpawnPoints;
-							for (ASpawnPoint* TargetPoint : StoneDefenceUtils::GetAllActor<ASpawnPoint>(GetWorld()))
-							{
-								if (MyMonster->IsTeam() == TargetPoint->bTeam)
-								{
-									MonsterSpawnPoints.Add(TargetPoint);
-									break;
-								}
-							}
-							ASpawnPoint* TargetPoint = MonsterSpawnPoints[FMath::RandRange(0, MonsterSpawnPoints.Num() - 1)];
-							MyMonster->SetActorLocationAndRotation(TargetPoint->GetActorLocation(), TargetPoint->GetActorRotation());
-							//计算剩余阶段
-							InGameState->GetGameData().StageDecision();
-						}
-					}
-				}
-			}
-		}
-		else
-		{
-
+			SpawnTower(0, 1, TargetPoint->GetActorLocation(), TargetPoint->GetActorRotation());
 		}
 	}
 }
-
 
 //获取难度系数
 int32 GetMonsterLevel(UWorld* InWorld)
@@ -205,7 +171,7 @@ int32 GetMonsterLevel(UWorld* InWorld)
 	StoneDefenceUtils::GetAllActor<AMonsters, ARuleOfTheCharacter>(InWorld, Monsters);
 	FDifficultyDetermination MonsterDD = GetDifficultyDetermination(Monsters);
 
-	int32 ReturnLevel = TowerDD.Level;
+	int32 ReturnLevel = (int32)TowerDD.Level;
 	if (TowerDD.Attack > MonsterDD.Attack)
 	{
 		ReturnLevel++;
@@ -215,9 +181,55 @@ int32 GetMonsterLevel(UWorld* InWorld)
 		ReturnLevel++;
 	}
 
-	ReturnLevel += FMath::Abs(2 - FMath::Sqrt(TowerDD.Variance));//2是保护值,对方差开根
+	//ReturnLevel += FMath::Abs(2 - FMath::Sqrt(TowerDD.Variance / 10.0f));//2是保护值,对方差开根
 
 	return ReturnLevel;
+}
+
+void AStoneDefenceGameMode::SpawnMonstersRule(float DeltaSeconds)
+{
+	if (ATowerDefenceGameState* InGameState = GetGameState<ATowerDefenceGameState>())
+	{
+		//判断当前关卡是否胜利
+		if (!InGameState->GetGameData().bCurrentLevelMissionSuccess)
+		{
+			//是否输掉比赛
+			if (!InGameState->GetGameData().bGameOver)
+			{
+				//怪物数量是否为0
+				if (InGameState->GetGameData().PerNumberOfMonsters.Num())
+				{
+					InGameState->GetGameData().CurrentSpawnMonsterTime += DeltaSeconds;
+					if (InGameState->GetGameData().IsAlloSpawnMonster())
+					{
+						InGameState->GetGameData().ResetSpawnMonsterTime();
+
+						int32 MonsterLevel = GetMonsterLevel(GetWorld());
+						if (ARuleOfTheCharacter* MyMonster = SpawnMonster(0, MonsterLevel, FVector::ZeroVector, FRotator::ZeroRotator))
+						{
+							TArray<ASpawnPoint*> MonsterSpawnPoints;
+							for (ASpawnPoint* TargetPoint : StoneDefenceUtils::GetAllActor<ASpawnPoint>(GetWorld()))
+							{
+								if (MyMonster->IsTeam() == TargetPoint->bTeam)
+								{
+									MonsterSpawnPoints.Add(TargetPoint);
+									break;
+								}
+							}
+							ASpawnPoint* TargetPoint = MonsterSpawnPoints[FMath::RandRange(0, MonsterSpawnPoints.Num() - 1)];
+							MyMonster->SetActorLocationAndRotation(TargetPoint->GetActorLocation(), TargetPoint->GetActorRotation());
+							//计算剩余阶段
+							InGameState->GetGameData().StageDecision();
+						}
+					}
+				}
+			}
+		}
+		else
+		{
+
+		}
+	}
 }
 
 ATowers* AStoneDefenceGameMode::SpawnTower(const int32 CharacterID, int32 CharacterLevel, const FVector& Location, const FRotator& Rotator)
@@ -245,7 +257,7 @@ ARuleOfTheCharacter* AStoneDefenceGameMode::SpawnCharacter(
 			TArray<FCharacterData*> Datas;
 			InCharacterData->GetAllRows(TEXT("Character Data"), Datas);
 
-			auto GetCharacterData = [&](int32 ID) ->FCharacterData*
+			auto GetCharacterData = [&](int32 ID) ->const FCharacterData*
 				{
 					for (auto& Temp : Datas)
 					{
@@ -258,26 +270,23 @@ ARuleOfTheCharacter* AStoneDefenceGameMode::SpawnCharacter(
 				};
 
 
-			if (FCharacterData* CharacterData = GetCharacterData(CharacterID))
+			if (const FCharacterData* CharacterData = GetCharacterData(CharacterID))
 			{
 				UClass* NewClass = CharacterData->CharacterBlueprintKey.LoadSynchronous();//LoadSynchronous读取
 				if (GetWorld() && NewClass)
 				{
 					if (ARuleOfTheCharacter* RuleOfTheCharacter = GetWorld()->SpawnActor<ARuleOfTheCharacter>(NewClass, Location, Rotator))
 					{
-						CharacterData->UpdateHealth();
-
+						FCharacterData& CharacterInstance = InGameState->AddCharacterData(RuleOfTheCharacter->GUID, *CharacterData);
+						CharacterInstance.UpdateHealth();
 						if (CharacterLevel > 1)
 						{
 							//升极
 							for (int32 i = 0; i < CharacterLevel; i++)
 							{
-								CharacterData->UpdateLevel();
+								CharacterInstance.UpdateLevel();
 							}
 						}
-						//RuleOfTheCharacter->GUID = FGuid::NewGuid();
-						InGameState->AddCharacterData(RuleOfTheCharacter->GUID, *CharacterData);
-						//AddCharacterData(RuleOfTheCharacter->GetUniqueID(), *CharacterData);
 						OutCharacter = RuleOfTheCharacter;
 					}
 				}
