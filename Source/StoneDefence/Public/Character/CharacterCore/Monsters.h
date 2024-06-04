@@ -18,9 +18,7 @@ public:
 	virtual void BeginPlay() override;
 	virtual void Tick(float DeltaTime) override;
 
-	virtual bool IsTeam();
-
-	virtual EGameCharacterType::Type GetType();
+	virtual ETeam GetTeamType();
 protected:
 	virtual void OnClicked(UPrimitiveComponent* TouchedComponent, FKey ButtonPressed);
 

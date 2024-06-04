@@ -225,7 +225,7 @@ void ARuleOfTheBullet::RadialDamage(const FVector& Origin, ARuleOfTheCharacter* 
 				FVector VDistance = TheCharacter->GetActorLocation() - InstigatorCharacter->GetActorLocation();
 				if (VDistance.Size() <= 1400.0f)
 				{
-					if (TheCharacter->IsTeam() == InstigatorCharacter->IsTeam())
+					if (TheCharacter->GetTeamType() == InstigatorCharacter->GetTeamType())
 					{
 						IgnoreActors.Add(TheCharacter);
 					}
@@ -260,7 +260,7 @@ void ARuleOfTheBullet::OnBeginOverlap(UPrimitiveComponent* OverlappedComp, AActo
 		if (ARuleOfTheCharacter* OtherCharacter = Cast<ARuleOfTheCharacter>(Other))
 		{
 			//判断是不是同一个队伍
-			if (InstigatorCharacter->IsTeam() != OtherCharacter->IsTeam())
+			if (InstigatorCharacter->GetTeamType() != OtherCharacter->GetTeamType())
 			{
 				//是不是活跃的
 				if (OtherCharacter->IsActive())

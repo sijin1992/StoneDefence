@@ -1,6 +1,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "../StoneDefenceType.h"
 #include "PlayerData.generated.h"
 
 USTRUCT()
@@ -56,7 +57,7 @@ struct FPlayerData
 
 	//玩家阵营
 	UPROPERTY(SaveGame)
-	bool bTeam;
+	TEnumAsByte<ETeam> Team;
 
 	//游戏金币
 	UPROPERTY(SaveGame)

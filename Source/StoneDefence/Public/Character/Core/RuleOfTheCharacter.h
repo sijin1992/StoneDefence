@@ -31,6 +31,11 @@ public:
 	//角色ID
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "CharacterAttribute")
 	FGuid GUID;
+
+	//角色类型
+	UPROPERTY(EditDefaultsOnly, Category = "CharacterType")
+	TEnumAsByte<EGameCharacterType::Type> CharacterType;
+
 	//是否在攻击
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "CharacterAttribute")
 	bool bAttack;
@@ -55,7 +60,7 @@ public:
 
 	void UpdateUI();
 
-	virtual EGameCharacterType::Type GetType();
+	virtual EGameCharacterType::Type GetCharacterType();
 
 	virtual bool IsDeath();
 
@@ -66,7 +71,7 @@ public:
 
 	virtual float GetMaxHealth();
 
-	virtual bool IsTeam();
+	virtual ETeam GetTeamType();
 
 	virtual FCharacterData& GetCharacterData();
 	//获取静态模型组件

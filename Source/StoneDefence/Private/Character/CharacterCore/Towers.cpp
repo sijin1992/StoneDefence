@@ -18,14 +18,9 @@ ATowers::ATowers()
 	DestructibleMeshBuilding->AttachToComponent(RootComponent, FAttachmentTransformRules::KeepRelativeTransform);
 }
 
-bool ATowers::IsTeam()
+ETeam ATowers::GetTeamType()
 {
-	return true;
-}
-
-EGameCharacterType::Type ATowers::GetType()
-{
-	return EGameCharacterType::Type::TOWER;
+	return ETeam::RED;
 }
 
 float ATowers::TakeDamage(float Damage, struct FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)

@@ -28,7 +28,7 @@ public:
 	virtual bool IsDeath() = 0;
 	virtual float GetHealth() = 0;
 	virtual float GetMaxHealth() = 0;
-	virtual bool IsTeam() = 0;
+	virtual ETeam GetTeamType() = 0;
 	virtual FCharacterData& GetCharacterData() = 0;
-	virtual EGameCharacterType::Type GetType() = 0;
+	virtual EGameCharacterType::Type GetCharacterType() = 0;
 };

@@ -17,6 +17,7 @@
 // Sets default values
 ARuleOfTheCharacter::ARuleOfTheCharacter()
 	:GUID(FGuid::NewGuid()),
+	CharacterType(EGameCharacterType::Type::MINI),
 	bAttack(false),
 	DelayDeath(10.0f)
 {
@@ -75,9 +76,9 @@ void ARuleOfTheCharacter::UpdateUI()
 	}
 }
 
-EGameCharacterType::Type ARuleOfTheCharacter::GetType()
+EGameCharacterType::Type ARuleOfTheCharacter::GetCharacterType()
 {
-	return EGameCharacterType::Type::MAX;
+	return CharacterType;
 }
 
 /// <summary>
@@ -116,7 +117,7 @@ float ARuleOfTheCharacter::TakeDamage(float Damage, struct FDamageEvent const& D
 		//通知蓝图角色死亡
 		CharacterDeath();
 		//杀掉怪物获取金币
-		if (GetPlayerState()->GetPlayerData().bTeam != IsTeam())
+		if (GetPlayerState()->GetPlayerData().Team != GetTeamType())
 		{
 			GetPlayerState()->GetPlayerData().GameGold += GetCharacterData().Gold;
 		}
@@ -188,9 +189,9 @@ float ARuleOfTheCharacter::GetMaxHealth()
 	return GetCharacterData().MaxHealth;
 }
 
-bool ARuleOfTheCharacter::IsTeam()
+ETeam ARuleOfTheCharacter::GetTeamType()
 {
-	return false;
+	return ETeam::MAX;
 }
 
 FCharacterData& ARuleOfTheCharacter::GetCharacterData()

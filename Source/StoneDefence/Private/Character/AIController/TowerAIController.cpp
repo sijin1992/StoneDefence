@@ -36,10 +36,10 @@ void ATowerAIController::Tick(float DeltaTime)
 			if (Target.IsValid())
 			{
 				Towers->TowersRotator = FRotationMatrix::MakeFromX(Target->GetActorLocation() - GetPawn()->GetActorLocation()).Rotator();
-				//if (GetPawn()->GetActorRotation() != FRotator::ZeroRotator)
-				//{
-				//	Towers->TowersRotator -= GetPawn()->GetActorRotation();
-				//}
+				if (GetPawn()->GetActorRotation() != FRotator::ZeroRotator)
+				{
+					Towers->TowersRotator -= GetPawn()->GetActorRotation();
+				}
 			}
 		}
 	}
