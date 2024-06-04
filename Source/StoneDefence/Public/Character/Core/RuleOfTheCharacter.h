@@ -8,6 +8,7 @@
 #include "Core/GameCore/TowerDefencePlayerController.h"
 #include "Core/GameCore/TowerDefenceGameState.h"
 #include "../StoneDefenceType.h"
+#include "Core/GameCore/TowerDefencePlayerState.h"
 #include "RuleOfTheCharacter.generated.h"
 
 UCLASS()
@@ -87,6 +88,7 @@ public:
 public:
 	FORCEINLINE ATowerDefencePlayerController* GetGameController() { return GetWorld() ? (GetWorld()->GetFirstPlayerController<ATowerDefencePlayerController>()) : NULL; }
 	FORCEINLINE ATowerDefenceGameState* GetGameState() { return GetWorld() ? (GetWorld()->GetGameState<ATowerDefenceGameState>()) : nullptr; }
+	FORCEINLINE ATowerDefencePlayerState* GetPlayerState() { return GetWorld() ? (GetGameController()->GetPlayerState<ATowerDefencePlayerState>()) : nullptr; }
 
 	FORCEINLINE USceneComponent* GetHomingPoint() const { return HomingPoint; }
 	FORCEINLINE UArrowComponent* GetOpenFirePoint() const { return OpenFirePoint; }

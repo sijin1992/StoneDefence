@@ -81,7 +81,7 @@ void UUI_InventorySlot::UpdateUI()
 
 FBuildingTower& UUI_InventorySlot::GetBuildingTower()
 {
-	return GetGameState()->GetBuildingTower(GUID);
+	return GetPlayerState()->GetBuildingTower(GUID);
 }
 
 void UUI_InventorySlot::ClearSlot()
@@ -165,7 +165,7 @@ bool UUI_InventorySlot::NativeOnDrop(const FGeometry& InGeometry, const FDragDro
 		if (UUI_InventorySlot* MyInventorySlot = Cast<UUI_InventorySlot>(StoneDefenceDragDropOperation->Payload))
 		{
 			MyInventorySlot->GetBuildingTower().bDragIcon = false;
-			GetGameState()->RequestInventorySlotSwap(GUID, MyInventorySlot->GUID);//交换数据
+			GetPlayerState()->RequestInventorySlotSwap(GUID, MyInventorySlot->GUID);//交换数据
 			//更新UI
 			UpdateTowersBuildingInfo();
 			UpdateUI();

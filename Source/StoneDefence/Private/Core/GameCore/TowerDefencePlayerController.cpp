@@ -4,6 +4,7 @@
 #include "Core/GameCore/TowerDefencePlayerController.h"
 #include "Core/GameCore/TowerDefenceGameCamrea.h"
 #include "UI/Core/UI_Datas.h"
+#include "../StoneDefenceGameMode.h"
 
 ATowerDefencePlayerController::ATowerDefencePlayerController()
 {
@@ -94,4 +95,28 @@ void ATowerDefencePlayerController::MouseMiddleButtonReleased()
 const FHitResult& ATowerDefencePlayerController::GetHitResult()
 {
 	return MouseTraceHit;
+}
+
+AStoneDefenceGameMode* ATowerDefencePlayerController::GetGameMode()
+{
+	//GetAuthGameMode是获取服务器的GameMode
+	return GetWorld()->GetAuthGameMode<AStoneDefenceGameMode>();
+}
+
+ATowers* ATowerDefencePlayerController::SpawnTower(const int32 CharacterID, int32 CharacterLevel, const FVector& Location, const FRotator& Rotator)
+{
+	if (GetGameMode())
+	{
+		return GetGameMode()->SpawnTower(CharacterID, CharacterLevel, Location, Rotator);
+	}
+	return nullptr;
+}
+
+AMonsters* ATowerDefencePlayerController::SpawnMonster(const int32 CharacterID, int32 CharacterLevel, const FVector& Location, const FRotator& Rotator)
+{
+	if (GetGameMode())
+	{
+		return GetGameMode()->SpawnMonster(CharacterID, CharacterLevel, Location, Rotator);
+	}
+	return nullptr;
 }

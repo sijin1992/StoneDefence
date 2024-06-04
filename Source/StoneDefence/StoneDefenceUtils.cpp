@@ -7,6 +7,14 @@
 #include "Rendering/SkeletalMeshLODRenderData.h"
 #include "Components/SkeletalMeshComponent.h"
 #include "SkeletalRenderPublic.h"
+#include "Particles/ParticleSystemComponent.h"
+#include "Particles/ParticleEmitter.h"
+#include "Particles/ParticleLODLevel.h"
+#include "Particles/TypeData/ParticleModuleTypeDataMesh.h"
+#include "Core/GameCore/TowerDefenceGameState.h"
+#include "Engine/StaticMeshActor.h"
+#include "Engine/World.h"
+
 //关闭优化optimize
 #if PLATFORM_WINDOWS
 #pragma optimize("",off)
@@ -60,6 +68,62 @@ ARuleOfTheCharacter* StoneDefenceUtils::FindTargetRecently(const TArray<ARuleOfT
 	}
 
 	return NULL;
+}
+
+AStaticMeshActor* StoneDefenceUtils::SpawnTowersDoll(UWorld* InWorld, int32 ID)
+{
+	AStaticMeshActor* OutActor = nullptr;
+
+	if (InWorld)
+	{
+		if (ATowerDefenceGameState* InGameState = InWorld->GetGameState<ATowerDefenceGameState>())
+		{
+			TArray<const FCharacterData*> InDatas;
+			InGameState->GetTowerDataFromTable(InDatas);
+			//遍历塔的数据列表
+			for (const auto& Temp : InDatas)
+			{
+				if (Temp->ID == ID)
+				{
+					//生成一个炮塔实例
+					UClass* NewClass = Temp->CharacterBlueprintKey.LoadSynchronous();
+					if (InWorld && NewClass)
+					{
+						if (ARuleOfTheCharacter* RuleOfTheCharacter = InWorld->SpawnActor<ARuleOfTheCharacter>(NewClass, FVector::ZeroVector, FRotator::ZeroRotator))
+						{
+							//生成替代模型
+							if (AStaticMeshActor* MeshActor = InWorld->SpawnActor<AStaticMeshActor>(AStaticMeshActor::StaticClass(), FVector::ZeroVector, FRotator::ZeroRotator))
+							{
+								FTransform InTransform;
+								//获取StaticMesh
+								if (UStaticMesh* InMesh = RuleOfTheCharacter->GetDollMesh(InTransform))
+								{
+									MeshActor->GetStaticMeshComponent()->SetRelativeTransform(InTransform);
+									MeshActor->SetMobility(EComponentMobility::Movable);//设置为可移动的组件
+									MeshActor->GetStaticMeshComponent()->SetStaticMesh(InMesh);//将获取的StaticMesh设置给替代模型
+									MeshActor->GetStaticMeshComponent()->SetMobility(EComponentMobility::Movable);//设置为可移动的组件
+									OutActor = MeshActor;
+									RuleOfTheCharacter->Destroy();
+								}
+								else
+								{
+									MeshActor->Destroy();
+									RuleOfTheCharacter->Destroy();
+								}
+							}
+							else
+							{
+								RuleOfTheCharacter->Destroy();
+							}
+						}
+					}
+					break;
+				}
+			}
+		}
+	}
+
+	return OutActor;
 }
 
 float Expression::GetDamage(IRuleCharacter* Enemy, IRuleCharacter* Owner)
@@ -215,92 +279,130 @@ bool IsValidSkeletalMeshComponent(USkeletalMeshComponent* InComponent)
 }
 
 
+/// <summary>
+/// 粒子特效组件转成静态模型
+/// </summary>
+/// <param name="NewParticleSystemComponent"></param>
+/// <returns></returns>
+UStaticMesh* MeshUtils::ParticleSystemToStaticMesh(UParticleSystemComponent* NewParticleSystemComponent)
+{
+	UStaticMesh* NewStaticMesh = nullptr;
+	//如果粒子特效的Template有效且发射器数量大于0
+	if (NewParticleSystemComponent->Template && NewParticleSystemComponent->Template->Emitters.Num() > 0)
+	{
+		//遍历发射器
+		for (const UParticleEmitter* TempEmitter : NewParticleSystemComponent->Template->Emitters)
+		{
+			if (TempEmitter->LODLevels[0]->bEnabled)//细节层次是否开启
+			{
+				//获取粒子特效的数据类型，看看是否可以转成模型
+				if (UParticleModuleTypeDataMesh* MyParticleDataMesh = Cast<UParticleModuleTypeDataMesh>(TempEmitter->LODLevels[0]->TypeDataModule))
+				{
+					if (MyParticleDataMesh->Mesh)
+					{
+						NewStaticMesh = MyParticleDataMesh->Mesh;
+						break;
+					}
+				}
+			}
+		}
+	}
+	return NewStaticMesh;
+}
 
-UStaticMesh* MeshUtils::SkeletalMeshToStaticMesh(UWorld* InWorld, USkeletalMeshComponent* SkeletalMeshComponent)
+/// <summary>
+///骨骼模型转成静态模型 
+/// </summary>
+/// <param name="SkeletalMeshComponent"></param>
+/// <returns></returns>
+UStaticMesh* MeshUtils::SkeletalMeshToStaticMesh(USkeletalMeshComponent* SkeletalMeshComponent)
 {
 	UStaticMesh* StaticMesh = nullptr;
-
-	FRawMesh InRawMesh;//Mesh原始的数据，包括点的位置、颜色、坐标
-	FMeshTracker MeshTracker;
-	int32 OverallMaxLODs = 0;	//拿到网格最大的LOD
-
-	const FTransform& InRootTransform = FTransform::Identity;//转换成单位矩阵
-	FMatrix WorldToRoot = InRootTransform.ToMatrixWithScale().Inverse();//把Scale转换成矩阵，然后求这个矩阵的逆,也是单位矩阵
-	//求出当前组件相对于世界的矩阵：用组件转过来的矩阵乘以WorldToRoot这个单位矩阵
-	FMatrix ComponentToWorld = SkeletalMeshComponent->GetComponentTransform().ToMatrixWithScale() * WorldToRoot;
-
-	if (IsValidSkeletalMeshComponent(SkeletalMeshComponent))
+	if (UWorld* InWorld = SkeletalMeshComponent->GetWorld())
 	{
-		//*将骨骼网格体转换成原始网格数据*核心方法
-		SkeletalMeshToRawMeshes(SkeletalMeshComponent, OverallMaxLODs, ComponentToWorld, MeshTracker, InRawMesh);
-	}
 
-	//声明一个最大的纹理坐标
-	uint32 MaxInUseTextureCoordinate = 0;
-	if (!MeshTracker.bValidColors)
-	{
-		//如果无效颜色，直接清空
-		InRawMesh.WedgeColors.Empty();
-	}
-	//遍历当前的纹理坐标
-	for (uint32 TexCoordIndex = 0; TexCoordIndex < MAX_MESH_TEXTURE_COORDS; TexCoordIndex++)
-	{
-		//当前TexCoord是否有效
-		if (!MeshTracker.bValidTexCoords[TexCoordIndex])
+		FRawMesh InRawMesh;//Mesh原始的数据，包括点的位置、颜色、坐标
+		FMeshTracker MeshTracker;
+		int32 OverallMaxLODs = 0;	//拿到网格最大的LOD
+
+		const FTransform& InRootTransform = FTransform::Identity;//转换成单位矩阵
+		FMatrix WorldToRoot = InRootTransform.ToMatrixWithScale().Inverse();//把Scale转换成矩阵，然后求这个矩阵的逆,也是单位矩阵
+		//求出当前组件相对于世界的矩阵：用组件转过来的矩阵乘以WorldToRoot这个单位矩阵
+		FMatrix ComponentToWorld = SkeletalMeshComponent->GetComponentTransform().ToMatrixWithScale() * WorldToRoot;
+
+		if (IsValidSkeletalMeshComponent(SkeletalMeshComponent))
 		{
-			//将三角锥直接清除
-			InRawMesh.WedgeTexCoords[TexCoordIndex].Empty();
-		}
-		else
-		{
-			MaxInUseTextureCoordinate = FMath::Max(MaxInUseTextureCoordinate, TexCoordIndex);
-		}
-	}
-	//判断RawMesh是否有意义
-	if (InRawMesh.IsValidOrFixable())
-	{
-		FString MeshName = FGuid::NewGuid().ToString();//起个名字，防止重名
-		StaticMesh = NewObject<UStaticMesh>(InWorld, *MeshName, RF_Transient);//在InWorld里生成对象，当InWorld销毁时，StaticMesh也会被销毁。RF_Transient标签表示当前对象不会被保存
-		StaticMesh->InitResources();//初始化资源
-
-		StaticMesh->SetLightingGuid(FGuid::NewGuid());
-		//生成灯光贴图
-		const uint32 LightMapIndex = FMath::Min(MaxInUseTextureCoordinate + 1, (uint32)8 - 1);//+1是灯光贴图材质，0是物体本身贴图材质
-
-		//部署可以渲染为静态模型的模型元
-		FStaticMeshSourceModel& SrcModel = StaticMesh->AddSourceModel();
-		SrcModel.BuildSettings.bRecomputeNormals = false;//因为法线不需要重新计算了，所以忽略掉
-		SrcModel.BuildSettings.bRecomputeTangents = false;//因为切线不需要重新计算了，所以忽略掉
-		SrcModel.BuildSettings.bRemoveDegenerates = true;//移除无法生成的三角形
-		SrcModel.BuildSettings.bUseHighPrecisionTangentBasis = false;//看切线是不是以16位对8位的精度来储存,置为false
-		SrcModel.BuildSettings.bUseFullPrecisionUVs = false;//是不是要以全浮点精度来储存UV，置为false
-		SrcModel.BuildSettings.bGenerateLightmapUVs = true;//是不是要生成灯光贴图
-		SrcModel.BuildSettings.SrcLightmapIndex = 0;//灯光贴图默认给0
-		SrcModel.BuildSettings.DstLightmapIndex = LightMapIndex;//目标光照贴图索引
-		SrcModel.SaveRawMesh(InRawMesh);//将RawMesh添加到模型结构里
-
-		for (const UMaterialInterface* Material : SkeletalMeshComponent->GetMaterials())
-		{
-			StaticMesh->GetStaticMaterials().Add(FStaticMaterial(const_cast<UMaterialInterface*>(Material)));
+			//*将骨骼网格体转换成原始网格数据*核心方法
+			SkeletalMeshToRawMeshes(SkeletalMeshComponent, OverallMaxLODs, ComponentToWorld, MeshTracker, InRawMesh);
 		}
 
-		StaticMesh->ImportVersion = EImportStaticMeshVersion::LastVersion;//将导入的版本设置为上一次导入的版本
-		StaticMesh->LightMapCoordinateIndex = LightMapIndex;//设置光照贴图索引
-
-		//设置材质索引
-		TArray<int32> UniqueMaterialIndices;
-		for (int32 MaterialIndex : InRawMesh.FaceMaterialIndices)
+		//声明一个最大的纹理坐标
+		uint32 MaxInUseTextureCoordinate = 0;
+		if (!MeshTracker.bValidColors)
 		{
-			UniqueMaterialIndices.AddUnique(MaterialIndex);
+			//如果无效颜色，直接清空
+			InRawMesh.WedgeColors.Empty();
 		}
-		for (int32 i = 0; i < UniqueMaterialIndices.Num(); i++)
+		//遍历当前的纹理坐标
+		for (uint32 TexCoordIndex = 0; TexCoordIndex < MAX_MESH_TEXTURE_COORDS; TexCoordIndex++)
 		{
-			StaticMesh->GetSectionInfoMap().Set(0, i, FMeshSectionInfo(UniqueMaterialIndices[i]));
+			//当前TexCoord是否有效
+			if (!MeshTracker.bValidTexCoords[TexCoordIndex])
+			{
+				//将三角锥直接清除
+				InRawMesh.WedgeTexCoords[TexCoordIndex].Empty();
+			}
+			else
+			{
+				MaxInUseTextureCoordinate = FMath::Max(MaxInUseTextureCoordinate, TexCoordIndex);
+			}
 		}
-		//拷贝
-		StaticMesh->GetOriginalSectionInfoMap().CopyFrom(StaticMesh->GetSectionInfoMap());
+		//判断RawMesh是否有意义
+		if (InRawMesh.IsValidOrFixable())
+		{
+			FString MeshName = FGuid::NewGuid().ToString();//起个名字，防止重名
+			StaticMesh = NewObject<UStaticMesh>(InWorld, *MeshName, RF_Transient);//在InWorld里生成对象，当InWorld销毁时，StaticMesh也会被销毁。RF_Transient标签表示当前对象不会被保存
+			StaticMesh->InitResources();//初始化资源
 
-		StaticMesh->Build(false);//Build给false，不希望弹出对话框
+			StaticMesh->SetLightingGuid(FGuid::NewGuid());
+			//生成灯光贴图
+			const uint32 LightMapIndex = FMath::Min(MaxInUseTextureCoordinate + 1, (uint32)8 - 1);//+1是灯光贴图材质，0是物体本身贴图材质
+
+			//部署可以渲染为静态模型的模型元
+			FStaticMeshSourceModel& SrcModel = StaticMesh->AddSourceModel();
+			SrcModel.BuildSettings.bRecomputeNormals = false;//因为法线不需要重新计算了，所以忽略掉
+			SrcModel.BuildSettings.bRecomputeTangents = false;//因为切线不需要重新计算了，所以忽略掉
+			SrcModel.BuildSettings.bRemoveDegenerates = true;//移除无法生成的三角形
+			SrcModel.BuildSettings.bUseHighPrecisionTangentBasis = false;//看切线是不是以16位对8位的精度来储存,置为false
+			SrcModel.BuildSettings.bUseFullPrecisionUVs = false;//是不是要以全浮点精度来储存UV，置为false
+			SrcModel.BuildSettings.bGenerateLightmapUVs = true;//是不是要生成灯光贴图
+			SrcModel.BuildSettings.SrcLightmapIndex = 0;//灯光贴图默认给0
+			SrcModel.BuildSettings.DstLightmapIndex = LightMapIndex;//目标光照贴图索引
+			SrcModel.SaveRawMesh(InRawMesh);//将RawMesh添加到模型结构里
+
+			for (const UMaterialInterface* Material : SkeletalMeshComponent->GetMaterials())
+			{
+				StaticMesh->GetStaticMaterials().Add(FStaticMaterial(const_cast<UMaterialInterface*>(Material)));
+			}
+
+			StaticMesh->ImportVersion = EImportStaticMeshVersion::LastVersion;//将导入的版本设置为上一次导入的版本
+			StaticMesh->LightMapCoordinateIndex = LightMapIndex;//设置光照贴图索引
+
+			//设置材质索引
+			TArray<int32> UniqueMaterialIndices;
+			for (int32 MaterialIndex : InRawMesh.FaceMaterialIndices)
+			{
+				UniqueMaterialIndices.AddUnique(MaterialIndex);
+			}
+			for (int32 i = 0; i < UniqueMaterialIndices.Num(); i++)
+			{
+				StaticMesh->GetSectionInfoMap().Set(0, i, FMeshSectionInfo(UniqueMaterialIndices[i]));
+			}
+			//拷贝
+			StaticMesh->GetOriginalSectionInfoMap().CopyFrom(StaticMesh->GetSectionInfoMap());
+
+			StaticMesh->Build(false);//Build给false，不希望弹出对话框
+		}
 	}
 
 	return StaticMesh;

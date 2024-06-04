@@ -12,9 +12,6 @@
 #include "Components/StaticMeshComponent.h"
 #include "Particles/ParticleSystemComponent.h"
 #include "Components/SkeletalMeshComponent.h"
-#include "Particles/TypeData/ParticleModuleTypeDataMesh.h"
-#include "Particles/ParticleEmitter.h"
-#include "Particles/ParticleLODLevel.h"
 #include "../StoneDefenceMacro.h"
 
 // Sets default values
@@ -119,9 +116,9 @@ float ARuleOfTheCharacter::TakeDamage(float Damage, struct FDamageEvent const& D
 		//通知蓝图角色死亡
 		CharacterDeath();
 		//杀掉怪物获取金币
-		if (GetGameState()->GetPlayerData().bTeam != IsTeam())
+		if (GetPlayerState()->GetPlayerData().bTeam != IsTeam())
 		{
-			GetGameState()->GetPlayerData().GameGold += GetCharacterData().Gold;
+			GetPlayerState()->GetPlayerData().GameGold += GetCharacterData().Gold;
 		}
 
 		GetCharacterData().Health = 0.0f;
@@ -225,25 +222,10 @@ UStaticMesh* ARuleOfTheCharacter::GetDollMesh(FTransform& InTransform)
 		}
 		else if(UParticleSystemComponent* NewParticleSystemComponent = Cast<UParticleSystemComponent>(TempScene))
 		{
-			//如果粒子特效的Template有效且发射器数量大于0
-			if (NewParticleSystemComponent->Template && NewParticleSystemComponent->Template->Emitters.Num() > 0)
+			if (UStaticMesh* NewMesh = MeshUtils::ParticleSystemToStaticMesh(NewParticleSystemComponent))
 			{
-				//遍历发射器
-				for (const UParticleEmitter* TempEmitter : NewParticleSystemComponent->Template->Emitters)
-				{
-					if (TempEmitter->LODLevels[0]->bEnabled)//细节层次是否开启
-					{
-						//获取粒子特效的数据类型，看看是否可以转成模型
-						if (UParticleModuleTypeDataMesh* MyParticleDataMesh = Cast<UParticleModuleTypeDataMesh>(TempEmitter->LODLevels[0]->TypeDataModule))
-						{
-							if (MyParticleDataMesh->Mesh)
-							{
-								InTransform = NewParticleSystemComponent->GetComponentTransform();
-								return MyParticleDataMesh->Mesh;
-							}
-						}
-					}
-				}
+				InTransform = NewParticleSystemComponent->GetComponentTransform();
+				return NewMesh;
 			}
 		}
 		else if (USkeletalMeshComponent* NewSkeletalMeshComponent = Cast<USkeletalMeshComponent>(TempScene))
@@ -256,7 +238,7 @@ UStaticMesh* ARuleOfTheCharacter::GetDollMesh(FTransform& InTransform)
 				NewSkeletalMeshComponent->SetRelativeTransform(FTransform::Identity);
 				NewSkeletalMeshComponent->SetWorldTransform(FTransform::Identity);
 				NewSkeletalMeshComponent->SetRelativeRotation(InTransform.GetRotation());
-				if (UStaticMesh* NewMesh = MeshUtils::SkeletalMeshToStaticMesh(GetWorld(), NewSkeletalMeshComponent))
+				if (UStaticMesh* NewMesh = MeshUtils::SkeletalMeshToStaticMesh(NewSkeletalMeshComponent))
 				{
 					return NewMesh;
 				}

@@ -3,14 +3,20 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "EngineUtils.h"
 
 class ARuleOfTheCharacter;
 class IRuleCharacter;
 class UStaticMesh;
 class USkeletalMeshComponent;
 class UWorld;
+class AStaticMeshActor;
+
 namespace StoneDefenceUtils
 {
+	//生成炮塔的绿色模型
+	AStaticMeshActor* SpawnTowersDoll(UWorld* InWorld, int32 ID);
+
 	//寻找一定范围内最近的人
 	void FindRangeTargetRecently(ARuleOfTheCharacter* InOwner, float Range, TArray<ARuleOfTheCharacter*> &Targets);
 
@@ -22,7 +28,7 @@ namespace StoneDefenceUtils
 	{
 		for (TActorIterator<A>It(World, A::StaticClass()); It; ++It)
 		{
-			if (B* b = Cast<B>(*It))
+			if (B* b = Cast<A>(*It))
 			{
 				Array.Add(b);
 			}
@@ -67,10 +73,11 @@ namespace Expression
 /// </summary>
 namespace MeshUtils
 {
+	UStaticMesh* ParticleSystemToStaticMesh(UParticleSystemComponent* NewParticleSystemComponent);
 	/// <summary>
 	/// 将SkeletalMesh转换成StaticMesh
 	/// </summary>
 	/// <param name="SkeletalMeshComponent"></param>
 	/// <returns></returns>
-	UStaticMesh* SkeletalMeshToStaticMesh(UWorld* InWorld, USkeletalMeshComponent* SkeletalMeshComponent);
+	UStaticMesh* SkeletalMeshToStaticMesh(USkeletalMeshComponent* SkeletalMeshComponent);
 }

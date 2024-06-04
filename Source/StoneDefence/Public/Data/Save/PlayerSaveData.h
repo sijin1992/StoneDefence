@@ -4,24 +4,24 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/SaveGame.h"
-#include "../Core/CharacterData.h"
 #include "../Core/PlayerData.h"
-#include "../Core/GameData.h"
-#include "GameSaveData.generated.h"
+#include "../Core/BuildingTowerData.h"
+#include "PlayerSaveData.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class STONEDEFENCE_API UGameSaveData : public USaveGame
+class STONEDEFENCE_API UPlayerSaveData : public USaveGame
 {
 	GENERATED_BODY()
-
 public:
-	//角色数据
+	//玩家数据
 	UPROPERTY(SaveGame)
-	TMap<FGuid, FCharacterData> CharacterDatas;
-	//游戏数据
+	FPlayerData PlayerData;
+
+	//建造列表数据
 	UPROPERTY(SaveGame)
-	FGameInstanceDatas GameDatas;
+	TMap<FGuid, FBuildingTower> BuildingTowers;
+
 };

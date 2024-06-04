@@ -7,6 +7,8 @@
 #include "Tool/ScreenMove.h"
 #include "TowerDefencePlayerController.generated.h"
 
+class ATowers;
+class AMonsters;
 /**
  * 
  */
@@ -46,6 +48,14 @@ public:
 	void MouseMiddleButtonReleased();
 
 	const FHitResult& GetHitResult();
+
+/////////////////////////////////服务器GameMode相关/////////////////////////////////////////
+	class AStoneDefenceGameMode* GetGameMode();
+	//UFUNCTION(Server)表示该函数是客户端调用，运行在服务器上
+	UFUNCTION()
+	ATowers* SpawnTower(const int32 CharacterID, int32 CharacterLevel, const FVector& Location, const FRotator& Rotator);
+	UFUNCTION()
+	AMonsters* SpawnMonster(const int32 CharacterID, int32 CharacterLevel, const FVector& Location, const FRotator& Rotator);
 
 protected:
 

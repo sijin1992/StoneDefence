@@ -17,7 +17,7 @@ void UUI_ToolBarSystem::NativeTick(const FGeometry& MyGeometry, float InDeltaTim
 	//显示倒计时
 	GameCount->SetText(FText::FromString(GetCurrentCount(GetGameState()->GetGameData().GameCount)));
 	//显示玩家金币
-	GameGold->SetText(FText::AsNumber(GetGameState()->GetPlayerData().GameGold));
+	GameGold->SetText(FText::AsNumber(GetPlayerState()->GetPlayerData().GameGold));
 	//塔的死亡数
 	TowersDeathNumber->SetText(FText::AsNumber(GetGameState()->GetGameData().TowersDeathNumber));
 	//杀死怪物数量

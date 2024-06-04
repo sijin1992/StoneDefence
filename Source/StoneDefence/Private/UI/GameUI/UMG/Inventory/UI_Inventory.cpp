@@ -5,10 +5,10 @@
 #include "UI/GameUI/UMG/Inventory/UI_InventorySlot.h"
 #include "Components/UniformGridSlot.h"
 #include "Components/UniformGridPanel.h"
-#include "Core/GameCore/TowerDefencePlayerController.h"
 #include "UI/Core/UI_Datas.h"
 #include "Engine/StaticMeshActor.h"
 #include "Components/StaticMeshComponent.h"
+#include "../StoneDefenceUtils.h"
 
 void UUI_Inventory::NativeConstruct()
 {
@@ -22,7 +22,7 @@ void UUI_Inventory::NativeConstruct()
 
 FBuildingTower& UUI_Inventory::GetBuildingTower()
 {
-	return GetGameState()->GetBuildingTower(TowerIconGUID);
+	return GetPlayerState()->GetBuildingTower(TowerIconGUID);
 }
 
 void UUI_Inventory::LayoutInventorySlot(int32 ColumnNumber, int32 RowNumber)
@@ -54,7 +54,7 @@ void UUI_Inventory::LayoutInventorySlot(int32 ColumnNumber, int32 RowNumber)
 
 		//处理炮塔数据
 		//拿到所有塔的ID
-		const TArray<const FGuid*> IDs = GetGameState()->GetBuildingTowerIDs();
+		const TArray<const FGuid*> IDs = GetPlayerState()->GetBuildingTowerIDs();
 		for (int32 i = 0; i < ColumnNumber * RowNumber; i++)
 		{
 			InventorySlotArray[i]->GUID = *IDs[i];
@@ -86,7 +86,7 @@ void UUI_Inventory::SpawnTowersDollPressed()
 		{
 			int32 TowersID = GetBuildingTower().TowerID;
 			//生成绿色模型
-			if (AStaticMeshActor* MeshActor = GetGameState()->SpawnTowersDoll(TowersID))
+			if (AStaticMeshActor* MeshActor = StoneDefenceUtils::SpawnTowersDoll(GetWorld(),TowersID))
 			{
 				//替换所有材质为绿色
 				for (int32 i = 0; i < MeshActor->GetStaticMeshComponent()->GetNumMaterials(); i++)
@@ -107,7 +107,7 @@ void UUI_Inventory::SpawnTowersDollReleased()
 		{
 			if (GetBuildingTower().TowersConstructionNumber >= 1)
 			{
-				if (AActor* CharacterActor = GetGameState()->SpawnTower(GetBuildingTower().TowerID, 1, TowerDoll->GetActorLocation(), TowerDoll->GetActorRotation()))
+				if (AActor* CharacterActor = GetPlayerController()->SpawnTower(GetBuildingTower().TowerID, 1, TowerDoll->GetActorLocation(), TowerDoll->GetActorRotation()))
 				{
 					GetBuildingTower().TowersConstructionNumber--;
 				}
