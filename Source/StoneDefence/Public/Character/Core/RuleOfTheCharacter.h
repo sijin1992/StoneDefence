@@ -70,6 +70,8 @@ public:
 	virtual float GetHealth();
 
 	virtual float GetMaxHealth();
+	//注册队伍类型(由服务器调用)
+	virtual void RegisterTeam() {};
 
 	virtual ETeam GetTeamType();
 

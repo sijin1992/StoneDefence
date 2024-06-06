@@ -9,6 +9,7 @@
 #include "Data/Save/GameSaveData.h"
 #include "Data/Save/GameSaveSlotList.h"
 #include "../StoneDefenceUtils.h"
+#include "Data/SkillData.h"
 
 //关闭优化optimize
 #if PLATFORM_WINDOWS
@@ -21,10 +22,14 @@ ATowerDefenceGameState::ATowerDefenceGameState()
 	//读取DataTable
 	static ConstructorHelpers::FObjectFinder<UDataTable> MyTable_Towers(TEXT("/Game/GameData/TowerData_DT"));
 	static ConstructorHelpers::FObjectFinder<UDataTable> MyTable_Monsters(TEXT("/Game/GameData/MonsterData_DT"));
+	static ConstructorHelpers::FObjectFinder<UDataTable> MyTable_Skills(TEXT("/Game/GameData/CharacterSkillData_DT"));
 
 	AITowerCharacterData = MyTable_Towers.Object;
 	AIMonsterCharacterData = MyTable_Monsters.Object;
+	CharacterSkillData = MyTable_Skills.Object;
 }
+
+//////////////////////////////存档数据//////////////////////////////////////////
 
 bool ATowerDefenceGameState::SaveGameData(int32 SaveNumber)
 {
@@ -66,6 +71,26 @@ UGameSaveSlotList* ATowerDefenceGameState::GetGameSaveSlotList()
 	}
 
 	return SlotList;
+}
+
+////////////////////////////////角色//////////////////////////////////////////
+
+const TArray<FCharacterData*>& ATowerDefenceGameState::GetTowerDataFromTable()
+{
+	if (!CacheTowerDatas.Num())
+	{
+		AITowerCharacterData->GetAllRows(TEXT("Tower Data"), CacheTowerDatas);
+	}
+	return CacheTowerDatas;
+}
+
+const TArray<FCharacterData*>& ATowerDefenceGameState::GetMonsterDataFromTable()
+{
+	if (!CacheMonsterDatas.Num())
+	{
+		AIMonsterCharacterData->GetAllRows(TEXT("Tower Data"), CacheMonsterDatas);
+	}
+	return CacheMonsterDatas;
 }
 
 FCharacterData& ATowerDefenceGameState::AddCharacterData(const FGuid& ID, const FCharacterData &Data)
@@ -119,60 +144,30 @@ FCharacterData& ATowerDefenceGameState::GetCharacterData(const FGuid& ID)
 
 const FCharacterData& ATowerDefenceGameState::GetCharacterDataByID(int32 ID, ECharacterType Type /*= ECharacterType::TOWER*/)
 {
-	TArray<const FCharacterData*> Datas;
+	auto GetMyCharacterData = [&](const TArray<FCharacterData*> Datas, int32 ID) ->const FCharacterData&
+		{
+			for (const auto& Temp : Datas)
+			{
+				if (Temp->ID == ID)
+				{
+					return *Temp;
+				}
+			}
+			return CharacterDataNULL;
+		};
+
 	switch (Type)
 	{
 	case ECharacterType::TOWER:
 	{
-		GetTowerDataFromTable(Datas);
-		break;
+		return GetMyCharacterData(GetTowerDataFromTable(), ID);
 	}
 	case ECharacterType::MONSTER:
 	{
-		GetMonsterDataFromTable(Datas);
-		break;
+		return GetMyCharacterData(GetMonsterDataFromTable(),ID);
 	}
 	}
-
-	for (const auto &Temp : Datas)
-	{
-		if (Temp->ID == ID)
-		{
-			return *Temp;
-		}
-	}
-
 	return CharacterDataNULL;
-}
-
-bool ATowerDefenceGameState::GetTowerDataFromTable(TArray<const FCharacterData*>& Datas)
-{
-	if (!CacheTowerDatas.Num())
-	{
-		AITowerCharacterData->GetAllRows(TEXT("Tower Data"), CacheTowerDatas);
-	}
-
-	for (const auto& Tmp : CacheTowerDatas)
-	{
-		Datas.Add(Tmp);
-	}
-
-	return Datas.Num() > 0;
-}
-
-bool ATowerDefenceGameState::GetMonsterDataFromTable(TArray<const FCharacterData*>& Datas)
-{
-	if (!CacheMonsterDatas.Num())
-	{
-		AIMonsterCharacterData->GetAllRows(TEXT("Monster Data"), CacheMonsterDatas);
-	}
-
-	for (const auto& Tmp : CacheMonsterDatas)
-	{
-		Datas.Add(Tmp);
-	}
-
-	return Datas.Num() > 0;
 }
 
 FGameInstanceDatas& ATowerDefenceGameState::GetGameData()
@@ -183,6 +178,80 @@ FGameInstanceDatas& ATowerDefenceGameState::GetGameData()
 FCharacterData& ATowerDefenceGameState::GetCharacterDataNULL()
 {
 	return CharacterDataNULL;
+}
+
+//////////////////////////////技能///////////////////////////////////////
+
+const TArray<FSkillData*>& ATowerDefenceGameState::GetSkillDataFromTable()
+{
+	if (!CacheSkillDatas.Num())
+	{
+		CharacterSkillData->GetAllRows(TEXT("Skill Data"), CacheSkillDatas);
+	}
+	return CacheSkillDatas;
+}
+
+void ATowerDefenceGameState::InitSkill(FCharacterData& InCharacterData)
+{
+	const TArray<FSkillData*>& InSkillDatas = GetSkillDataFromTable();
+	for (auto& Temp : InCharacterData.CharacterSkillIDs)
+	{
+		for (const FSkillData* NewSkill : InSkillDatas)
+		{
+			if (NewSkill->ID == Temp)
+			{
+				InCharacterData.CharacterSkills.Add(*NewSkill);
+				break;
+			}
+		}
+	}
+}
+
+FSkillData& ATowerDefenceGameState::AddSkillData(const FGuid& CharacterID, const FGuid& SkillID, const FSkillData& Data)
+{
+	FCharacterData& InCharacterData = GetCharacterData(CharacterID);
+	if (InCharacterData.IsValid())
+	{
+		return InCharacterData.AdditionalSkillData.Add(SkillID, Data);
+	}
+	return SkillDataNULL;
+}
+
+FSkillData& ATowerDefenceGameState::GetSkillData(const FGuid& SkillID)
+{
+	for (auto& Temp : GetSaveData()->CharacterDatas)
+	{
+		for (auto& SkillTemp : Temp.Value.AdditionalSkillData)
+		{
+			if (SkillTemp.Key == SkillID)
+			{
+				return SkillTemp.Value;
+			}
+		}
+	}
+	return SkillDataNULL;
+}
+
+FSkillData& ATowerDefenceGameState::GetSkillData(const FGuid& CharacterID, const FGuid& SkillID)
+{
+	FCharacterData& InCharacterData = GetCharacterData(CharacterID);
+	if (InCharacterData.IsValid())
+	{
+		if (InCharacterData.AdditionalSkillData.Contains(SkillID))
+		{
+			return InCharacterData.AdditionalSkillData[SkillID];
+		}
+	}
+	return SkillDataNULL;
+}
+
+int32 ATowerDefenceGameState::RemoveSkillData(const FGuid& SkillID)
+{
+	for (auto& Temp : GetSaveData()->CharacterDatas)
+	{
+		return Temp.Value.AdditionalSkillData.Remove(SkillID);
+	}
+	return INDEX_NONE;
 }
 
 //打开优化

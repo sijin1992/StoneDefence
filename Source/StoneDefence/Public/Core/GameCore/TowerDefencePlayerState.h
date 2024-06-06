@@ -5,7 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/PlayerState.h"
 #include "Data/Save/PlayerSaveData.h"
-#include "Data/Core/BuildingTowerData.h"
+#include "Data/BuildingTowerData.h"
 #include "TowerDefencePlayerState.generated.h"
 
 /**

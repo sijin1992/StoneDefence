@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/SaveGame.h"
-#include "../Core/CharacterData.h"
+#include "../CharacterData.h"
 #include "GameSaveSlotList.generated.h"
 
 

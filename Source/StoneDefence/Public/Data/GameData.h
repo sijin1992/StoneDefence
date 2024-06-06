@@ -28,7 +28,7 @@ struct FGameInstanceDatas
 	void AssignedMonsterAmount();
 
 	//当前生成怪物的时间是否大于生成怪物的时间间隔
-	FORCEINLINE bool IsAlloSpawnMonster() { return CurrentSpawnMonsterTime > TimeInterval; }
+	FORCEINLINE bool IsAllowSpawnMonster() { return CurrentSpawnMonsterTime > TimeInterval; }
 
 	//SaveGame表示不需要保存的变量，Transient不需要保存的变量
 	

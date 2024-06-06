@@ -2,33 +2,8 @@
 
 #include "CoreMinimal.h"
 #include "../StoneDefenceType.h"
+#include "PlayerSkillData.h"
 #include "PlayerData.generated.h"
-
-USTRUCT()
-struct FPlayerSkillData
-{
-	GENERATED_USTRUCT_BODY()
-
-	FPlayerSkillData();
-
-	void Init();
-
-	bool IsValid();
-
-	//技能ID
-	UPROPERTY(SaveGame)
-	int32 SkillID;
-	//技能CD
-	UPROPERTY(SaveGame)
-	float SkillCD;
-	//最大技能CD
-	UPROPERTY(SaveGame)
-	float MaxSkillID;
-	//技能数
-	UPROPERTY(SaveGame)
-	int32 SkillNumber;
-
-};
 
 USTRUCT()
 struct FPlayerData

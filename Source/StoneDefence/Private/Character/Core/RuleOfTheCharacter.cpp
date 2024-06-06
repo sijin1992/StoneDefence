@@ -102,7 +102,7 @@ float ARuleOfTheCharacter::TakeDamage(float Damage, struct FDamageEvent const& D
 					TCHAR InTextArray[256];
 					FCString::Strcpy(InTextArray, InText);
 					FString DamageText = FString::Printf(InTextArray, InDamageValue);
-					MyValueText->SetTextBlock(DamageText, InColor, InDamageValue / InOwer->GetCharacterData().MaxHealth);
+					MyValueText->SetTextBlock(DamageText, InColor, InDamageValue / InOwer->GetCharacterData().GetMaxHealth());
 				}
 			}
 		};
@@ -186,12 +186,12 @@ float ARuleOfTheCharacter::GetHealth()
 
 float ARuleOfTheCharacter::GetMaxHealth()
 {
-	return GetCharacterData().MaxHealth;
+	return GetCharacterData().GetMaxHealth();
 }
 
 ETeam ARuleOfTheCharacter::GetTeamType()
 {
-	return ETeam::MAX;
+	return GetCharacterData().Team;
 }
 
 FCharacterData& ARuleOfTheCharacter::GetCharacterData()

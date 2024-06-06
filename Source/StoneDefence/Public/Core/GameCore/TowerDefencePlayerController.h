@@ -9,6 +9,9 @@
 
 class ATowers;
 class AMonsters;
+//代理
+DECLARE_DELEGATE_OneParam(FAddSkillDelegate,FGuid)
+DECLARE_DELEGATE_TwoParams(FSpawnBulletDelegate, FGuid, UClass*)
 /**
  * 
  */
@@ -21,6 +24,10 @@ public:
 	FSimpleDelegate EventMouseMiddlePressed;
 	//松开鼠标的代理
 	FSimpleDelegate EventMouseMiddleReleased;
+	//添加技能的代理
+	FAddSkillDelegate AddSkillDelegate;
+	//生成子弹的代理
+	FSpawnBulletDelegate SpawnBulletDelegate;
 
 public:
 	//构建函数
@@ -31,6 +38,12 @@ public:
 
 	//初始化
 	virtual void BeginPlay() override;
+
+	//通知代理,如果是网络游戏的话需要加：UFUNCTION(Client)，代表这个逻辑是执行在客户端的
+	UFUNCTION()
+	void AddSkillSlot_Client(const FGuid& SlotID);//添加技能UI
+	UFUNCTION()
+	void SpawnBullet_Client(const FGuid& CharacterFGuid, UClass* InClass);//生成子弹特效
 
 	void SetInputModeGameAndUI();
 

@@ -9,7 +9,7 @@
 #include "DragDrop/StoneDefenceDragDropOperation.h"
 #include "UI/GameUI/UMG/Inventory/DragDrop/UI_IconDragDrop.h"
 #include "UI/GameUI/UMG/Tips/UI_TowerTip.h"
-#include "UI/Core/UI_Datas.h"
+#include "Global/UI_Datas.h"
 
 void UUI_InventorySlot::NativeConstruct()
 {

@@ -22,14 +22,13 @@ class STONEDEFENCE_API ATowers : public ARuleOfTheCharacter
 	//可破坏组件,塔死亡后将特效模型改成该组件
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "BaseAttrubute", meta = (AllowPrivateAccess = "true"))
 	class UDestructibleComponent* DestructibleMeshBuilding;
-
 public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "BaseAttrubute")
 	FRotator TowersRotator;
-public:
+
 	ATowers();
 
-	virtual ETeam GetTeamType();
+	virtual void RegisterTeam();
 
 protected:
 	virtual float TakeDamage(float Damage, struct FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;

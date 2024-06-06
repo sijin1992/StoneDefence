@@ -5,6 +5,7 @@
 #include "Character/Core/RuleOfTheCharacter.h"
 #include "Components/SkeletalMeshComponent.h"
 #include "Components/ArrowComponent.h"
+#include "../StoneDefenceUtils.h"
 
 UAnimNotify_SpawnBullet::UAnimNotify_SpawnBullet()
 	:Super()
@@ -39,17 +40,6 @@ void UAnimNotify_SpawnBullet::Notify(USkeletalMeshComponent* MeshComp, UAnimSequ
 	if (ARuleOfTheCharacter* Character = Cast<ARuleOfTheCharacter>(MeshComp->GetOuter()))//动画编辑器看不到，必须Runtime状态才能看见生成的Actor
 #endif
 	{
-		//构造Transform
-		FTransform Transform;
-		Transform.SetLocation(ComponentLocation);
-		Transform.SetRotation(ComponentRotation.Quaternion());//将Rotation转化成四元数类型:TQuat
-		//构造ActorSpawnParameters
-		FActorSpawnParameters ActorSpawnParameters;
-		ActorSpawnParameters.Instigator = Cast<APawn>(Character);//设置施法者
-
-		if (ARuleOfTheBullet *Bullet = Character->GetWorld()->SpawnActor<ARuleOfTheBullet>(BulletClass, Transform, ActorSpawnParameters))
-		{
-
-		}
+		StoneDefenceUtils::SpawnBullet(Character->GetWorld(), Cast<APawn>(Character), BulletClass, ComponentLocation, ComponentRotation);
 	}
 }

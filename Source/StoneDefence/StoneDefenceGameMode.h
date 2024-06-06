@@ -10,6 +10,7 @@ class ATowers;
 class AMonsters;
 class ARuleOfTheCharacter;
 class UDataTable;
+class ATowerDefencePlayerController;
 /**
  * 
  */
@@ -43,4 +44,9 @@ protected:
 		return Cast<T>(SpawnCharacter(CharacterID, CharacterLevel, InCharacterData, Location, Rotator));
 	}
 
+	//更新技能系统
+	void UpdateSkill(float DeltaSeconds);
+
+	//通知客户端调用代理函数
+	void CallUpdateAllClient(TFunction<void(ATowerDefencePlayerController* MyPlayerController)> InImplement);
 };

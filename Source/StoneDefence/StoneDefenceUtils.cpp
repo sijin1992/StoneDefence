@@ -14,6 +14,8 @@
 #include "Core/GameCore/TowerDefenceGameState.h"
 #include "Engine/StaticMeshActor.h"
 #include "Engine/World.h"
+#include "Components/ArrowComponent.h"
+#include "Bullet/RuleOfTheBullet.h"
 
 //关闭优化optimize
 #if PLATFORM_WINDOWS
@@ -70,6 +72,41 @@ ARuleOfTheCharacter* StoneDefenceUtils::FindTargetRecently(const TArray<ARuleOfT
 	return NULL;
 }
 
+AActor* StoneDefenceUtils::SpawnBullet(UWorld* InWorld, FGuid CharacterFGuid, UClass* InClass)
+{
+	TArray<ARuleOfTheCharacter*> InCharacterList;
+	GetAllActor(InWorld, InCharacterList);
+
+	for (auto& Temp : InCharacterList)
+	{
+		if (Temp->GUID == CharacterFGuid)
+		{
+			return SpawnBullet(InWorld, Temp, InClass, Temp->GetOpenFirePoint()->GetComponentLocation(), Temp->GetOpenFirePoint()->GetComponentRotation());
+		}
+	}
+	return nullptr;
+}
+
+AActor* StoneDefenceUtils::SpawnBullet(UWorld* InWorld, APawn* NewPawn, UClass* InClass, const FVector& InLocation, const FRotator& InRotation)
+{
+	if (InWorld && NewPawn && InClass)
+	{
+		//构造Transform
+		FTransform Transform;
+		Transform.SetLocation(InLocation);
+		Transform.SetRotation(InRotation.Quaternion());//将Rotation转化成四元数类型:TQuat
+		//构造ActorSpawnParameters
+		FActorSpawnParameters ActorSpawnParameters;
+		ActorSpawnParameters.Instigator = NewPawn;//设置施法者
+
+		if (ARuleOfTheBullet* Bullet = InWorld->SpawnActor<ARuleOfTheBullet>(InClass, Transform, ActorSpawnParameters))
+		{
+			return Bullet;
+		}
+	}
+	return nullptr;
+}
+
 AStaticMeshActor* StoneDefenceUtils::SpawnTowersDoll(UWorld* InWorld, int32 ID)
 {
 	AStaticMeshActor* OutActor = nullptr;
@@ -78,8 +115,7 @@ AStaticMeshActor* StoneDefenceUtils::SpawnTowersDoll(UWorld* InWorld, int32 ID)
 	{
 		if (ATowerDefenceGameState* InGameState = InWorld->GetGameState<ATowerDefenceGameState>())
 		{
-			TArray<const FCharacterData*> InDatas;
-			InGameState->GetTowerDataFromTable(InDatas);
+			const TArray<FCharacterData*> InDatas = InGameState->GetTowerDataFromTable();
 			//遍历塔的数据列表
 			for (const auto& Temp : InDatas)
 			{
@@ -130,7 +166,7 @@ float Expression::GetDamage(IRuleCharacter* Enemy, IRuleCharacter* Owner)
 {
 	if (Enemy && Owner)
 	{
-		return Enemy->GetCharacterData().PhysicalAttack / ((Owner->GetCharacterData().Armor / 100.0f) + 1);
+		return Enemy->GetCharacterData().GetAttack() / ((Owner->GetCharacterData().GetArmor() / 100.0f) + 1);
 	}
 	return 0.0f;
 }

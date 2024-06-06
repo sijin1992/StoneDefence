@@ -1,5 +1,5 @@
 
-#include "Data/Core/GameData.h"
+#include "Data/GameData.h"
 
 FGameInstanceDatas::FGameInstanceDatas()
 {

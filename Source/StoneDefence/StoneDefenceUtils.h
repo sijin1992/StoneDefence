@@ -14,6 +14,11 @@ class AStaticMeshActor;
 
 namespace StoneDefenceUtils
 {
+	//服务端通知客户端生成子弹
+	AActor* SpawnBullet(UWorld* InWorld, FGuid CharacterFGuid, UClass* InClass);
+	//客户端生成子弹
+	AActor* SpawnBullet(UWorld* InWorld, APawn* NewPawn, UClass* InClass, const FVector& InLocation, const FRotator& InRotation);
+
 	//生成炮塔的绿色模型
 	AStaticMeshActor* SpawnTowersDoll(UWorld* InWorld, int32 ID);
 

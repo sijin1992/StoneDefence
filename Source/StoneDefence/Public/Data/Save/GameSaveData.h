@@ -4,9 +4,9 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/SaveGame.h"
-#include "../Core/CharacterData.h"
-#include "../Core/PlayerData.h"
-#include "../Core/GameData.h"
+#include "../CharacterData.h"
+#include "../PlayerData.h"
+#include "../GameData.h"
 #include "GameSaveData.generated.h"
 
 /**

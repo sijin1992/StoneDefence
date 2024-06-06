@@ -4,9 +4,9 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/GameState.h"
-#include "Data/Core/CharacterData.h"
+#include "Data/CharacterData.h"
 #include "Data/Save/GameSaveData.h"
-#include "Data/Core/GameData.h"
+#include "Data/GameData.h"
 #include "../StoneDefenceType.h"
 #include "TowerDefenceGameState.generated.h"
 
@@ -17,6 +17,7 @@ class UDataTable;
 //class ATowers;
 //class UGameSaveData;
 class UGameSaveSlotList;
+struct FSkillData;
 
 UCLASS()
 class STONEDEFENCE_API ATowerDefenceGameState : public AGameState
@@ -33,6 +34,10 @@ class STONEDEFENCE_API ATowerDefenceGameState : public AGameState
 	UPROPERTY()
 	UDataTable* AIMonsterCharacterData;
 
+	//角色技能数据
+	UPROPERTY()
+	UDataTable* CharacterSkillData;
+
 public:
 	ATowerDefenceGameState();
 
@@ -45,10 +50,11 @@ public:
 	UFUNCTION(BlueprintCallable, Category = SaveData)
 	bool ReadGameData(int32 SaveNumber);
 
+	/////////////////////////////////模板角色///////////////////////////////////
 	//获取塔、怪物数据表
-	bool GetTowerDataFromTable(TArray<const FCharacterData*>& Datas);
-	bool GetMonsterDataFromTable(TArray<const FCharacterData*>& Datas);
-
+	const TArray<FCharacterData*>& GetTowerDataFromTable();
+	const TArray<FCharacterData*>& GetMonsterDataFromTable();
+	/////////////////////////////////角色操作////////////////////////////////////
 	//增
 	FCharacterData& AddCharacterData(const FGuid& ID, const FCharacterData &Data);
 	//删
@@ -58,9 +64,16 @@ public:
 	FCharacterData& GetCharacterDataNULL();
 
 	const FCharacterData& GetCharacterDataByID(int32 ID, ECharacterType Type = ECharacterType::TOWER);
+	/////////////////////////////////模板技能/////////////////////////////////////////
+	//获取模板技能数据表
+	const TArray<FSkillData*>& GetSkillDataFromTable();
 
-
-
+	/////////////////////////////////动态技能操作/////////////////////////////////////////
+	void InitSkill(FCharacterData& InCharacterData);
+	FSkillData& AddSkillData(const FGuid& CharacterID, const FGuid& SkillID, const FSkillData& Data);
+	FSkillData& GetSkillData(const FGuid& SkillID);
+	FSkillData& GetSkillData(const FGuid& CharacterID, const FGuid& SkillID);
+	int32 RemoveSkillData(const FGuid& SkillID);
 protected:
 	//获取所有需要保存的数据
 	UGameSaveData* GetSaveData();
@@ -77,6 +90,8 @@ private:
 	//缓存数据
 	TArray<FCharacterData*> CacheTowerDatas;
 	TArray<FCharacterData*> CacheMonsterDatas;
-
+	TArray<FSkillData*> CacheSkillDatas;
+	//空数据
 	FCharacterData CharacterDataNULL;
+	FSkillData SkillDataNULL;
 };

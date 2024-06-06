@@ -19,7 +19,7 @@ ATowerDefenceGameState* UUI_RuleOfTheWidget::GetGameState()
 	return nullptr;
 }
 
-class ATowerDefencePlayerState* UUI_RuleOfTheWidget::GetPlayerState()
+ATowerDefencePlayerState* UUI_RuleOfTheWidget::GetPlayerState()
 {
 	if (GetPlayerController())
 	{
@@ -28,7 +28,7 @@ class ATowerDefencePlayerState* UUI_RuleOfTheWidget::GetPlayerState()
 	return nullptr;
 }
 
-class ATowerDefencePlayerController* UUI_RuleOfTheWidget::GetPlayerController()
+ATowerDefencePlayerController* UUI_RuleOfTheWidget::GetPlayerController()
 {
 	if (GetWorld())
 	{

@@ -3,8 +3,10 @@
 
 #include "Core/GameCore/TowerDefencePlayerController.h"
 #include "Core/GameCore/TowerDefenceGameCamrea.h"
-#include "UI/Core/UI_Datas.h"
+#include "Global/UI_Datas.h"
 #include "../StoneDefenceGameMode.h"
+#include "Character/CharacterCore/Towers.h"
+#include "Character/CharacterCore/Monsters.h"
 
 ATowerDefencePlayerController::ATowerDefencePlayerController()
 {
@@ -119,4 +121,14 @@ AMonsters* ATowerDefencePlayerController::SpawnMonster(const int32 CharacterID, 
 		return GetGameMode()->SpawnMonster(CharacterID, CharacterLevel, Location, Rotator);
 	}
 	return nullptr;
+}
+
+void ATowerDefencePlayerController::AddSkillSlot_Client(const FGuid& SlotID)
+{
+	AddSkillDelegate.ExecuteIfBound(SlotID);
+}
+
+void ATowerDefencePlayerController::SpawnBullet_Client(const FGuid& CharacterFGuid, UClass* InClass)
+{
+	SpawnBulletDelegate.ExecuteIfBound(CharacterFGuid, InClass);
 }

@@ -5,7 +5,7 @@
 #include "UI/GameUI/UMG/Inventory/UI_InventorySlot.h"
 #include "Components/UniformGridSlot.h"
 #include "Components/UniformGridPanel.h"
-#include "UI/Core/UI_Datas.h"
+#include "Global/UI_Datas.h"
 #include "Engine/StaticMeshActor.h"
 #include "Components/StaticMeshComponent.h"
 #include "../StoneDefenceUtils.h"
@@ -59,20 +59,18 @@ void UUI_Inventory::LayoutInventorySlot(int32 ColumnNumber, int32 RowNumber)
 		{
 			InventorySlotArray[i]->GUID = *IDs[i];
 		}
-		//拿到塔数据
-		TArray<const FCharacterData*> Datas;
-		if (GetGameState()->GetTowerDataFromTable(Datas))
-		{
-			//默认把塔都送给玩家,实际项目中会根据玩家解锁的塔生成
-			for (int32 i = 0; i < Datas.Num(); i++)
-			{
-				InventorySlotArray[i]->GetBuildingTower().TowerID = Datas[i]->ID;
-				InventorySlotArray[i]->GetBuildingTower().NeedGold = Datas[i]->Gold;
-				InventorySlotArray[i]->GetBuildingTower().MaxConstructionTowersCD = Datas[i]->CD;
-				InventorySlotArray[i]->GetBuildingTower().Icon = Datas[i]->Icon.LoadSynchronous();
 
-				InventorySlotArray[i]->UpdateUI();
-			}
+		//拿到塔数据
+		const TArray<FCharacterData*>& Datas = GetGameState()->GetTowerDataFromTable();
+		//默认把塔都送给玩家,实际项目中会根据玩家解锁的塔生成
+		for (int32 i = 0; i < Datas.Num(); i++)
+		{
+			InventorySlotArray[i]->GetBuildingTower().TowerID = Datas[i]->ID;
+			InventorySlotArray[i]->GetBuildingTower().NeedGold = Datas[i]->Gold;
+			InventorySlotArray[i]->GetBuildingTower().MaxConstructionTowersCD = Datas[i]->CD;
+			InventorySlotArray[i]->GetBuildingTower().Icon = Datas[i]->Icon.LoadSynchronous();
+
+			InventorySlotArray[i]->UpdateUI();
 		}
 	}
 }

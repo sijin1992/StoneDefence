@@ -7,7 +7,7 @@
 #include "UI/GameUI/UMG/Tips/UI_TowerTip.h"
 #include "UMG/Public/Blueprint/WidgetLayoutLibrary.h"
 #include "UMG/Public/Components/CanvasPanelSlot.h"
-#include "UI/Core/UI_Datas.h"
+#include "Global/UI_Datas.h"
 #include "UMG/Public/Components/Image.h"
 
 void UUI_MainScreen::NativeConstruct()

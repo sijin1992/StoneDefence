@@ -4,8 +4,8 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/SaveGame.h"
-#include "../Core/PlayerData.h"
-#include "../Core/BuildingTowerData.h"
+#include "../PlayerData.h"
+#include "../BuildingTowerData.h"
 #include "PlayerSaveData.generated.h"
 
 /**

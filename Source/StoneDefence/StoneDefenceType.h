@@ -5,6 +5,65 @@
 #include "CoreMinimal.h"
 #include "StoneDefenceType.generated.h"
 
+//技能类型
+UENUM(BlueprintType)
+enum class ESkillType:uint8
+{
+	BURST,//爆发,一次造成的伤害
+	SECTION,//区间,在一定范围内属性提升，时间到了就还原属性
+	ITERATION,//迭代,持续一定时间内进行恢复
+};
+//技能攻击方式
+UENUM(BlueprintType)
+enum class ESkillAttackType :uint8
+{
+	SINGLE,//单体攻击
+	MULTIPLE,//群体攻击
+};
+//技能目标阵营
+UENUM(BlueprintType)
+enum class ESkillTargetType :uint8
+{
+	FRIENDLY_FORCES,//友军技能
+	ENEMY//敌人技能
+};
+//技能效果类型
+UENUM(BlueprintType)
+enum class ESkillEffectType :uint8
+{
+	ADD,//增益
+	SUBTRACT,//减益
+};
+
+USTRUCT(BlueprintType)
+struct FSkillType
+{
+	GENERATED_USTRUCT_BODY()
+
+	FSkillType()
+		:SkillType(ESkillType::SECTION),
+		SkillAttackType(ESkillAttackType::MULTIPLE),
+		SkillTargetType(ESkillTargetType::FRIENDLY_FORCES),
+		SkillEffectType(ESkillEffectType::ADD)
+	{
+	}
+
+	UPROPERTY(EditDefaultsOnly, Category = "Skill Type")
+	ESkillType SkillType;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Skill Type")
+	ESkillAttackType SkillAttackType;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Skill Type")
+	ESkillTargetType SkillTargetType;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Skill Type")
+	ESkillEffectType SkillEffectType;
+};
+
+
+
+//队伍类型
 UENUM()
 enum ETeam
 {
@@ -13,9 +72,8 @@ enum ETeam
 	MAX
 };
 
-
-UENUM(BlueprintType)
 //角色类型
+UENUM(BlueprintType)
 namespace EGameCharacterType
 {
 	enum Type
@@ -25,7 +83,7 @@ namespace EGameCharacterType
 		MAX
 	};
 }
-
+//子弹类型
 UENUM(BlueprintType)
 enum class EBulletType :uint8
 {

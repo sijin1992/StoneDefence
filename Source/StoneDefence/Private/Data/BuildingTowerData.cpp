@@ -1,4 +1,4 @@
-#include "Data/Core/BuildingTowerData.h"
+#include "Data/BuildingTowerData.h"
 
 FBuildingTower::FBuildingTower()
 {
