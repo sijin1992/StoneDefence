@@ -283,6 +283,8 @@ ARuleOfTheCharacter* AStoneDefenceGameMode::SpawnCharacter(
 				{
 					if (ARuleOfTheCharacter* RuleOfTheCharacter = GetWorld()->SpawnActor<ARuleOfTheCharacter>(NewClass, Location, Rotator))
 					{
+						RuleOfTheCharacter->ResetGUID();
+
 						FCharacterData& CharacterInstance = InGameState->AddCharacterData(RuleOfTheCharacter->GUID, *CharacterData);
 						CharacterInstance.UpdateHealth();
 						if (CharacterLevel > 1)
@@ -311,44 +313,44 @@ void AStoneDefenceGameMode::UpdateSkill(float DeltaSeconds)
 {
 	if (ATowerDefenceGameState* InGameState = GetGameState<ATowerDefenceGameState>())
 	{
-
-		//将相同阵营的距离最近的角色加入数组
-		auto AddRecentCharacterToArray = [&](TArray<FCharacterData*>& TeamArray, const TPair<FGuid, FCharacterData>& InSpellcaster, FCharacterData& InOther, float InRange)
-			{
-				//是否无限距离
-				if (InRange != 0)
-				{
-					float Distance = (InSpellcaster.Value.Location - InOther.Location).Size();
-					if (Distance <= InRange)
-					{
-						TeamArray.Add(&InOther);
-					}
-				}
-				else
-				{
-					//场景中所有的角色都加进去
-					TeamArray.Add(&InOther);
-				}
-			};
-
-
 		//获取距离最近的角色列表
-		auto GetTeam = [&](TArray<FCharacterData*>& TeamArray, const TPair<FGuid, FCharacterData>& InSpellcaster, float InRange, bool bReversed = false)
+		auto GetTeam = [&](TArray<TPair<FGuid, FCharacterData>*>& TeamArray, const TPair<FGuid, FCharacterData>& InSpellcaster, float InRange, bool bReversed = false)
 			{
+
+				//将相同阵营的距离最近的角色加入数组
+				auto AddRecentCharacterToArray = [&](TPair<FGuid, FCharacterData>& InOther)
+					{
+						//是否无限距离
+						if (InRange != 0)
+						{
+							float Distance = (InOther.Value.Location - InSpellcaster.Value.Location).Size();
+							if (Distance <= InRange)
+							{
+								TeamArray.Add(&InOther);
+							}
+						}
+						else
+						{
+							//场景中所有的角色都加进去
+							TeamArray.Add(&InOther);
+						}
+					};
+
+
 				for (auto& Temp : InGameState->GetSaveData()->CharacterDatas)
 				{
 					if (bReversed)
 					{
 						if (Temp.Value.Team != InSpellcaster.Value.Team)//寻找敌人列表
 						{
-							AddRecentCharacterToArray(TeamArray, InSpellcaster, Temp.Value, InRange);
+							AddRecentCharacterToArray(Temp);
 						}
 					}
 					else
 					{
 						if (Temp.Value.Team == InSpellcaster.Value.Team)//寻找友军列表
 						{
-							AddRecentCharacterToArray(TeamArray, InSpellcaster, Temp.Value, InRange);
+							AddRecentCharacterToArray(Temp);
 						}
 					}
 				}
@@ -368,37 +370,31 @@ void AStoneDefenceGameMode::UpdateSkill(float DeltaSeconds)
 			};
 
 		//给单个角色挂上技能
-		auto AddSkill = [&](FCharacterData* InCharacterData, FSkillData& InSkill)
+		auto AddSkill = [&](TPair<FGuid, FCharacterData>& InCharacter, FSkillData& InSkill)
 			{
-				if (!IsVerificationSkill(*InCharacterData, InSkill.ID))
+				if (!IsVerificationSkill(InCharacter.Value, InSkill.ID))
 				{
 					FGuid NewSkillID = FGuid::NewGuid();
-					InCharacterData->AdditionalSkillData.Add(NewSkillID, InSkill);
+					InCharacter.Value.AdditionalSkillData.Add(NewSkillID, InSkill).ResetDuration();
 					//通知客户端更新添加UI
 					CallUpdateAllClient([&](ATowerDefencePlayerController* MyPlayerController)
 						{
-							MyPlayerController->AddSkillSlot_Client(NewSkillID);
+							MyPlayerController->AddSkillSlot_S2C(InCharacter.Key,NewSkillID);
 						});
 				}
 			};
 
 		//给某个队伍全员挂上技能
-		auto AddSkillToForces = [&](TArray<FCharacterData*>& InForces, FSkillData& InSkill)
+		auto AddSkillToForces = [&](TArray<TPair<FGuid, FCharacterData>*>& InForces, FSkillData& InSkill)
 			{
 				for (auto& CharacterElement : InForces)
 				{
-					//如果角色身上没有这个技能，就给他挂上这个技能
-					if (!IsVerificationSkill(*CharacterElement, InSkill.ID))
-					{
-						FGuid NewSkillID = FGuid::NewGuid();
-						//TODO代理
-						CharacterElement->AdditionalSkillData.Add(NewSkillID, InSkill);
-					}
+					AddSkill(*CharacterElement, InSkill);
 				}
 			};
 
 		//寻找最近的单个目标
-		auto FindRangeTargetRecently = [&](const TPair<FGuid, FCharacterData>& InSpellcaster, bool bReversed = false) ->FCharacterData*
+		auto FindRangeTargetRecently = [&](const TPair<FGuid, FCharacterData>& InSpellcaster, bool bReversed = false) ->TPair<FGuid, FCharacterData>*
 			{
 				float TargetDistance = 99999999;
 				FGuid InFGuid;
@@ -445,7 +441,7 @@ void AStoneDefenceGameMode::UpdateSkill(float DeltaSeconds)
 					{
 						if (CharacterTemp.Key == InFGuid)
 						{
-							return &CharacterTemp.Value;
+							return &CharacterTemp;
 						}
 					}
 				}
@@ -462,7 +458,7 @@ void AStoneDefenceGameMode::UpdateSkill(float DeltaSeconds)
 			TArray<FGuid> RemoveSkill;
 			for (auto& SkillTemp : InSpellcaster.Value.AdditionalSkillData)
 			{
-
+				SkillTemp.Value.SkillDurationTime += DeltaSeconds;
 				//爆发类型的技能只存在1帧，所以可以释放后立即移除
 				if (SkillTemp.Value.SkillType.SkillType == ESkillType::BURST)
 				{
@@ -474,8 +470,8 @@ void AStoneDefenceGameMode::UpdateSkill(float DeltaSeconds)
 				if (SkillTemp.Value.SkillType.SkillType == ESkillType::SECTION ||
 					SkillTemp.Value.SkillType.SkillType == ESkillType::ITERATION)
 				{
-					SkillTemp.Value.SkillDuration += DeltaSeconds;
-					if (SkillTemp.Value.SkillDuration >= SkillTemp.Value.MaxSkillDuration)
+					SkillTemp.Value.SkillDuration -= DeltaSeconds;
+					if (SkillTemp.Value.SkillDuration <= 0.0f)
 					{
 						RemoveSkill.Add(SkillTemp.Key);
 					}
@@ -484,7 +480,6 @@ void AStoneDefenceGameMode::UpdateSkill(float DeltaSeconds)
 				//迭代技能进行持续更新技能
 				if (SkillTemp.Value.SkillType.SkillType == ESkillType::ITERATION)
 				{
-					SkillTemp.Value.SkillDurationTime += DeltaSeconds;
 					if (SkillTemp.Value.SkillDurationTime >= 1.0f)
 					{
 						SkillTemp.Value.SkillDurationTime = 0.0f;
@@ -512,13 +507,18 @@ void AStoneDefenceGameMode::UpdateSkill(float DeltaSeconds)
 				//通知客户端生成子弹特效
 				CallUpdateAllClient([&](ATowerDefencePlayerController* MyPlayerController)
 					{
-						MyPlayerController->SpawnBullet_Client(InSpellcaster.Key, SkillTemp.Value.BulletClass);
+						MyPlayerController->SpawnBullet_S2C(InSpellcaster.Key, SkillTemp.Value.BulletClass);
 					});
 			}
 
 			//移除技能
 			for (FGuid& SkillFGuid : RemoveSkill)
 			{
+				//通知客户端移除技能Icon
+				CallUpdateAllClient([&](ATowerDefencePlayerController* MyPlayerController)
+					{
+						MyPlayerController->RemoveSkillSlot_S2C(InSpellcaster.Key, SkillFGuid);
+					});
 				InSpellcaster.Value.AdditionalSkillData.Remove(SkillFGuid);
 			}
 
@@ -531,7 +531,7 @@ void AStoneDefenceGameMode::UpdateSkill(float DeltaSeconds)
 					InSkill.CDTime = 0.0f;
 					if (InSkill.SkillType.SkillAttackType == ESkillAttackType::MULTIPLE)//群体技能
 					{
-						TArray<FCharacterData*> RecentForces;
+						TArray<TPair<FGuid, FCharacterData>*> RecentForces;
 						if (InSkill.SkillType.SkillTargetType == ESkillTargetType::FRIENDLY_FORCES)//友军技能
 						{
 							GetTeam(RecentForces, InSpellcaster, InSkill.AttackRange);
@@ -545,7 +545,7 @@ void AStoneDefenceGameMode::UpdateSkill(float DeltaSeconds)
 					}
 					else if (InSkill.SkillType.SkillAttackType == ESkillAttackType::SINGLE)//单体技能
 					{
-						FCharacterData* Recent = nullptr;
+						TPair<FGuid, FCharacterData>* Recent = nullptr;
 						if (InSkill.SkillType.SkillTargetType == ESkillTargetType::FRIENDLY_FORCES)//友军技能
 						{
 							Recent = FindRangeTargetRecently(InSpellcaster);
@@ -554,8 +554,11 @@ void AStoneDefenceGameMode::UpdateSkill(float DeltaSeconds)
 						{
 							Recent = FindRangeTargetRecently(InSpellcaster, true);
 						}
-						//挂上技能
-						AddSkill(Recent, InSkill);
+						if (Recent)
+						{
+							//挂上技能
+							AddSkill(*Recent, InSkill);
+						}
 					}
 				}
 			}

@@ -60,6 +60,9 @@ public:
 
 	void UpdateUI();
 
+	UFUNCTION()
+	void ResetGUID();
+
 	virtual EGameCharacterType::Type GetCharacterType();
 
 	virtual bool IsDeath();
@@ -91,6 +94,12 @@ public:
 	//通知蓝图动画标签
 	UFUNCTION(BlueprintImplementableEvent)
 	void AnimTag();
+
+	//如果是网络游戏的话需要加：UFUNCTION(Client)，代表这个逻辑是执行在客户端的
+	UFUNCTION(/*Client*/)
+	void AddSkillSlot_Client(const FGuid& SlotID);//添加技能UI
+	UFUNCTION(/*Client*/)
+	void RemoveSkillSlot_Client(const FGuid& SlotID);//移除技能UI
 
 public:
 	FORCEINLINE ATowerDefencePlayerController* GetGameController() { return GetWorld() ? (GetWorld()->GetFirstPlayerController<ATowerDefencePlayerController>()) : NULL; }

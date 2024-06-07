@@ -7,6 +7,8 @@
 #include "../StoneDefenceGameMode.h"
 #include "Character/CharacterCore/Towers.h"
 #include "Character/CharacterCore/Monsters.h"
+#include "../StoneDefenceUtils.h"
+#include "Character/Core/RuleOfTheCharacter.h"
 
 ATowerDefencePlayerController::ATowerDefencePlayerController()
 {
@@ -123,12 +125,23 @@ AMonsters* ATowerDefencePlayerController::SpawnMonster(const int32 CharacterID, 
 	return nullptr;
 }
 
-void ATowerDefencePlayerController::AddSkillSlot_Client(const FGuid& SlotID)
+void ATowerDefencePlayerController::AddSkillSlot_S2C(const FGuid& CharacterFGuid, const FGuid& SlotID)
 {
-	AddSkillDelegate.ExecuteIfBound(SlotID);
+	StoneDefenceUtils::FindCharacterToExecution(GetWorld(), CharacterFGuid, [&](ARuleOfTheCharacter* InCharacter)
+		{
+			InCharacter->AddSkillSlot_Client(SlotID);
+		});
 }
 
-void ATowerDefencePlayerController::SpawnBullet_Client(const FGuid& CharacterFGuid, UClass* InClass)
+void ATowerDefencePlayerController::RemoveSkillSlot_S2C(const FGuid& CharacterFGuid, const FGuid& SlotID)
+{
+	StoneDefenceUtils::FindCharacterToExecution(GetWorld(), CharacterFGuid, [&](ARuleOfTheCharacter* InCharacter)
+		{
+			InCharacter->RemoveSkillSlot_Client(SlotID);
+		});
+}
+
+void ATowerDefencePlayerController::SpawnBullet_S2C(const FGuid& CharacterFGuid, UClass* InClass)
 {
 	SpawnBulletDelegate.ExecuteIfBound(CharacterFGuid, InClass);
 }

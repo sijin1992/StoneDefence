@@ -14,6 +14,8 @@ class AStaticMeshActor;
 
 namespace StoneDefenceUtils
 {
+	void FindCharacterToExecution(UWorld* InWorld, const FGuid CharacterFGuid, TFunction<void(ARuleOfTheCharacter* InCharacter)> Code);
+
 	//服务端通知客户端生成子弹
 	AActor* SpawnBullet(UWorld* InWorld, FGuid CharacterFGuid, UClass* InClass);
 	//客户端生成子弹

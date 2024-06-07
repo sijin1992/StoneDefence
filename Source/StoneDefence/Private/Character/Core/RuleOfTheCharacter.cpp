@@ -76,6 +76,11 @@ void ARuleOfTheCharacter::UpdateUI()
 	}
 }
 
+void ARuleOfTheCharacter::ResetGUID()
+{
+	GUID = FGuid::NewGuid();
+}
+
 EGameCharacterType::Type ARuleOfTheCharacter::GetCharacterType()
 {
 	return CharacterType;
@@ -247,4 +252,20 @@ UStaticMesh* ARuleOfTheCharacter::GetDollMesh(FTransform& InTransform)
 		}
 	}
 	return NULL;
+}
+
+void ARuleOfTheCharacter::AddSkillSlot_Client(const FGuid& SlotID)
+{
+	if (UUI_Health* HealthUI = Cast<UUI_Health>(Widget->GetUserWidgetObject()))
+	{
+		HealthUI->AddSkillSlot(SlotID);
+	}
+}
+
+void ARuleOfTheCharacter::RemoveSkillSlot_Client(const FGuid& SlotID)
+{
+	if (UUI_Health* HealthUI = Cast<UUI_Health>(Widget->GetUserWidgetObject()))
+	{
+		HealthUI->RemoveSkillSlot(SlotID);
+	}
 }

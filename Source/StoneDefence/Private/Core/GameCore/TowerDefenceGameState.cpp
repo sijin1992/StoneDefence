@@ -201,6 +201,7 @@ void ATowerDefenceGameState::InitSkill(FCharacterData& InCharacterData)
 			if (NewSkill->ID == Temp)
 			{
 				InCharacterData.CharacterSkills.Add(*NewSkill);
+				InCharacterData.CharacterSkills[InCharacterData.CharacterSkills.Num() - 1].ResetCD();
 				break;
 			}
 		}
@@ -221,12 +222,9 @@ FSkillData& ATowerDefenceGameState::GetSkillData(const FGuid& SkillID)
 {
 	for (auto& Temp : GetSaveData()->CharacterDatas)
 	{
-		for (auto& SkillTemp : Temp.Value.AdditionalSkillData)
+		if (Temp.Value.AdditionalSkillData.Contains(SkillID))
 		{
-			if (SkillTemp.Key == SkillID)
-			{
-				return SkillTemp.Value;
-			}
+			return Temp.Value.AdditionalSkillData[SkillID];
 		}
 	}
 	return SkillDataNULL;

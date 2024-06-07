@@ -39,11 +39,13 @@ public:
 	//初始化
 	virtual void BeginPlay() override;
 
-	//通知代理,如果是网络游戏的话需要加：UFUNCTION(Client)，代表这个逻辑是执行在客户端的
-	UFUNCTION()
-	void AddSkillSlot_Client(const FGuid& SlotID);//添加技能UI
-	UFUNCTION()
-	void SpawnBullet_Client(const FGuid& CharacterFGuid, UClass* InClass);//生成子弹特效
+	//如果是网络游戏的话需要加：UFUNCTION(Server)，代表这个逻辑是执行在服务端的,S2C表示服务器通知客户端
+	UFUNCTION(/*Server*/)
+	void AddSkillSlot_S2C(const FGuid& CharacterFGuid, const FGuid& SlotID);//添加技能UI
+	UFUNCTION(/*Server*/)
+	void RemoveSkillSlot_S2C(const FGuid& CharacterFGuid, const FGuid& SlotID);//移除技能UI
+	UFUNCTION(/*Server*/)
+	void SpawnBullet_S2C(const FGuid& CharacterFGuid, UClass* InClass);//生成子弹特效
 
 	void SetInputModeGameAndUI();
 

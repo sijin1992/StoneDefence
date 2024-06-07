@@ -47,6 +47,6 @@ protected:
 	//更新技能系统
 	void UpdateSkill(float DeltaSeconds);
 
-	//通知客户端调用代理函数
+	//通知客户端调用代理函数,多播委托
 	void CallUpdateAllClient(TFunction<void(ATowerDefencePlayerController* MyPlayerController)> InImplement);
 };

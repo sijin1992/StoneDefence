@@ -27,6 +27,10 @@ struct FSkillData : public FDataCore
 	//子弹类型
 	UPROPERTY(EditDefaultsOnly, Category = "Skill Attribute")
 	TSubclassOf<ARuleOfTheBullet> BulletClass;
+	//技能描述
+	UPROPERTY(EditDefaultsOnly, Category = "Skill Attribute")
+	FText SkillIntroduce;
+
 	//加减金币
 	UPROPERTY(EditDefaultsOnly, Category = "Skill Profit")
 	float Gold;
@@ -45,21 +49,30 @@ struct FSkillData : public FDataCore
 	//技能范围(0代表全场景所有敌人)
 	UPROPERTY(EditDefaultsOnly, Category = "Skill Profit")
 	float AttackRange;
-	//技能最大持续时间
+	//技能效果最大持续时间
 	UPROPERTY(EditDefaultsOnly, Category = "Skill Profit")
 	float MaxSkillDuration;
-	//技能持续时间
+	//技能效果持续时间
 	UPROPERTY()
 	float SkillDuration;
 	//每帧进行更新的持续时间
 	UPROPERTY()
 	float SkillDurationTime;
 
-	//技能CD
+	//技能释放CD
 	UPROPERTY(EditDefaultsOnly, Category = "Skill Profit")
 	float CD;
-
+	//技能释放CD计时器
 	UPROPERTY()
 	float CDTime;
 
+	//获取技能释放CD百分比
+	float GetCDPercent() const;
+	//重置技能释放的CD
+	void ResetCD();
+
+	//获取技能效果持续时间百分比
+	float GetDurationPercent() const;
+	//重置技能效果持续时间
+	void ResetDuration();
 };

@@ -72,6 +72,20 @@ ARuleOfTheCharacter* StoneDefenceUtils::FindTargetRecently(const TArray<ARuleOfT
 	return NULL;
 }
 
+void StoneDefenceUtils::FindCharacterToExecution(UWorld* InWorld, const FGuid CharacterFGuid, TFunction<void(ARuleOfTheCharacter* InCharacter)> Code)
+{
+	TArray<ARuleOfTheCharacter*> Characters;
+	GetAllActor(InWorld, Characters);
+	for (ARuleOfTheCharacter* Temp : Characters)
+	{
+		if (Temp->GUID == CharacterFGuid)
+		{
+			Code(Temp);
+			break;
+		}
+	}
+}
+
 AActor* StoneDefenceUtils::SpawnBullet(UWorld* InWorld, FGuid CharacterFGuid, UClass* InClass)
 {
 	TArray<ARuleOfTheCharacter*> InCharacterList;

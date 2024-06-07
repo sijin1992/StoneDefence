@@ -19,3 +19,23 @@ void FSkillData::Init()
 	SkillDurationTime = 0.0f;
 	CD = 0.0f;
 }
+
+float FSkillData::GetCDPercent() const
+{
+	return CD == 0.0f ? 0.0f : (CDTime / CD);
+}
+
+void FSkillData::ResetCD()
+{
+	CDTime = CD;
+}
+
+float FSkillData::GetDurationPercent() const
+{
+	return MaxSkillDuration == 0.0f ? 0.0f : (SkillDuration / MaxSkillDuration);
+}
+
+void FSkillData::ResetDuration()
+{
+	SkillDuration = MaxSkillDuration;
+}
