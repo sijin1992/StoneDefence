@@ -5,6 +5,14 @@
 #include "CoreMinimal.h"
 #include "StoneDefenceType.generated.h"
 
+//技能是自动提交还是手动提交
+UENUM(BlueprintType)
+enum class ESubmissionSkillRequestType :uint8
+{
+	AUTO,	//生成权利交给服务器
+	MANUAL,	//生成权利交给客户端
+};
+
 //技能类型
 UENUM(BlueprintType)
 enum class ESkillType:uint8

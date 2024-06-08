@@ -13,6 +13,7 @@
 #include "Particles/ParticleSystemComponent.h"
 #include "Components/SkeletalMeshComponent.h"
 #include "../StoneDefenceMacro.h"
+#include "Bullet/RuleOfTheBullet.h"
 
 // Sets default values
 ARuleOfTheCharacter::ARuleOfTheCharacter()
@@ -72,6 +73,32 @@ void ARuleOfTheCharacter::UpdateUI()
 				HealthUI->SetTitle(GetCharacterData().Name.ToString());
 				HealthUI->SetHealth(GetHealth() / GetMaxHealth());
 			}
+		}
+	}
+}
+
+void ARuleOfTheCharacter::InitSkill()
+{
+	for (auto& SkillID : SkillIDs)
+	{
+		if (ARuleOfTheBullet* Bullet = StoneDefenceUtils::SpawnBullet(GetWorld(), this, SkillID, OpenFirePoint->GetComponentLocation(), OpenFirePoint->GetComponentRotation()))
+		{
+			Bullet->InitSkill();
+		}
+	}
+}
+
+void ARuleOfTheCharacter::UpdateSkill(int32 SkillID)
+{
+	for (auto& SkillTempID : SkillIDs)
+	{
+		if (SkillTempID == SkillID)
+		{
+			if (ARuleOfTheBullet* Bullet = StoneDefenceUtils::SpawnBullet(GetWorld(), this, SkillTempID, OpenFirePoint->GetComponentLocation(), OpenFirePoint->GetComponentRotation()))
+			{
+				Bullet->InitSkill();
+			}
+			break;
 		}
 	}
 }

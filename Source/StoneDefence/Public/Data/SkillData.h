@@ -30,6 +30,9 @@ struct FSkillData : public FDataCore
 	//技能描述
 	UPROPERTY(EditDefaultsOnly, Category = "Skill Attribute")
 	FText SkillIntroduce;
+	//技能提交类型
+	UPROPERTY()
+	ESubmissionSkillRequestType SubmissionSkillRequestType;
 
 	//加减金币
 	UPROPERTY(EditDefaultsOnly, Category = "Skill Profit")
@@ -65,6 +68,8 @@ struct FSkillData : public FDataCore
 	//技能释放CD计时器
 	UPROPERTY()
 	float CDTime;
+	//技能是否已经释放过了
+	bool bBecomeEffective;
 
 	//获取技能释放CD百分比
 	float GetCDPercent() const;
@@ -75,4 +80,9 @@ struct FSkillData : public FDataCore
 	float GetDurationPercent() const;
 	//重置技能效果持续时间
 	void ResetDuration();
+
+	friend bool operator == (const FSkillData& A, const FSkillData& B)
+	{
+		return A.ID == B.ID;
+	}
 };

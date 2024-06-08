@@ -10,6 +10,8 @@
 #include "Data/Save/GameSaveSlotList.h"
 #include "../StoneDefenceUtils.h"
 #include "Data/SkillData.h"
+#include "Core/GameCore/TowerDefencePlayerController.h"
+#include "../StoneDefenceType.h"
 
 //关闭优化optimize
 #if PLATFORM_WINDOWS
@@ -191,21 +193,42 @@ const TArray<FSkillData*>& ATowerDefenceGameState::GetSkillDataFromTable()
 	return CacheSkillDatas;
 }
 
-void ATowerDefenceGameState::InitSkill(FCharacterData& InCharacterData)
+void ATowerDefenceGameState::AddSkillDataTemplateToCharacterData(const FGuid& CharacterID, int32 SkillID)
 {
-	const TArray<FSkillData*>& InSkillDatas = GetSkillDataFromTable();
-	for (auto& Temp : InCharacterData.CharacterSkillIDs)
+	if (const FSkillData* InSkillData = GetSkillData(SkillID))
 	{
-		for (const FSkillData* NewSkill : InSkillDatas)
+		for (auto& Temp : GetSaveData()->CharacterDatas)
 		{
-			if (NewSkill->ID == Temp)
+			if (CharacterID == Temp.Key)
 			{
-				InCharacterData.CharacterSkills.Add(*NewSkill);
-				InCharacterData.CharacterSkills[InCharacterData.CharacterSkills.Num() - 1].ResetCD();
+				Temp.Value.CharacterSkills.Add(*InSkillData);
+				Temp.Value.CharacterSkills[Temp.Value.CharacterSkills.Num() - 1].ResetCD();
 				break;
 			}
 		}
 	}
+}
+
+bool ATowerDefenceGameState::IsVerificationSkillTemplate(const FGuid& CharacterID, int32 SkillID)
+{
+	const FCharacterData& InData = GetCharacterData(CharacterID);
+	if (InData.IsValid())
+	{
+		return IsVerificationSkillTemplate(InData, SkillID);
+	}
+	return false;
+}
+
+bool ATowerDefenceGameState::IsVerificationSkillTemplate(const FCharacterData& CharacterData, int32 SkillID)
+{
+	for (auto& InSkill : CharacterData.CharacterSkills)
+	{
+		if (InSkill.ID == SkillID)
+		{
+			return true;
+		}
+	}
+	return false;
 }
 
 FSkillData& ATowerDefenceGameState::AddSkillData(const FGuid& CharacterID, const FGuid& SkillID, const FSkillData& Data)
@@ -243,6 +266,19 @@ FSkillData& ATowerDefenceGameState::GetSkillData(const FGuid& CharacterID, const
 	return SkillDataNULL;
 }
 
+const FSkillData* ATowerDefenceGameState::GetSkillData(const int32 SkillID)
+{
+	const TArray<FSkillData*>& SkillArray = GetSkillDataFromTable();
+	for (const auto &Temp : SkillArray)
+	{
+		if (SkillID == Temp->ID)
+		{
+			return Temp;
+		}
+	}
+	return nullptr;
+}
+
 int32 ATowerDefenceGameState::RemoveSkillData(const FGuid& SkillID)
 {
 	for (auto& Temp : GetSaveData()->CharacterDatas)
@@ -250,6 +286,57 @@ int32 ATowerDefenceGameState::RemoveSkillData(const FGuid& SkillID)
 		return Temp.Value.AdditionalSkillData.Remove(SkillID);
 	}
 	return INDEX_NONE;
+}
+
+
+bool ATowerDefenceGameState::SetSkillSubmissionType(const FGuid& CharacterID, int32 SkillID, ESubmissionSkillRequestType Type)
+{
+	FCharacterData& InCharacterData = GetCharacterData(CharacterID);
+	if (InCharacterData.IsValid())
+	{
+		for (auto& SkillTemp : InCharacterData.CharacterSkills)
+		{
+			SkillTemp.SubmissionSkillRequestType = Type;
+			return true;
+		}
+	}
+	return false;
+}
+
+bool ATowerDefenceGameState::IsVerificationSkill(const FGuid& CharacterID, int32 SkillID)
+{
+	const FCharacterData& InData = GetCharacterData(CharacterID);
+	if (InData.IsValid())
+	{
+		return IsVerificationSkill(InData, SkillID);
+	}
+	return false;
+}
+
+bool ATowerDefenceGameState::IsVerificationSkill(const FCharacterData& InCharacterData, int32 SkillID)
+{
+	for (auto& InSkill : InCharacterData.AdditionalSkillData)
+	{
+		if (InSkill.Value.ID == SkillID)
+		{
+			return true;
+		}
+	}
+	return false;
+}
+
+void ATowerDefenceGameState::AddSkill(TPair<FGuid, FCharacterData>& InCharacter, FSkillData& InSkill)
+{
+	if (!IsVerificationSkill(InCharacter.Value, InSkill.ID))
+	{
+		FGuid NewSkillID = FGuid::NewGuid();
+		InCharacter.Value.AdditionalSkillData.Add(NewSkillID, InSkill).ResetDuration();
+		//通知客户端更新添加UI
+		StoneDefenceUtils::CallUpdateAllClient(GetWorld(), [&](ATowerDefencePlayerController* MyPlayerController)
+			{
+				MyPlayerController->AddSkillSlot_S2C(InCharacter.Key, NewSkillID);
+			});
+	}
 }
 
 //打开优化

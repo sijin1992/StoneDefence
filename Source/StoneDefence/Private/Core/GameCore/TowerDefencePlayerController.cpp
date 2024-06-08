@@ -107,6 +107,11 @@ AStoneDefenceGameMode* ATowerDefencePlayerController::GetGameMode()
 	return GetWorld()->GetAuthGameMode<AStoneDefenceGameMode>();
 }
 
+class ATowerDefenceGameState* ATowerDefencePlayerController::GetGameState()
+{
+	return GetWorld()->GetGameState<ATowerDefenceGameState>();
+}
+
 ATowers* ATowerDefencePlayerController::SpawnTower(const int32 CharacterID, int32 CharacterLevel, const FVector& Location, const FRotator& Rotator)
 {
 	if (GetGameMode())
@@ -141,7 +146,13 @@ void ATowerDefencePlayerController::RemoveSkillSlot_S2C(const FGuid& CharacterFG
 		});
 }
 
-void ATowerDefencePlayerController::SpawnBullet_S2C(const FGuid& CharacterFGuid, UClass* InClass)
+void ATowerDefencePlayerController::SpawnBullet_S2C(const FGuid& CharacterFGuid, const int32& SkillID)
 {
-	SpawnBulletDelegate.ExecuteIfBound(CharacterFGuid, InClass);
+	if (const FSkillData* InSkillData = GetGameState()->GetSkillData(SkillID))
+	{
+		StoneDefenceUtils::FindCharacterToExecution(GetWorld(), CharacterFGuid, [&](ARuleOfTheCharacter* InCharacter)
+			{
+				InCharacter->UpdateSkill(SkillID);
+			});
+	}
 }

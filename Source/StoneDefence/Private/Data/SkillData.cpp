@@ -18,6 +18,9 @@ void FSkillData::Init()
 	SkillDuration = 0.0f;
 	SkillDurationTime = 0.0f;
 	CD = 0.0f;
+	CDTime = 0;
+	bBecomeEffective = false;
+	SubmissionSkillRequestType = ESubmissionSkillRequestType::AUTO;
 }
 
 float FSkillData::GetCDPercent() const

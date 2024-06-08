@@ -8,7 +8,11 @@
 #include "Character/Core/RuleOfTheCharacter.h"
 #include "RuleOfTheBullet.generated.h"
 
+//技能实例
 class USplineComponent;
+class ARuleOfTheCharacter;
+struct FSkillData;
+
 UCLASS()
 class STONEDEFENCE_API ARuleOfTheBullet : public AActor
 {
@@ -24,6 +28,12 @@ class STONEDEFENCE_API ARuleOfTheBullet : public AActor
 	class UProjectileMovementComponent* ProjectileMoement;
 
 public:
+	UPROPERTY(EditDefaultsOnly, Category = "Bullet")
+	int32 SkillID;
+	//技能提交类型
+	UPROPERTY()
+	ESubmissionSkillRequestType SubmissionSkillRequestType;
+
 	UPROPERTY(EditDefaultsOnly, Category = "Bullet")
 	TEnumAsByte<EBulletType> BulletType;
 	//开火特效
@@ -43,6 +53,15 @@ public:
 
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
+
+	const FSkillData* GetSkillData();
+
+	//初始化技能
+	void InitSkill();
+
+	//提交技能
+	UFUNCTION(BlueprintCallable, Category = "Add Skill Request")
+	void SubmissionSkillRequest();
 
 	//范围伤害
 	void RadialDamage(const FVector& Origin, ARuleOfTheCharacter* InstigatorCharacter);

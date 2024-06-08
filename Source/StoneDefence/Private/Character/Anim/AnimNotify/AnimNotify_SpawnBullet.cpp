@@ -40,6 +40,10 @@ void UAnimNotify_SpawnBullet::Notify(USkeletalMeshComponent* MeshComp, UAnimSequ
 	if (ARuleOfTheCharacter* Character = Cast<ARuleOfTheCharacter>(MeshComp->GetOuter()))//动画编辑器看不到，必须Runtime状态才能看见生成的Actor
 #endif
 	{
-		StoneDefenceUtils::SpawnBullet(Character->GetWorld(), Cast<APawn>(Character), BulletClass, ComponentLocation, ComponentRotation);
+		if (ARuleOfTheBullet* Bullet = StoneDefenceUtils::SpawnBullet(Character->GetWorld(), Cast<APawn>(Character), BulletClass, ComponentLocation, ComponentRotation))
+		{
+			Bullet->SubmissionSkillRequestType = ESubmissionSkillRequestType::MANUAL;
+			Bullet->InitSkill();
+		}
 	}
 }

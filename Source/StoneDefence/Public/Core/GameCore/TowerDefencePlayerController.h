@@ -39,13 +39,13 @@ public:
 	//初始化
 	virtual void BeginPlay() override;
 
-	//如果是网络游戏的话需要加：UFUNCTION(Server)，代表这个逻辑是执行在服务端的,S2C表示服务器通知客户端
+	//如果是网络游戏的话需要加：UFUNCTION(Server)，S2C表示服务器通知客户端
 	UFUNCTION(/*Server*/)
 	void AddSkillSlot_S2C(const FGuid& CharacterFGuid, const FGuid& SlotID);//添加技能UI
 	UFUNCTION(/*Server*/)
 	void RemoveSkillSlot_S2C(const FGuid& CharacterFGuid, const FGuid& SlotID);//移除技能UI
-	UFUNCTION(/*Server*/)
-	void SpawnBullet_S2C(const FGuid& CharacterFGuid, UClass* InClass);//生成子弹特效
+	UFUNCTION(/*Client*/)
+	void SpawnBullet_S2C(const FGuid& CharacterFGuid, const int32& SkillID);//生成子弹特效
 
 	void SetInputModeGameAndUI();
 
@@ -66,11 +66,15 @@ public:
 
 /////////////////////////////////服务器GameMode相关/////////////////////////////////////////
 	class AStoneDefenceGameMode* GetGameMode();
+
 	//UFUNCTION(Server)表示该函数是客户端调用，运行在服务器上
 	UFUNCTION()
 	ATowers* SpawnTower(const int32 CharacterID, int32 CharacterLevel, const FVector& Location, const FRotator& Rotator);
 	UFUNCTION()
 	AMonsters* SpawnMonster(const int32 CharacterID, int32 CharacterLevel, const FVector& Location, const FRotator& Rotator);
+
+	/////////////////////////////////GameState/////////////////////////////////////////
+	class ATowerDefenceGameState* GetGameState();
 
 protected:
 

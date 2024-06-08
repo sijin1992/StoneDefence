@@ -68,12 +68,29 @@ public:
 	//获取模板技能数据表
 	const TArray<FSkillData*>& GetSkillDataFromTable();
 
-	/////////////////////////////////动态技能操作/////////////////////////////////////////
-	void InitSkill(FCharacterData& InCharacterData);
+	/////////////////////////////////初始化技能数据操作/////////////////////////////////////////
+	//将技能数据添加到角色的技能列表中,运行在服务端
+	UFUNCTION(/*Server*/)
+	void AddSkillDataTemplateToCharacterData(const FGuid& CharacterID, int32 SkillID);
+	//验证角色是否已经初始化好技能,运行在客户端
+	bool IsVerificationSkillTemplate(const FGuid& CharacterID, int32 SkillID);
+	bool IsVerificationSkillTemplate(const FCharacterData& CharacterData, int32 SkillID);
+
 	FSkillData& AddSkillData(const FGuid& CharacterID, const FGuid& SkillID, const FSkillData& Data);
+	const FSkillData* GetSkillData(const int32 SkillID);
 	FSkillData& GetSkillData(const FGuid& SkillID);
 	FSkillData& GetSkillData(const FGuid& CharacterID, const FGuid& SkillID);
 	int32 RemoveSkillData(const FGuid& SkillID);
+	//设置技能提交类型
+	UFUNCTION(/*Server*/)
+	bool SetSkillSubmissionType(const FGuid& CharacterID, int32 SkillID, ESubmissionSkillRequestType Type);
+
+	/////////////////////////////////释放挂载技能操作/////////////////////////////////////////
+	//判断角色身上是否已经挂上某个技能
+	bool IsVerificationSkill(const FGuid& CharacterID, int32 SkillID);
+	bool IsVerificationSkill(const FCharacterData& InCharacterData, int32 SkillID);
+	//给单个角色挂上技能
+	void AddSkill(TPair<FGuid, FCharacterData>& InCharacter, FSkillData& InSkill);
 protected:
 	//获取所有需要保存的数据
 	UGameSaveData* GetSaveData();

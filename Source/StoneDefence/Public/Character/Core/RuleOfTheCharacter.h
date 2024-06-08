@@ -36,6 +36,10 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category = "CharacterType")
 	TEnumAsByte<EGameCharacterType::Type> CharacterType;
 
+	//被动/自动技能ID列表
+	UPROPERTY(EditDefaultsOnly, Category = "Skill")
+	TArray<int32> SkillIDs;
+
 	//是否在攻击
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "CharacterAttribute")
 	bool bAttack;
@@ -59,6 +63,11 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 	void UpdateUI();
+	//初始化被动/自动技能
+	UFUNCTION(/*Client*/)
+	void InitSkill();
+	//更新被动/自动技能
+	void UpdateSkill(int32 SkillID);
 
 	UFUNCTION()
 	void ResetGUID();

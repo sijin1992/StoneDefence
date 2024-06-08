@@ -151,11 +151,6 @@ public:
 	void UpdateLevel();//直接升级
 
 	/////////////////////////////技能/////////////////////////////////////////////
-	
-	//数据表配置的技能
-	UPROPERTY(EditDefaultsOnly, Category = "Character Skill")
-	TArray<int32> CharacterSkillIDs;
-
 	//角色拥有的实体技能数据
 	UPROPERTY()
 	TArray<FSkillData> CharacterSkills;

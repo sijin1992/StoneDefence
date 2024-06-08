@@ -16,6 +16,7 @@
 #include "Engine/World.h"
 #include "Components/ArrowComponent.h"
 #include "Bullet/RuleOfTheBullet.h"
+#include "Core/GameCore/TowerDefencePlayerController.h"
 
 //关闭优化optimize
 #if PLATFORM_WINDOWS
@@ -86,7 +87,23 @@ void StoneDefenceUtils::FindCharacterToExecution(UWorld* InWorld, const FGuid Ch
 	}
 }
 
-AActor* StoneDefenceUtils::SpawnBullet(UWorld* InWorld, FGuid CharacterFGuid, UClass* InClass)
+void StoneDefenceUtils::CallUpdateAllClient(UWorld* InWorld, TFunction<void(ATowerDefencePlayerController* MyPlayerController)> InImplement)
+{
+	if (InWorld)
+	{
+		//这里是因为服务器有多个PlayerController,所以需要遍历多个PlayerController
+		for (FConstPlayerControllerIterator It = InWorld->GetPlayerControllerIterator(); It; ++It)
+		{
+			//这里是因为是单机，所以直接转了，如果是网络游戏需要判断是否是要找的PlayerController
+			if (ATowerDefencePlayerController* MyPlayerController = Cast<ATowerDefencePlayerController>(It->Get()))
+			{
+				InImplement(MyPlayerController);
+			}
+		}
+	}
+}
+
+ARuleOfTheBullet* StoneDefenceUtils::SpawnBullet(UWorld* InWorld, FGuid CharacterFGuid, UClass* InClass)
 {
 	TArray<ARuleOfTheCharacter*> InCharacterList;
 	GetAllActor(InWorld, InCharacterList);
@@ -101,7 +118,27 @@ AActor* StoneDefenceUtils::SpawnBullet(UWorld* InWorld, FGuid CharacterFGuid, UC
 	return nullptr;
 }
 
-AActor* StoneDefenceUtils::SpawnBullet(UWorld* InWorld, APawn* NewPawn, UClass* InClass, const FVector& InLocation, const FRotator& InRotation)
+ARuleOfTheBullet* StoneDefenceUtils::SpawnBullet(UWorld* InWorld, ARuleOfTheCharacter* Instigator, const int32 SkillID, const FVector& InLocation, const FRotator& InRotation)
+{
+	ARuleOfTheBullet* NewBullet = nullptr;
+	if (InWorld)
+	{
+		if (ATowerDefenceGameState* InGamestate = InWorld->GetGameState<ATowerDefenceGameState>())
+		{
+			if (const FSkillData* InSkillData = InGamestate->GetSkillData(SkillID))
+			{
+				if (ARuleOfTheBullet* Bullet = SpawnBullet(InWorld, Instigator, InSkillData->BulletClass, InLocation, InRotation))
+				{
+					NewBullet = Bullet;
+				}
+			}
+		}
+	}
+
+	return NewBullet;
+}
+
+ARuleOfTheBullet* StoneDefenceUtils::SpawnBullet(UWorld* InWorld, APawn* NewPawn, UClass* InClass, const FVector& InLocation, const FRotator& InRotation)
 {
 	if (InWorld && NewPawn && InClass)
 	{

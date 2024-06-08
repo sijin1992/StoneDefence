@@ -11,15 +11,23 @@ class UStaticMesh;
 class USkeletalMeshComponent;
 class UWorld;
 class AStaticMeshActor;
+class ATowerDefencePlayerController;
+class ARuleOfTheBullet;
 
 namespace StoneDefenceUtils
 {
+	//找到相应角色触发代理函数
 	void FindCharacterToExecution(UWorld* InWorld, const FGuid CharacterFGuid, TFunction<void(ARuleOfTheCharacter* InCharacter)> Code);
 
+	//通知客户端调用代理函数,多播委托
+	void CallUpdateAllClient(UWorld* InWorld, TFunction<void(ATowerDefencePlayerController* MyPlayerController)> InImplement);
+
 	//服务端通知客户端生成子弹
-	AActor* SpawnBullet(UWorld* InWorld, FGuid CharacterFGuid, UClass* InClass);
+	ARuleOfTheBullet* SpawnBullet(UWorld* InWorld, FGuid CharacterFGuid, UClass* InClass);
 	//客户端生成子弹
-	AActor* SpawnBullet(UWorld* InWorld, APawn* NewPawn, UClass* InClass, const FVector& InLocation, const FRotator& InRotation);
+	ARuleOfTheBullet* SpawnBullet(UWorld* InWorld, APawn* NewPawn, UClass* InClass, const FVector& InLocation, const FRotator& InRotation);
+
+	ARuleOfTheBullet* SpawnBullet(UWorld* InWorld, ARuleOfTheCharacter* Instigator, const int32 SkillID, const FVector& InLocation, const FRotator& InRotation);
 
 	//生成炮塔的绿色模型
 	AStaticMeshActor* SpawnTowersDoll(UWorld* InWorld, int32 ID);
