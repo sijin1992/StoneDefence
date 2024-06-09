@@ -339,6 +339,11 @@ void ATowerDefenceGameState::AddSkill(TPair<FGuid, FCharacterData>& InCharacter,
 	}
 }
 
+void ATowerDefenceGameState::AddSkill(const FGuid& CharacterGUID, int32& InSkillID)
+{
+
+}
+
 //打开优化
 #if PLATFORM_WINDOWS
 #pragma optimize("",on)

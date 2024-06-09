@@ -21,13 +21,7 @@ enum class ESkillType:uint8
 	SECTION,//区间,在一定范围内属性提升，时间到了就还原属性
 	ITERATION,//迭代,持续一定时间内进行恢复
 };
-//技能攻击方式
-UENUM(BlueprintType)
-enum class ESkillAttackType :uint8
-{
-	SINGLE,//单体攻击
-	MULTIPLE,//群体攻击
-};
+
 //技能目标阵营
 UENUM(BlueprintType)
 enum class ESkillTargetType :uint8
@@ -50,7 +44,6 @@ struct FSkillType
 
 	FSkillType()
 		:SkillType(ESkillType::SECTION),
-		SkillAttackType(ESkillAttackType::MULTIPLE),
 		SkillTargetType(ESkillTargetType::FRIENDLY_FORCES),
 		SkillEffectType(ESkillEffectType::ADD)
 	{
@@ -58,9 +51,6 @@ struct FSkillType
 
 	UPROPERTY(EditDefaultsOnly, Category = "Skill Type")
 	ESkillType SkillType;
-
-	UPROPERTY(EditDefaultsOnly, Category = "Skill Type")
-	ESkillAttackType SkillAttackType;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Skill Type")
 	ESkillTargetType SkillTargetType;

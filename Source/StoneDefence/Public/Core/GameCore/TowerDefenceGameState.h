@@ -89,7 +89,9 @@ public:
 	//判断角色身上是否已经挂上某个技能
 	bool IsVerificationSkill(const FGuid& CharacterID, int32 SkillID);
 	bool IsVerificationSkill(const FCharacterData& InCharacterData, int32 SkillID);
+
 	//给单个角色挂上技能
+	void AddSkill(const FGuid& CharacterGUID, int32& InSkillID);
 	void AddSkill(TPair<FGuid, FCharacterData>& InCharacter, FSkillData& InSkill);
 protected:
 	//获取所有需要保存的数据

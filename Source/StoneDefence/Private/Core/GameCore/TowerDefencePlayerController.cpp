@@ -9,6 +9,7 @@
 #include "Character/CharacterCore/Monsters.h"
 #include "../StoneDefenceUtils.h"
 #include "Character/Core/RuleOfTheCharacter.h"
+#include "UI/GameUI/Core/RuleOfTheHUD.h"
 
 ATowerDefencePlayerController::ATowerDefencePlayerController()
 {
@@ -154,5 +155,13 @@ void ATowerDefencePlayerController::SpawnBullet_S2C(const FGuid& CharacterFGuid,
 			{
 				InCharacter->UpdateSkill(SkillID);
 			});
+	}
+}
+
+void ATowerDefencePlayerController::UpdateInventory_Client(const FGuid& InVentorySlotGUID, bool bInCD)
+{
+	if (ARuleOfTheHUD* NewHUD = GetHUD<ARuleOfTheHUD>())
+	{
+		NewHUD->UpdateInventorySlot(InVentorySlotGUID, bInCD);
 	}
 }

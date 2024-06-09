@@ -8,6 +8,7 @@
 #include "UMG/Public/Components/CanvasPanelSlot.h"
 #include "Global/UI_Datas.h"
 #include "UMG/Public/Components/Image.h"
+#include "UI/GameUI/UMG/UI_RucksackSystem.h"
 
 void UUI_MainScreen::NativeConstruct()
 {
@@ -65,5 +66,13 @@ void UUI_MainScreen::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
 	{
 		ClickedTargetMonster = nullptr;
 		FireConcentrationPoint->SetVisibility(ESlateVisibility::Hidden);
+	}
+}
+
+void UUI_MainScreen::UpdateInventorySlot(const FGuid& InventorySlotGUID, bool bInCD)
+{
+	if (RucksackSystem)
+	{
+		RucksackSystem->UpdateInventorySlot(InventorySlotGUID, bInCD);
 	}
 }

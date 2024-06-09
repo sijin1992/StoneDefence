@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "UI/Core/UI_RuleOfTheWidget.h"
+#include "Drop/UI_NativeOnDrop.h"
 #include "UI_RucksackSystem.generated.h"
 
 class UUI_Inventory;
@@ -11,7 +11,7 @@ class UUI_Inventory;
  * 
  */
 UCLASS()
-class STONEDEFENCE_API UUI_RucksackSystem : public UUI_RuleOfTheWidget
+class STONEDEFENCE_API UUI_RucksackSystem : public UUI_NativeOnDrop
 {
 	GENERATED_BODY()
 
@@ -20,4 +20,6 @@ class STONEDEFENCE_API UUI_RucksackSystem : public UUI_RuleOfTheWidget
 
 public:
 	virtual void NativeConstruct();
+
+	void UpdateInventorySlot(const FGuid& InventorySlotGUID, bool bInCD);
 };

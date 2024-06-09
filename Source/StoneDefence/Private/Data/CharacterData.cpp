@@ -21,6 +21,7 @@ void FCharacterData::Init()
 	EmpirceValue = 0.0f;
 	CD = 2.0f;
 	AttackSpeed = 0.66f;
+	WalkSpeed = 356.0f;
 	Gold = 80;
 	Team = ETeam::RED;
 	Location = FVector::ZeroVector;
@@ -118,4 +119,9 @@ float FCharacterData::GetCD() const
 float FCharacterData::GetAttackSpeed() const
 {
 	SKILL_TABLE_ACQUISITION(AttackSpeed, AttackSpeed);
+}
+
+float FCharacterData::GetWalkSpeed() const
+{
+	SKILL_TABLE_ACQUISITION(WalkSpeed, WalkSpeed);
 }

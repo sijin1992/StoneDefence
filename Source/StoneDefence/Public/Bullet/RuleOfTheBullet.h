@@ -62,6 +62,8 @@ public:
 	//提交技能
 	UFUNCTION(BlueprintCallable, Category = "Add Skill Request")
 	void SubmissionSkillRequest();
+	//迭代技能
+	//void ResetIteration();
 
 	//范围伤害
 	void RadialDamage(const FVector& Origin, ARuleOfTheCharacter* InstigatorCharacter);

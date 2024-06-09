@@ -68,6 +68,9 @@ public:
 	void InitSkill();
 	//更新被动/自动技能
 	void UpdateSkill(int32 SkillID);
+		
+	UFUNCTION(BlueprintCallable, Category = "Add Skill request")
+	void SubmissionSkillRequest(int32 SkillID);
 
 	UFUNCTION()
 	void ResetGUID();

@@ -78,3 +78,36 @@ void ATowerDefencePlayerState::RequestInventorySlotSwap(const FGuid& A, const FG
 		BSlot.Init();//将B初始化，也可以达到清空效果
 	}
 }
+
+void ATowerDefencePlayerState::TowersPrepareBuildingNumber(const FGuid& InventoryGUID)
+{
+	FBuildingTower& BuildingTower = GetBuildingTower(InventoryGUID);
+	if (BuildingTower.IsValid())//服务器验证，防止作弊
+	{
+		if (BuildingTower.NeedGold <= GetPlayerData().GameGold)
+		{
+			BuildingTower.TowersPrepareBuildingNumber++;
+			GetPlayerData().GameGold -= BuildingTower.NeedGold;
+
+			if (BuildingTower.CurrentConstructionTowersCD <= 0)
+			{
+				BuildingTower.ResetCD();
+			}
+		}
+	}
+}
+
+void ATowerDefencePlayerState::SetTowersDragIconState(const FGuid& InventoryGUID, bool bDragIcon)
+{
+	FBuildingTower& BuildingTower = GetBuildingTower(InventoryGUID);
+	BuildingTower.bDragIcon = bDragIcon;
+}
+
+void ATowerDefencePlayerState::TowersConstructionNumber(const FGuid& InventoryGUID, int32 InValue /*= INDEX_NONE*/)
+{
+	FBuildingTower& BuildingTower = GetBuildingTower(InventoryGUID);
+	if (BuildingTower.IsValid())
+	{
+		BuildingTower.TowersConstructionNumber += InValue;
+	}
+}

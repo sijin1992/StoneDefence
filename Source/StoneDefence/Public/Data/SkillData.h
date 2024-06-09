@@ -49,6 +49,10 @@ struct FSkillData : public FDataCore
 	//加减护甲
 	UPROPERTY(EditDefaultsOnly, Category = "Skill Profit")
 	float Armor;
+	//加减移动速度
+	UPROPERTY(EditDefaultsOnly, Category = "Skill Profit")
+	float WalkSpeed;
+
 	//技能范围(0代表全场景所有敌人)
 	UPROPERTY(EditDefaultsOnly, Category = "Skill Profit")
 	float AttackRange;

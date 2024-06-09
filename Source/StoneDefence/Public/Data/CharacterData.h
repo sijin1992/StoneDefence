@@ -65,6 +65,10 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category = "Character Attribute")
 	float AttackSpeed;
 
+	//移动速度
+	UPROPERTY(EditDefaultsOnly, Category = "Character Attribute")
+	float WalkSpeed;
+
 	//如果是塔，则代表花费多少金币可以建造
 	//如果是怪物，代码消灭它可以获取多少金币
 	UPROPERTY(EditDefaultsOnly, Category = "Character Attribute")
@@ -170,4 +174,6 @@ public:
 	float GetCD() const;
 	//获取攻击速度
 	float GetAttackSpeed() const;
+	//获取移动速度
+	float GetWalkSpeed() const;
 };

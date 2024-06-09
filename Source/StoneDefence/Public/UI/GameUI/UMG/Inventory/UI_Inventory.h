@@ -32,6 +32,8 @@ public:
 
 	void LayoutInventorySlot(int32 ColumnNumber, int32 RowNumber);
 
+	void UpdateInventorySlot(const FGuid& InventorySlotGUID, bool bInCD);
+
 	void SpawnTowersDollPressed();
 
 	void SpawnTowersDollReleased();

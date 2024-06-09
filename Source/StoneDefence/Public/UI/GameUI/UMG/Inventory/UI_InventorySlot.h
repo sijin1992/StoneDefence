@@ -72,6 +72,12 @@ public:
 	UFUNCTION(BlueprintCallable, BlueprintPure, Category = Tip)
 	UWidget* GetTowerTip();
 
+	//绘制CD
+	void DrawTowersCD(float InTowersCD);
+
+	//更新炮塔信息
+	void UpdateTowersBuildingInfo();
+
 protected:
 	//点击时触发
 	virtual FReply NativeOnMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent) override;
@@ -87,10 +93,6 @@ protected:
 private:
 	//更新炮塔CD
 	void UpdateTowerCD(float InDeltaTime);
-	//绘制CD
-	void DrawTowersCD(float InTowersCD);
 	//显示数字到Text组件上
 	void DisplayNumber(UTextBlock* TextNumberBlock, int32 TextNumber);
-	//更新炮塔信息
-	void UpdateTowersBuildingInfo();
 };

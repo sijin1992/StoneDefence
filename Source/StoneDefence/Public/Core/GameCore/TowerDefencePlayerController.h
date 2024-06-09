@@ -46,6 +46,8 @@ public:
 	void RemoveSkillSlot_S2C(const FGuid& CharacterFGuid, const FGuid& SlotID);//移除技能UI
 	UFUNCTION(/*Client*/)
 	void SpawnBullet_S2C(const FGuid& CharacterFGuid, const int32& SkillID);//生成子弹特效
+	UFUNCTION(/*Client*/)
+	void UpdateInventory_Client(const FGuid& InVentorySlotGUID, bool bInCD);
 
 	void SetInputModeGameAndUI();
 

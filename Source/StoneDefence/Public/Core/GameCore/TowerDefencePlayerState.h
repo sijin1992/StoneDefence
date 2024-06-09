@@ -34,6 +34,13 @@ public:
 	//建造列表单元格数据交换
 	void RequestInventorySlotSwap(const FGuid& A, const FGuid& B);
 
+	UFUNCTION(/*Server*/)
+	void TowersPrepareBuildingNumber(const FGuid& InventoryGUID);
+	UFUNCTION(/*Server*/)
+	void SetTowersDragIconState(const FGuid& InventoryGUID, bool bDragIcon);
+	UFUNCTION(/*Server*/)
+	void TowersConstructionNumber(const FGuid& InventoryGUID, int32 InValue = INDEX_NONE);
+
 protected:
 	//需要保存的玩家数据
 	UPROPERTY()

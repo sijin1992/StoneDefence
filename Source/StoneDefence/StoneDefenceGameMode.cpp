@@ -50,56 +50,21 @@ void AStoneDefenceGameMode::BeginPlay()
 void AStoneDefenceGameMode::Tick(float DeltaSeconds)
 {
 	Super::Tick(DeltaSeconds);
-	if (ATowerDefenceGameState* InGameState = GetGameState<ATowerDefenceGameState>())
-	{
-		//通知更新客户端
-		StoneDefenceUtils::CallUpdateAllClient(
-			GetWorld(),
-			[&](ATowerDefencePlayerController* MyPlayerController)
-			{
-				if (ATowerDefencePlayerState* InPlayerState = MyPlayerController->GetPlayerState<ATowerDefencePlayerState>())
-				{
-					InPlayerState->GetPlayerData().GameGoldTime += DeltaSeconds;
-					if (InPlayerState->GetPlayerData().IsAllowIncrease())
-					{
-						InPlayerState->GetPlayerData().GameGoldTime = 0.0f;
-						InPlayerState->GetPlayerData().GameGold++;
-					}
-				}
-			}
-		);
+	
+	//更新玩家数据
+	UpdatePlayerData(DeltaSeconds);
 
-		if (InGameState->GetGameData().GameCount <= 0.0f)
-		{
-			InGameState->GetGameData().bGameOver = true;
-		}
-		else
-		{
-			InGameState->GetGameData().GameCount -= DeltaSeconds;
-		}
+	//更新游戏场景规则
+	UpdateGameData(DeltaSeconds);
 
-		int32 TowersNum = 0;
-		TArray<ARuleOfTheCharacter*> InTowers;
-		StoneDefenceUtils::GetAllActor<ATowers>(GetWorld(), InTowers);
-		for (ARuleOfTheCharacter* Tower : InTowers)
-		{
-			if (Tower->IsActive())
-			{
-				TowersNum++;
-			}
-		}
-
-		if (TowersNum == 0)
-		{
-			InGameState->GetGameData().bGameOver = true;
-		}
-	}
-
-	//生成怪物
-	SpawnMonstersRule(DeltaSeconds);
+	//更新生成怪物
+	UpdateMonstersRule(DeltaSeconds);
 
 	//更新技能
 	UpdateSkill(DeltaSeconds);
+
+	//更新背包
+	UpdateInventory(DeltaSeconds);
 }
 
 void AStoneDefenceGameMode::SpawnMainTowerRule()
@@ -193,7 +158,7 @@ int32 GetMonsterLevel(UWorld* InWorld)
 	return ReturnLevel;
 }
 
-void AStoneDefenceGameMode::SpawnMonstersRule(float DeltaSeconds)
+void AStoneDefenceGameMode::UpdateMonstersRule(float DeltaSeconds)
 {
 	if (ATowerDefenceGameState* InGameState = GetGameState<ATowerDefenceGameState>())
 	{
@@ -235,6 +200,61 @@ void AStoneDefenceGameMode::SpawnMonstersRule(float DeltaSeconds)
 		else
 		{
 
+		}
+	}
+}
+
+void AStoneDefenceGameMode::UpdatePlayerData(float DeltaSeconds)
+{
+	if (ATowerDefenceGameState* InGameState = GetGameState<ATowerDefenceGameState>())
+	{
+		//通知更新客户端
+		StoneDefenceUtils::CallUpdateAllClient(
+			GetWorld(),
+			[&](ATowerDefencePlayerController* MyPlayerController)
+			{
+				if (ATowerDefencePlayerState* InPlayerState = MyPlayerController->GetPlayerState<ATowerDefencePlayerState>())
+				{
+					//游戏金币更新
+					InPlayerState->GetPlayerData().GameGoldTime += DeltaSeconds;
+					if (InPlayerState->GetPlayerData().IsAllowIncrease())
+					{
+						InPlayerState->GetPlayerData().GameGoldTime = 0.0f;
+						InPlayerState->GetPlayerData().GameGold++;
+					}
+				}
+			}
+		);
+	}
+}
+
+void AStoneDefenceGameMode::UpdateGameData(float DeltaSeconds)
+{
+	if (ATowerDefenceGameState* InGameState = GetGameState<ATowerDefenceGameState>())
+	{
+		if (InGameState->GetGameData().GameCount <= 0.0f)
+		{
+			InGameState->GetGameData().bGameOver = true;
+		}
+		else
+		{
+			InGameState->GetGameData().GameCount -= DeltaSeconds;
+		}
+
+		int32 TowersNum = 0;
+		TArray<ARuleOfTheCharacter*> InTowers;
+		StoneDefenceUtils::GetAllActor<ATowers>(GetWorld(), InTowers);
+		for (ARuleOfTheCharacter* Tower : InTowers)
+		{
+			if (Tower->IsActive())
+			{
+				TowersNum++;
+			}
+		}
+
+		if (TowersNum == 0)
+		{
+			InGameState->GetGameData().bGameOver = true;
 		}
 	}
 }
@@ -314,6 +334,8 @@ void AStoneDefenceGameMode::UpdateSkill(float DeltaSeconds)
 {
 	if (ATowerDefenceGameState* InGameState = GetGameState<ATowerDefenceGameState>())
 	{
+		/*
+		
 		//获取距离最近的角色列表
 		auto GetTeam = [&](TArray<TPair<FGuid, FCharacterData>*>& TeamArray, const TPair<FGuid, FCharacterData>& InSpellcaster, float InRange, bool bReversed = false)
 			{
@@ -420,6 +442,8 @@ void AStoneDefenceGameMode::UpdateSkill(float DeltaSeconds)
 				}
 				return nullptr;
 			};
+
+		*/
 		
 		//获取数据表中的技能基础模板
 		const TArray<FSkillData*>&SkillDataTemplate = InGameState->GetSkillDataFromTable();
@@ -458,23 +482,6 @@ void AStoneDefenceGameMode::UpdateSkill(float DeltaSeconds)
 						if (SkillTemp.Value.SkillDurationTime >= 1.0f)
 						{
 							SkillTemp.Value.SkillDurationTime = 0.0f;
-							//判断是增益还是减益
-							if (SkillTemp.Value.SkillType.SkillEffectType == ESkillEffectType::ADD)
-							{
-								InSpellcaster.Value.Health += SkillTemp.Value.Health;
-								InSpellcaster.Value.PhysicalAttack += SkillTemp.Value.PhysicalAttack;
-								InSpellcaster.Value.Armor += SkillTemp.Value.Armor;
-								InSpellcaster.Value.AttackSpeed += SkillTemp.Value.AttackSpeed;
-								InSpellcaster.Value.Gold += SkillTemp.Value.Gold;
-							}
-							else
-							{
-								InSpellcaster.Value.Health -= SkillTemp.Value.Health;
-								InSpellcaster.Value.PhysicalAttack -= SkillTemp.Value.PhysicalAttack;
-								InSpellcaster.Value.Armor -= SkillTemp.Value.Armor;
-								InSpellcaster.Value.AttackSpeed -= SkillTemp.Value.AttackSpeed;
-								InSpellcaster.Value.Gold -= SkillTemp.Value.Gold;
-							}
 
 							//更新所有客户端
 							StoneDefenceUtils::CallUpdateAllClient(GetWorld(), [&](ATowerDefencePlayerController* MyPlayerController)
@@ -511,41 +518,6 @@ void AStoneDefenceGameMode::UpdateSkill(float DeltaSeconds)
 						InSkill.CDTime = 0.0f;
 						if (!InSkill.bBecomeEffective)
 						{
-							if (InSkill.SkillType.SkillAttackType == ESkillAttackType::MULTIPLE)//群体技能
-							{
-								TArray<TPair<FGuid, FCharacterData>*> RecentForces;
-								if (InSkill.SkillType.SkillTargetType == ESkillTargetType::FRIENDLY_FORCES)//友军技能
-								{
-									GetTeam(RecentForces, InSpellcaster, InSkill.AttackRange);
-								}
-								else if (InSkill.SkillType.SkillTargetType == ESkillTargetType::ENEMY)//对敌技能
-								{
-									GetTeam(RecentForces, InSpellcaster, InSkill.AttackRange, true);
-								}
-								if (RecentForces.Num())
-								{
-									//挂上技能
-									AddSkillToForces(RecentForces, InSkill);
-								}
-							}
-							else if (InSkill.SkillType.SkillAttackType == ESkillAttackType::SINGLE)//单体技能
-							{
-								TPair<FGuid, FCharacterData>* Recent = nullptr;
-								if (InSkill.SkillType.SkillTargetType == ESkillTargetType::FRIENDLY_FORCES)//友军技能
-								{
-									Recent = FindRangeTargetRecently(InSpellcaster);
-								}
-								else if (InSkill.SkillType.SkillTargetType == ESkillTargetType::ENEMY)//对敌技能
-								{
-									Recent = FindRangeTargetRecently(InSpellcaster, true);
-								}
-								if (Recent)
-								{
-									//挂上技能
-									InGameState->AddSkill(*Recent, InSkill);
-								}
-							}
-
 							InSkill.bBecomeEffective = true;
 						}
 						else
@@ -573,6 +545,61 @@ void AStoneDefenceGameMode::UpdateSkill(float DeltaSeconds)
 				}
 			}
 		}
+	}
+}
+
+void AStoneDefenceGameMode::UpdateInventory(float DeltaSeconds)
+{
+	if (ATowerDefenceGameState* InGameState = GetGameState<ATowerDefenceGameState>())
+	{
+		StoneDefenceUtils::CallUpdateAllClient(GetWorld(), [&](ATowerDefencePlayerController* MyPlayerController)
+			{
+				if (ATowerDefencePlayerState* InPlayerState = MyPlayerController->GetPlayerState<ATowerDefencePlayerState>())
+				{
+					for (auto& BuildingTowerPair : InPlayerState->GetSaveData()->BuildingTowers)
+					{
+						if (BuildingTowerPair.Value.IsValid())
+						{
+							if (!BuildingTowerPair.Value.bLockCD)
+							{
+								if (!BuildingTowerPair.Value.bDragIcon)
+								{
+									if (BuildingTowerPair.Value.CurrentConstructionTowersCD > 0)
+									{
+										BuildingTowerPair.Value.CurrentConstructionTowersCD -= DeltaSeconds;
+										BuildingTowerPair.Value.bCallUpdateTowersInfo = true;
+
+										//通知客户端更新装备CD
+										StoneDefenceUtils::CallUpdateAllClient(GetWorld(), [&](ATowerDefencePlayerController* InPlayerController)
+											{
+												InPlayerController->UpdateInventory_Client(BuildingTowerPair.Key, true);
+											});
+									}
+									else if (BuildingTowerPair.Value.bCallUpdateTowersInfo)
+									{
+										BuildingTowerPair.Value.bCallUpdateTowersInfo = false;
+										//准备构建的塔
+										BuildingTowerPair.Value.TowersPrepareBuildingNumber--;
+										BuildingTowerPair.Value.TowersConstructionNumber++;
+
+										//通知客户端更新装备的CD
+										StoneDefenceUtils::CallUpdateAllClient(GetWorld(), [&](ATowerDefencePlayerController* InPlayerController)
+											{
+												InPlayerController->UpdateInventory_Client(BuildingTowerPair.Key, false);
+											});
+
+										if (BuildingTowerPair.Value.TowersPrepareBuildingNumber > 0)
+										{
+											BuildingTowerPair.Value.ResetCD();
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+			});
+
 	}
 }
 

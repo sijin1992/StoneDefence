@@ -14,6 +14,7 @@
 #include "Components/SplineComponent.h"
 #include "../StoneDefenceUtils.h"
 #include "Data/SkillData.h"
+#include "Character/Damage/RuleOfTheDamage.h"
 
 //关闭优化
 #if PLATFORM_WINDOWS
@@ -265,6 +266,12 @@ void ARuleOfTheBullet::SubmissionSkillRequest()
 	}
 }
 
+//void ARuleOfTheBullet::ResetIteration()
+//{
+//	BulletType = EBulletType::BULLET_NONE;
+//	InitSkill();
+//}
+
 void ARuleOfTheBullet::RadialDamage(const FVector& Origin, ARuleOfTheCharacter* InstigatorCharacter)
 {
 	//获取施法者
@@ -316,17 +323,23 @@ void ARuleOfTheBullet::RadialDamage(const FVector& Origin, ARuleOfTheCharacter* 
 					}
 				}
 			}
-			//造成范围伤害,向四周衰减
-			UGameplayStatics::ApplyRadialDamageWithFalloff(
-				GetWorld(),
-				100.0f, 10.0f,
-				Origin,
-				400.0f, 1000.0f, 1.0f,
-				UDamageType::StaticClass(),
-				IgnoreActors,
-				GetInstigator(),
-				GetInstigator()->GetController(),
-				ECollisionChannel::ECC_MAX);
+
+			UClass* RuleOfTheDamage = URuleOfTheDamage::StaticClass();
+			if (URuleOfTheDamage* DamageClass = RuleOfTheDamage->GetDefaultObject<URuleOfTheDamage>())//获取CDO单例
+			{
+				DamageClass->SkillData = InSkillData;
+				//造成范围伤害,向四周衰减
+				UGameplayStatics::ApplyRadialDamageWithFalloff(
+					GetWorld(),
+					100.0f, 10.0f,
+					Origin,
+					400.0f, 1000.0f, 1.0f,
+					RuleOfTheDamage,
+					IgnoreActors,
+					GetInstigator(),
+					GetInstigator()->GetController(),
+					ECollisionChannel::ECC_MAX);
+			}
 		}
 	}
 }
@@ -373,16 +386,22 @@ void ARuleOfTheBullet::OnBeginOverlap(UPrimitiveComponent* OverlappedComp, AActo
 						case EBulletType::BULLET_TRACK_LINE:
 						case EBulletType::BULLET_TRACK_BEZIER:
 						{
-							//造成伤害,伤害计算在RuleOfTheCharacter里进行计算,这里的100没有用
-							UGameplayStatics::ApplyDamage(
-								OtherCharacter,
-								100.0f,
-								InstigatorCharacter->GetController(),
-								InstigatorCharacter,
-								UDamageType::StaticClass());
+							UClass* RuleOfTheDamage = URuleOfTheDamage::StaticClass();
+							if (URuleOfTheDamage* DamageClass = RuleOfTheDamage->GetDefaultObject<URuleOfTheDamage>())//获取CDO单例
+							{
+								DamageClass->SkillData = InSkillData;
 
-							//提交技能到数据库
-							SubmissionSkillRequest();
+								//造成伤害,伤害计算在RuleOfTheCharacter里进行计算,这里的100没有用
+								UGameplayStatics::ApplyDamage(
+									OtherCharacter,
+									100.0f,
+									InstigatorCharacter->GetController(),
+									InstigatorCharacter,
+									RuleOfTheDamage);
+
+								//提交技能到数据库
+								SubmissionSkillRequest();
+							}
 
 							//销毁
 							Destroy();
@@ -410,6 +429,7 @@ void ARuleOfTheBullet::ChainAttack()
 	} 
 
 	//主要伤害区
+	if (const FSkillData* InSkillData = GetSkillData())
 	{
 		//拿到施法者
 		if (ARuleOfTheCharacter* InstigatorCharacter = GetInstigator<ARuleOfTheCharacter>())
@@ -420,12 +440,21 @@ void ARuleOfTheBullet::ChainAttack()
 				//拿到Target
 				if (ARuleOfTheCharacter* TargetCharacter = InstigatroController->Target.Get())
 				{
-					UGameplayStatics::ApplyDamage(
-						TargetCharacter,
-						100.0f,
-						InstigatorCharacter->GetController(),
-						InstigatorCharacter,
-						UDamageType::StaticClass());
+					UGameplayStatics::SpawnEmitterAttached(DamgeParticle, TargetCharacter->GetHomingPoint());
+					UGameplayStatics::SpawnEmitterAttached(DamgeParticle, InstigatorCharacter->GetHomingPoint());
+
+					UClass* RuleOfTheDamage = URuleOfTheDamage::StaticClass();
+					if (URuleOfTheDamage* DamageClass = RuleOfTheDamage->GetDefaultObject<URuleOfTheDamage>())//获取CDO单例
+					{
+						DamageClass->SkillData = InSkillData;
+
+						UGameplayStatics::ApplyDamage(
+							TargetCharacter,
+							100.0f,
+							InstigatorCharacter->GetController(),
+							InstigatorCharacter,
+							RuleOfTheDamage);
+					}
 				}
 			}
 		}

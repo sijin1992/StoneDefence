@@ -32,8 +32,6 @@ protected:
 	virtual void Tick(float DeltaSeconds) override;
 	//生成主塔
 	void SpawnMainTowerRule();
-	//生成怪物
-	void SpawnMonstersRule(float DeltaSeconds);
 
 	//生成角色
 	ARuleOfTheCharacter* SpawnCharacter(const int32 CharacterID, int32 CharacterLevel, const UDataTable* InCharacterData, const FVector& Location, const FRotator& Rotator);
@@ -44,6 +42,14 @@ protected:
 		return Cast<T>(SpawnCharacter(CharacterID, CharacterLevel, InCharacterData, Location, Rotator));
 	}
 
+	//更新怪物数据
+	void UpdateMonstersRule(float DeltaSeconds);
+	//更新玩家数据
+	void UpdatePlayerData(float DeltaSeconds);
+	//更新游戏数据
+	void UpdateGameData(float DeltaSeconds);
 	//更新技能系统
 	void UpdateSkill(float DeltaSeconds);
+	//更新背包
+	void UpdateInventory(float DeltaSeconds);
 };

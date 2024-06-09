@@ -75,6 +75,27 @@ void UUI_Inventory::LayoutInventorySlot(int32 ColumnNumber, int32 RowNumber)
 	}
 }
 
+void UUI_Inventory::UpdateInventorySlot(const FGuid& InventorySlotGUID, bool bInCD)
+{
+	for (auto& UISlot : InventorySlotArray)
+	{
+		if (UISlot->GUID == InventorySlotGUID)
+		{
+			if (bInCD)
+			{
+				UISlot->DrawTowersCD(UISlot->GetBuildingTower().GetTowerConstructionTimePercentage());
+			}
+			else
+			{
+				UISlot->DrawTowersCD(0.0f);
+			}
+
+			UISlot->UpdateTowersBuildingInfo();
+			break;
+		}
+	}
+}
+
 void UUI_Inventory::SpawnTowersDollPressed()
 {
 	if (GetBuildingTower().IsValid())

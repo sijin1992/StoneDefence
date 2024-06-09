@@ -23,3 +23,11 @@ void ARuleOfTheHUD::BeginPlay()
 	NativeOnDropPtr = CreateWidget<UUI_NativeOnDrop>(GetWorld(), NativeOnDropClass);
 	NativeOnDropPtr->AddToPlayerScreen(0);
 }
+
+void ARuleOfTheHUD::UpdateInventorySlot(const FGuid& InventorySlotGUID, bool bInCD)
+{
+	if (MainScreen)
+	{
+		MainScreen->UpdateInventorySlot(InventorySlotGUID, bInCD);
+	}
+}

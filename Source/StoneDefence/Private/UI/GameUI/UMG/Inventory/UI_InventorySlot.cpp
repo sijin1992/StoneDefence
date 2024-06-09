@@ -11,6 +11,11 @@
 #include "UI/GameUI/UMG/Tips/UI_TowerTip.h"
 #include "Global/UI_Datas.h"
 
+//关闭优化
+#if PLATFORM_WINDOWS
+#pragma optimize("", off)
+#endif
+
 void UUI_InventorySlot::NativeConstruct()
 {
 	Super::NativeConstruct();
@@ -26,23 +31,13 @@ void UUI_InventorySlot::NativeConstruct()
 void UUI_InventorySlot::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
 {
 	Super::NativeTick(MyGeometry, InDeltaTime);
-
-	if (GetBuildingTower().IsValid())
-	{
-		if (!GetBuildingTower().bLockCD)
-		{
-			if (!GetBuildingTower().bDragIcon)
-			{
-				UpdateTowerCD(InDeltaTime);
-			}
-		}
-	}
 }
 
 void UUI_InventorySlot::OnClickedWidget()
 {
-	if (GetBuildingTower().IsValid())
+	if (GetBuildingTower().IsValid())//客户端验证，降低网络带宽
 	{
+		GetPlayerState()->TowersPrepareBuildingNumber(GUID);
 		if (/*GetBuildingTower().NeedGold <= */ 1)
 		{
 			GetBuildingTower().TowersPrepareBuildingNumber++;
@@ -145,9 +140,10 @@ void UUI_InventorySlot::NativeOnDragDetected(const FGeometry& InGeometry, const 
 				StoneDefenceDragDropOperation->Payload = this;//把自己传过去，这样就可以对数据进行交换，且可以获取数据知道拖拽的是哪个
 				OutOperation = StoneDefenceDragDropOperation;
 
-				GetBuildingTower().bDragIcon = true;//将数据层是否正在被拖拽设为true
+				//通知服务器，要进行拖拽了
+				GetPlayerState()->SetTowersDragIconState(GUID, true);
 
-				ClearSlot();
+				ClearSlot();//隐藏自己
 			}
 		}
 	}
@@ -164,12 +160,12 @@ bool UUI_InventorySlot::NativeOnDrop(const FGeometry& InGeometry, const FDragDro
 	{
 		if (UUI_InventorySlot* MyInventorySlot = Cast<UUI_InventorySlot>(StoneDefenceDragDropOperation->Payload))
 		{
-			MyInventorySlot->GetBuildingTower().bDragIcon = false;
+			GetPlayerState()->SetTowersDragIconState(MyInventorySlot->GUID, false);
 			GetPlayerState()->RequestInventorySlotSwap(GUID, MyInventorySlot->GUID);//交换数据
 			//更新UI
-			UpdateTowersBuildingInfo();
+			//UpdateTowersBuildingInfo();
 			UpdateUI();
-			MyInventorySlot->UpdateTowersBuildingInfo();
+			//MyInventorySlot->UpdateTowersBuildingInfo();
 			MyInventorySlot->UpdateUI();
 
 			bDrop = true;
@@ -255,3 +251,8 @@ void UUI_InventorySlot::UpdateTowersBuildingInfo()
 	DisplayNumber(TCOCNumber, GetBuildingTower().TowersConstructionNumber);
 	DisplayNumber(TPBNumber, GetBuildingTower().TowersPrepareBuildingNumber);
 }
+
+//打开优化
+#if PLATFORM_WINDOWS
+#pragma optimize("", on)
+#endif
