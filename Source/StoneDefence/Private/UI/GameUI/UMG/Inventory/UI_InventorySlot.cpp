@@ -20,12 +20,6 @@ void UUI_InventorySlot::NativeConstruct()
 {
 	Super::NativeConstruct();
 
-	TISButton->OnClicked.AddDynamic(this, &UUI_InventorySlot::OnClickedWidget);
-
-	if (TowersCDMask)
-	{
-		CDMaterialDynamic = TowersCDMask->GetDynamicMaterial();
-	}
 }
 
 void UUI_InventorySlot::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
@@ -51,20 +45,7 @@ void UUI_InventorySlot::OnClickedWidget()
 
 void UUI_InventorySlot::UpdateUI()
 {
-	if (GetBuildingTower().Icon)
-	{
-		TowersIcon->SetBrushFromTexture(GetBuildingTower().Icon);
-		TowersIcon->SetVisibility(ESlateVisibility::HitTestInvisible);
-	}
-	else
-	{ 
-		TowersIcon->SetVisibility(ESlateVisibility::Hidden);
-	}
-
-	if (GetBuildingTower().TowersConstructionNumber > 0)
-	{
-		TCOCNumber->SetVisibility(ESlateVisibility::HitTestInvisible);
-	}
+	Super::UpdateSlotUI(GetBuildingTower().Icon, GetBuildingTower().TowersConstructionNumber);
 
 	if (GetBuildingTower().TowersPrepareBuildingNumber > 0)
 	{
@@ -81,11 +62,8 @@ FBuildingTower& UUI_InventorySlot::GetBuildingTower()
 
 void UUI_InventorySlot::ClearSlot()
 {
-	TowersIcon->SetVisibility(ESlateVisibility::Hidden);
-	TowersCDMask->SetVisibility(ESlateVisibility::Hidden);
+	Super::ClearSlot();
 	TPBNumber->SetVisibility(ESlateVisibility::Hidden);
-	TCOCNumber->SetVisibility(ESlateVisibility::Hidden);
-	TowersCDValue->SetVisibility(ESlateVisibility::Hidden);
 }
 
 UWidget* UUI_InventorySlot::GetTowerTip()
@@ -191,7 +169,7 @@ void UUI_InventorySlot::UpdateTowerCD(float InDeltaTime)
 {
 	if (GetBuildingTower().CurrentConstructionTowersCD > 0)
 	{
-		DrawTowersCD(GetBuildingTower().GetTowerConstructionTimePercentage());
+		Super::DrawSlotCD(GetBuildingTower().GetTowerConstructionTimePercentage());
 		GetBuildingTower().CurrentConstructionTowersCD -= InDeltaTime;
 		GetBuildingTower().bCallUpdateTowersInfo = true;
 		UpdateTowersBuildingInfo();
@@ -203,7 +181,7 @@ void UUI_InventorySlot::UpdateTowerCD(float InDeltaTime)
 		GetBuildingTower().TowersPrepareBuildingNumber--;
 		GetBuildingTower().TowersConstructionNumber++;
 
-		DrawTowersCD(0.0f);
+		Super::DrawSlotCD(0.0f);
 
 		if (GetBuildingTower().TowersPrepareBuildingNumber > 0)
 		{
@@ -213,43 +191,11 @@ void UUI_InventorySlot::UpdateTowerCD(float InDeltaTime)
 	}
 }
 
-void UUI_InventorySlot::DrawTowersCD(float InTowersCD)
-{
-	if (CDMaterialDynamic)
-	{
-		if (InTowersCD > 0.0f && InTowersCD < 1.0f)
-		{
-			CDMaterialDynamic->SetScalarParameterValue(TowersClearValueName, true);
-			TowersCDMask->SetVisibility(ESlateVisibility::HitTestInvisible);
-		}
-		else
-		{
-			CDMaterialDynamic->SetScalarParameterValue(TowersClearValueName, false);
-			TowersCDMask->SetVisibility(ESlateVisibility::Hidden);
-		}
-
-		CDMaterialDynamic->SetScalarParameterValue(TowersMatCDName, InTowersCD);
-	}
-}
-
-void UUI_InventorySlot::DisplayNumber(UTextBlock* TextNumberBlock, int32 TextNumber)
-{
-	if (TextNumber < 1 || !GetBuildingTower().IsValid())
-	{
-		TextNumberBlock->SetVisibility(ESlateVisibility::Hidden);
-	}
-	else
-	{
-		TextNumberBlock->SetText(FText::FromString(FString::Printf(TEXT("%02d"), TextNumber)));
-		TextNumberBlock->SetVisibility(ESlateVisibility::HitTestInvisible);
-	}
-}
-
 void UUI_InventorySlot::UpdateTowersBuildingInfo()
 {
-	DisplayNumber(TowersCDValue, GetBuildingTower().CurrentConstructionTowersCD);
-	DisplayNumber(TCOCNumber, GetBuildingTower().TowersConstructionNumber);
-	DisplayNumber(TPBNumber, GetBuildingTower().TowersPrepareBuildingNumber);
+	Super::UpdateSlotInfo(GetBuildingTower().CurrentConstructionTowersCD, GetBuildingTower().TowersConstructionNumber);
+
+	Super::DisplayNumber(TPBNumber, GetBuildingTower().TowersPrepareBuildingNumber);
 }
 
 //打开优化

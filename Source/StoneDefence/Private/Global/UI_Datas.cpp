@@ -3,6 +3,9 @@
 #include "Global/UI_Datas.h"
 #include "Character/Core/RuleOfTheCharacter.h"
 
+
+int32 PlayerSkillNumber = 0;
+
 FGuid TowerIconGUID;
 AActor* TowerDoll;
 bool bLockGUID = false;

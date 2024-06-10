@@ -17,6 +17,7 @@
 #include "Components/ArrowComponent.h"
 #include "Bullet/RuleOfTheBullet.h"
 #include "Core/GameCore/TowerDefencePlayerController.h"
+#include "Bullet/PlayerSkillSlotActor.h"
 
 //关闭优化optimize
 #if PLATFORM_WINDOWS
@@ -101,6 +102,22 @@ void StoneDefenceUtils::CallUpdateAllClient(UWorld* InWorld, TFunction<void(ATow
 			}
 		}
 	}
+}
+
+APlayerSkillSlotActor* StoneDefenceUtils::SpawnPlayerSkill(UWorld* InWorld, int32 SkillID)
+{
+	if (ATowerDefencePlayerState* InPlayerState = InWorld->GetFirstPlayerController()->GetPlayerState<ATowerDefencePlayerState>())
+	{
+		if (const FPlayerSkillData* PlayerSkillData = InPlayerState->GetPlayerSkillDataFromTable(SkillID))
+		{
+			if (APlayerSkillSlotActor* PlayerSkillSlot = InWorld->SpawnActor<APlayerSkillSlotActor>(PlayerSkillData->BulletClass, FVector::ZeroVector, FRotator::ZeroRotator))
+			{
+				return PlayerSkillSlot;
+			}
+		}
+	}
+
+	return nullptr;
 }
 
 ARuleOfTheBullet* StoneDefenceUtils::SpawnBullet(UWorld* InWorld, FGuid CharacterFGuid, UClass* InClass)

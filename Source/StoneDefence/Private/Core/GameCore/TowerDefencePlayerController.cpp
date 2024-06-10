@@ -47,6 +47,8 @@ void ATowerDefencePlayerController::BeginPlay()
 	Super::BeginPlay();
 
 	SetInputModeGameAndUI();
+
+	UpdateGlobalValue();
 }
 
 void ATowerDefencePlayerController::SetInputModeGameAndUI()
@@ -55,6 +57,11 @@ void ATowerDefencePlayerController::SetInputModeGameAndUI()
 	InputMode.SetLockMouseToViewportBehavior(EMouseLockMode::LockAlways);
 	InputMode.SetHideCursorDuringCapture(false);
 	SetInputMode(InputMode);
+}
+
+void ATowerDefencePlayerController::UpdateGlobalValue()
+{
+	//PlayerSkillNumber = 0;
 }
 
 void ATowerDefencePlayerController::SetupInputComponent()
@@ -163,5 +170,18 @@ void ATowerDefencePlayerController::UpdateInventory_Client(const FGuid& InVentor
 	if (ARuleOfTheHUD* NewHUD = GetHUD<ARuleOfTheHUD>())
 	{
 		NewHUD->UpdateInventorySlot(InVentorySlotGUID, bInCD);
+	}
+}
+
+void ATowerDefencePlayerController::SpawnPlayerSkill_Client(const int32& PlayerSkillSlotGUID)
+{
+	StoneDefenceUtils::SpawnPlayerSkill(GetWorld(), PlayerSkillSlotGUID);
+}
+
+void ATowerDefencePlayerController::UpdatePlayerSkill_Client(const FGuid& PlayerSkillSlotGUID, bool bInCD)
+{
+	if (ARuleOfTheHUD* NewHUD = GetHUD<ARuleOfTheHUD>())
+	{
+		NewHUD->UpdatePlayerSkillSlot(PlayerSkillSlotGUID, bInCD);
 	}
 }

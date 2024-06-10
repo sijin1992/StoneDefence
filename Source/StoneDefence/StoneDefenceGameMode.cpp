@@ -60,6 +60,9 @@ void AStoneDefenceGameMode::Tick(float DeltaSeconds)
 	//更新生成怪物
 	UpdateMonstersRule(DeltaSeconds);
 
+	//更新玩家技能
+	UpdatePlayerSkill(DeltaSeconds);
+
 	//更新技能
 	UpdateSkill(DeltaSeconds);
 
@@ -328,6 +331,46 @@ ARuleOfTheCharacter* AStoneDefenceGameMode::SpawnCharacter(
 		}
 	}
 	return OutCharacter;
+}
+
+void AStoneDefenceGameMode::UpdatePlayerSkill(float DeltaSeconds)
+{
+	if (ATowerDefenceGameState* InGameState = GetGameState<ATowerDefenceGameState>())
+	{
+		StoneDefenceUtils::CallUpdateAllClient(GetWorld(), [&](ATowerDefencePlayerController* MyPlayerController)
+			{
+				if (ATowerDefencePlayerState* InPlayerState = MyPlayerController->GetPlayerState<ATowerDefencePlayerState>())
+				{
+					for (auto& PlayerSkillDataPair : InPlayerState->GetSaveData()->PlayerSkillDatas)
+					{
+						if (PlayerSkillDataPair.Value.IsValid())
+						{
+							if (PlayerSkillDataPair.Value.CDTime > 0.0f)
+							{
+								PlayerSkillDataPair.Value.CDTime -= DeltaSeconds;
+								PlayerSkillDataPair.Value.bBecomeEffective = true;
+
+								//通知客户端更新玩家技能
+								StoneDefenceUtils::CallUpdateAllClient(GetWorld(), [&](ATowerDefencePlayerController* InPlayerController)
+									{
+										InPlayerController->UpdatePlayerSkill_Client(PlayerSkillDataPair.Key, true);
+									});
+							}
+							else if(PlayerSkillDataPair.Value.bBecomeEffective)
+							{
+								//通知客户端更新玩家技能
+								StoneDefenceUtils::CallUpdateAllClient(GetWorld(), [&](ATowerDefencePlayerController* InPlayerController)
+									{
+										InPlayerController->UpdatePlayerSkill_Client(PlayerSkillDataPair.Key, false);
+									});
+
+								PlayerSkillDataPair.Value.bBecomeEffective = false;
+							}
+						}
+					}
+				}
+			});
+	}
 }
 
 void AStoneDefenceGameMode::UpdateSkill(float DeltaSeconds)

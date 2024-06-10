@@ -26,7 +26,7 @@ struct FSkillData : public FDataCore
 	TAssetPtr<class UTexture2D> Icon;
 	//子弹类型
 	UPROPERTY(EditDefaultsOnly, Category = "Skill Attribute")
-	TSubclassOf<ARuleOfTheBullet> BulletClass;
+	TSubclassOf<AActor> BulletClass;
 	//技能描述
 	UPROPERTY(EditDefaultsOnly, Category = "Skill Attribute")
 	FText SkillIntroduce;

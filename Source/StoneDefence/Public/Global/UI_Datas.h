@@ -6,6 +6,7 @@
 
 class ARuleOfTheCharacter;
 
+extern int32 PlayerSkillNumber;
 extern FGuid TowerIconGUID;
 extern AActor* TowerDoll;
 extern bool bLockGUID;

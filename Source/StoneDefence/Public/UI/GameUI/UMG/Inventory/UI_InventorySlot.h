@@ -16,40 +16,15 @@ UCLASS()
 class STONEDEFENCE_API UUI_InventorySlot : public UUI_Slot
 {
 	GENERATED_BODY()
-	
-	UPROPERTY(meta = (BindWidget))
-	UImage* TowersIcon;//塔的图标
-
-	UPROPERTY(meta = (BindWidget))
-	UImage* TowersCDMask;//塔技能CD蒙版
 
 	UPROPERTY(meta = (BindWidget))
 	UTextBlock* TPBNumber;//Towers Prepare Building Number准备构建的数量
-
-	UPROPERTY(meta = (BindWidget))
-	UTextBlock* TCOCNumber;//Towers Completion Of Construction Number完成的数量
-
-	UPROPERTY(meta = (BindWidget))
-	UTextBlock* TowersCDValue;//塔的CD
-
-	UPROPERTY(meta = (BindWidget))
-	UButton* TISButton;//Towers Inventory Slot Button
-
-	UPROPERTY(EditDefaultsOnly, Category = UI)
-	FName TowersMatCDName;
-
-	UPROPERTY(EditDefaultsOnly, Category = UI)
-	FName TowersClearValueName;
 
 	//UPROPERTY(EditDefaultsOnly, Category = UI)
 	//TSubclassOf<class UStoneDefenceDragDropOperation> IconDragDrop;//拖拽实例
 
 	UPROPERTY(EditDefaultsOnly, Category = UI)
 	TSubclassOf<class UUI_IconDragDrop> IconDragDropClass;
-
-	//CD动态材质
-	UPROPERTY()
-	class UMaterialInstanceDynamic* CDMaterialDynamic;
 
 	UPROPERTY(EditDefaultsOnly, Category = UI)
 	TSubclassOf<class UUI_TowerTip> TowerTipClass;//Tips蓝图类
@@ -59,21 +34,17 @@ public:
 
 	virtual void NativeTick(const FGeometry& MyGeometry, float InDeltaTime) override;
 
-	UFUNCTION(BlueprintCallable)
-	void OnClickedWidget();
+	virtual void OnClickedWidget() override;
 
 	void UpdateUI();
 
 	FBuildingTower& GetBuildingTower();
 
 	//只是显示清除
-	void ClearSlot();
+	virtual void ClearSlot() override;
 
 	UFUNCTION(BlueprintCallable, BlueprintPure, Category = Tip)
 	UWidget* GetTowerTip();
-
-	//绘制CD
-	void DrawTowersCD(float InTowersCD);
 
 	//更新炮塔信息
 	void UpdateTowersBuildingInfo();
@@ -93,6 +64,4 @@ protected:
 private:
 	//更新炮塔CD
 	void UpdateTowerCD(float InDeltaTime);
-	//显示数字到Text组件上
-	void DisplayNumber(UTextBlock* TextNumberBlock, int32 TextNumber);
 };

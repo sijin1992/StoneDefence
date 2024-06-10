@@ -6,6 +6,7 @@
 #include "GameFramework/SaveGame.h"
 #include "../PlayerData.h"
 #include "../BuildingTowerData.h"
+#include "../PlayerSkillData.h"
 #include "PlayerSaveData.generated.h"
 
 /**
@@ -23,5 +24,9 @@ public:
 	//建造列表数据
 	UPROPERTY(SaveGame)
 	TMap<FGuid, FBuildingTower> BuildingTowers;
+
+	//玩家技能数据
+	UPROPERTY(SaveGame)
+	TMap<FGuid, FPlayerSkillData> PlayerSkillDatas;
 
 };

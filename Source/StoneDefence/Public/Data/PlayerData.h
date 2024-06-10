@@ -57,8 +57,4 @@ struct FPlayerData
 	//玩家拥有的技能
 	UPROPERTY(SaveGame)
 	TArray<int32> SkillID;
-
-	//玩家游戏中数据的状态
-	UPROPERTY(SaveGame)
-	TArray<FPlayerSkillData> SkillData;
 };

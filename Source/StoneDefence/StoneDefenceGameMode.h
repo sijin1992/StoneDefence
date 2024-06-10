@@ -48,6 +48,8 @@ protected:
 	void UpdatePlayerData(float DeltaSeconds);
 	//更新游戏数据
 	void UpdateGameData(float DeltaSeconds);
+	//更新玩家技能
+	void UpdatePlayerSkill(float DeltaSeconds);
 	//更新技能系统
 	void UpdateSkill(float DeltaSeconds);
 	//更新背包

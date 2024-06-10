@@ -47,9 +47,19 @@ public:
 	UFUNCTION(/*Client*/)
 	void SpawnBullet_S2C(const FGuid& CharacterFGuid, const int32& SkillID);//生成子弹特效
 	UFUNCTION(/*Client*/)
-	void UpdateInventory_Client(const FGuid& InVentorySlotGUID, bool bInCD);
+	void UpdateInventory_Client(const FGuid& InVentorySlotGUID, bool bInCD);//更新背包建造列表
 
+
+	UFUNCTION(/*Client*/)
+	void SpawnPlayerSkill_Client(const int32& PlayerSkillSlotGUID);//生成玩家技能
+	UFUNCTION(/*Client*/)
+	void UpdatePlayerSkill_Client(const FGuid& PlayerSkillSlotGUID, bool bInCD);//更新玩家技能
+
+
+	//设置
 	void SetInputModeGameAndUI();
+	//更新全局变量
+	void UpdateGlobalValue();
 
 	/**
 	* 绑定输入事件

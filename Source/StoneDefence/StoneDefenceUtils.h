@@ -13,6 +13,7 @@ class UWorld;
 class AStaticMeshActor;
 class ATowerDefencePlayerController;
 class ARuleOfTheBullet;
+class APlayerSkillSlotActor;
 
 namespace StoneDefenceUtils
 {
@@ -21,6 +22,9 @@ namespace StoneDefenceUtils
 
 	//通知客户端调用代理函数,多播委托
 	void CallUpdateAllClient(UWorld* InWorld, TFunction<void(ATowerDefencePlayerController* MyPlayerController)> InImplement);
+
+	//生成玩家技能
+	APlayerSkillSlotActor* SpawnPlayerSkill(UWorld* InWorld, int32 SkillID);
 
 	//服务端通知客户端生成子弹
 	ARuleOfTheBullet* SpawnBullet(UWorld* InWorld, FGuid CharacterFGuid, UClass* InClass);

@@ -26,15 +26,15 @@ class STONEDEFENCE_API ATowerDefenceGameState : public AGameState
 
 	friend class AStoneDefenceGameMode;
 
-	//塔数据
+	//塔数据表
 	UPROPERTY()//一定要加这个，否则很容易被GC回收
 	UDataTable* AITowerCharacterData;
 
-	//怪物数据
+	//怪物数据表
 	UPROPERTY()
 	UDataTable* AIMonsterCharacterData;
 
-	//角色技能数据
+	//角色技能数据表
 	UPROPERTY()
 	UDataTable* CharacterSkillData;
 
