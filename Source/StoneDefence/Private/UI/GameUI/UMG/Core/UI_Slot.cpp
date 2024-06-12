@@ -59,6 +59,26 @@ void UUI_Slot::DrawSlotCD(float CDValue)
 	}
 }
 
+void UUI_Slot::DisplayNumber(UTextBlock* TextNumberBlock, float TextNumber)
+{
+	if (TextNumber <= 0.0f)
+	{
+		TextNumberBlock->SetVisibility(ESlateVisibility::Hidden);
+	}
+	else
+	{
+		if (TextNumber > 0.0f && TextNumber <= 1.0f)
+		{
+			TextNumberBlock->SetText(FText::FromString(FString::Printf(TEXT("%.1f"), TextNumber)));
+		}
+		else
+		{
+			TextNumberBlock->SetText(FText::FromString(FString::Printf(TEXT("%02d"), (int32)TextNumber)));
+		}
+		TextNumberBlock->SetVisibility(ESlateVisibility::HitTestInvisible);
+	}
+}
+
 void UUI_Slot::DisplayNumber(UTextBlock* TextNumberBlock, int32 TextNumber)
 {
 	if (TextNumber < 1)

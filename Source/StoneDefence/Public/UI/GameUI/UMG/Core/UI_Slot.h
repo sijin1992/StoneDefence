@@ -61,6 +61,7 @@ protected:
 	virtual void OnClickedWidget() {};
 
 	//显示数字到Text组件上
+	void DisplayNumber(UTextBlock* TextNumberBlock, float TextNumber);
 	void DisplayNumber(UTextBlock* TextNumberBlock, int32 TextNumber);
 
 	virtual void ClearSlot();
