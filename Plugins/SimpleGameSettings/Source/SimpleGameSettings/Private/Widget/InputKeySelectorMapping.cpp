@@ -1,6 +1,6 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
-#include "Components/InputKeySelector.h"
+#include "Widget/InputKeySelectorMapping.h"
 #include "Engine/Font.h"
 #include "UObject/ConstructorHelpers.h"
 #include "UObject/FrameworkObjectVersion.h"
@@ -9,61 +9,61 @@
 #include "Internationalization/Internationalization.h"
 #include "Styling/UMGCoreStyle.h"
 
-#include UE_INLINE_GENERATED_CPP_BY_NAME(InputKeySelector)
+#include UE_INLINE_GENERATED_CPP_BY_NAME(InputKeySelectorMapping)
 
-#define LOCTEXT_NAMESPACE "UMG"
+#define LOCTEXT_NAMESPACE "SimpleUMG"
 
-static FButtonStyle* DefaultInputKeySelectorButtonStyle = nullptr;
-static FTextBlockStyle* DefaultInputKeySelectorTextStyle = nullptr;
+static FButtonStyle* DefaultInputKeySelectorMappingButtonStyle = nullptr;
+static FTextBlockStyle* DefaultInputKeySelectorMappingTextStyle = nullptr;
 
 #if WITH_EDITOR 
-static FButtonStyle* EditorInputKeySelectorButtonStyle = nullptr;
-static FTextBlockStyle* EditorInputKeySelectorTextStyle = nullptr;
+static FButtonStyle* EditorInputKeySelectorMappingButtonStyle = nullptr;
+static FTextBlockStyle* EditorInputKeySelectorMappingTextStyle = nullptr;
 #endif
 
-UInputKeySelector::UInputKeySelector( const FObjectInitializer& ObjectInitializer )
+UInputKeySelectorMapping::UInputKeySelectorMapping( const FObjectInitializer& ObjectInitializer )
 	: Super(ObjectInitializer)
 {
-	if (DefaultInputKeySelectorButtonStyle == nullptr)
+	if (DefaultInputKeySelectorMappingButtonStyle == nullptr)
 	{
-		DefaultInputKeySelectorButtonStyle = new FButtonStyle(FUMGCoreStyle::Get().GetWidgetStyle<FButtonStyle>("Button"));
+		DefaultInputKeySelectorMappingButtonStyle = new FButtonStyle(FUMGCoreStyle::Get().GetWidgetStyle<FButtonStyle>("Button"));
 
 		// Unlink UMG default colors.
-		DefaultInputKeySelectorButtonStyle->UnlinkColors();
+		DefaultInputKeySelectorMappingButtonStyle->UnlinkColors();
 	}
 
-	if (DefaultInputKeySelectorTextStyle == nullptr)
+	if (DefaultInputKeySelectorMappingTextStyle == nullptr)
 	{
-		DefaultInputKeySelectorTextStyle = new FTextBlockStyle(FUMGCoreStyle::Get().GetWidgetStyle<FTextBlockStyle>("NormalText"));
+		DefaultInputKeySelectorMappingTextStyle = new FTextBlockStyle(FUMGCoreStyle::Get().GetWidgetStyle<FTextBlockStyle>("NormalText"));
 
 		// Unlink UMG default colors.
-		DefaultInputKeySelectorTextStyle->UnlinkColors();
+		DefaultInputKeySelectorMappingTextStyle->UnlinkColors();
 	}
 
-	WidgetStyle = *DefaultInputKeySelectorButtonStyle;
-	TextStyle = *DefaultInputKeySelectorTextStyle;
+	WidgetStyle = *DefaultInputKeySelectorMappingButtonStyle;
+	TextStyle = *DefaultInputKeySelectorMappingTextStyle;
 
 #if WITH_EDITOR 
-	if (EditorInputKeySelectorButtonStyle == nullptr)
+	if (EditorInputKeySelectorMappingButtonStyle == nullptr)
 	{
-		EditorInputKeySelectorButtonStyle = new FButtonStyle(FCoreStyle::Get().GetWidgetStyle<FButtonStyle>("Button"));
+		EditorInputKeySelectorMappingButtonStyle = new FButtonStyle(FCoreStyle::Get().GetWidgetStyle<FButtonStyle>("Button"));
 
 		// Unlink UMG Editor colors from the editor settings colors.
-		EditorInputKeySelectorButtonStyle->UnlinkColors();
+		EditorInputKeySelectorMappingButtonStyle->UnlinkColors();
 	}
 
-	if (EditorInputKeySelectorTextStyle == nullptr)
+	if (EditorInputKeySelectorMappingTextStyle == nullptr)
 	{
-		EditorInputKeySelectorTextStyle = new FTextBlockStyle(FCoreStyle::Get().GetWidgetStyle<FTextBlockStyle>("NormalText"));
+		EditorInputKeySelectorMappingTextStyle = new FTextBlockStyle(FCoreStyle::Get().GetWidgetStyle<FTextBlockStyle>("NormalText"));
 
 		// Unlink UMG Editor colors from the editor settings colors.
-		EditorInputKeySelectorTextStyle->UnlinkColors();
+		EditorInputKeySelectorMappingTextStyle->UnlinkColors();
 	}
 
 	if (IsEditorWidget())
 	{
-		WidgetStyle = *EditorInputKeySelectorButtonStyle;
-		TextStyle = *EditorInputKeySelectorTextStyle;
+		WidgetStyle = *EditorInputKeySelectorMappingButtonStyle;
+		TextStyle = *EditorInputKeySelectorMappingTextStyle;
 
 		// The CDO isn't an editor widget and thus won't use the editor style, call post edit change to mark difference from CDO
 		PostEditChange();
@@ -85,14 +85,14 @@ UInputKeySelector::UInputKeySelector( const FObjectInitializer& ObjectInitialize
 	}
 }
 
-void UInputKeySelector::Serialize(FArchive& Ar)
+void UInputKeySelectorMapping::Serialize(FArchive& Ar)
 {
 	Super::Serialize(Ar);
 
 	Ar.UsingCustomVersion(FFrameworkObjectVersion::GUID);
 }
 
-void UInputKeySelector::SetSelectedKey( const FInputChord& InSelectedKey )
+void UInputKeySelectorMapping::SetSelectedKey( const FInputChord& InSelectedKey )
 {
 	if ( MyInputKeySelector.IsValid() )
 	{
@@ -101,7 +101,7 @@ void UInputKeySelector::SetSelectedKey( const FInputChord& InSelectedKey )
 	SelectedKey = InSelectedKey;
 }
 
-void UInputKeySelector::SetKeySelectionText( FText InKeySelectionText )
+void UInputKeySelectorMapping::SetKeySelectionText( FText InKeySelectionText )
 {
 	if ( MyInputKeySelector.IsValid() )
 	{
@@ -110,7 +110,7 @@ void UInputKeySelector::SetKeySelectionText( FText InKeySelectionText )
 	KeySelectionText = MoveTemp(InKeySelectionText);
 }
 
-void UInputKeySelector::SetNoKeySpecifiedText(FText InNoKeySpecifiedText)
+void UInputKeySelectorMapping::SetNoKeySpecifiedText(FText InNoKeySpecifiedText)
 {
 	if (MyInputKeySelector.IsValid())
 	{
@@ -119,7 +119,7 @@ void UInputKeySelector::SetNoKeySpecifiedText(FText InNoKeySpecifiedText)
 	NoKeySpecifiedText = MoveTemp(InNoKeySpecifiedText);
 }
 
-void UInputKeySelector::SetAllowModifierKeys( const bool bInAllowModifierKeys )
+void UInputKeySelectorMapping::SetAllowModifierKeys( const bool bInAllowModifierKeys )
 {
 	if ( MyInputKeySelector.IsValid() )
 	{
@@ -128,7 +128,7 @@ void UInputKeySelector::SetAllowModifierKeys( const bool bInAllowModifierKeys )
 	bAllowModifierKeys = bInAllowModifierKeys;
 }
 
-void UInputKeySelector::SetAllowGamepadKeys(const bool bInAllowGamepadKeys)
+void UInputKeySelectorMapping::SetAllowGamepadKeys(const bool bInAllowGamepadKeys)
 {
 	if (MyInputKeySelector.IsValid())
 	{
@@ -137,12 +137,12 @@ void UInputKeySelector::SetAllowGamepadKeys(const bool bInAllowGamepadKeys)
 	bAllowGamepadKeys = bInAllowGamepadKeys;
 }
 
-bool UInputKeySelector::GetIsSelectingKey() const
+bool UInputKeySelectorMapping::GetIsSelectingKey() const
 {
 	return MyInputKeySelector.IsValid() ? MyInputKeySelector->GetIsSelectingKey() : false;
 }
 
-void UInputKeySelector::SetButtonStyle( const FButtonStyle* InButtonStyle )
+void UInputKeySelectorMapping::SetButtonStyle( const FButtonStyle* InButtonStyle )
 {
 	if ( MyInputKeySelector.IsValid() )
 	{
@@ -151,7 +151,7 @@ void UInputKeySelector::SetButtonStyle( const FButtonStyle* InButtonStyle )
 	WidgetStyle = *InButtonStyle;
 }
 
-void UInputKeySelector::SetEscapeKeys(const TArray<FKey>& InKeys)
+void UInputKeySelectorMapping::SetEscapeKeys(const TArray<FKey>& InKeys)
 {
 	if (MyInputKeySelector.IsValid())
 	{
@@ -160,13 +160,13 @@ void UInputKeySelector::SetEscapeKeys(const TArray<FKey>& InKeys)
 	EscapeKeys = InKeys;
 }
 #if WITH_EDITOR
-const FText UInputKeySelector::GetPaletteCategory()
+const FText UInputKeySelectorMapping::GetPaletteCategory()
 {
 	return LOCTEXT("Advanced", "Advanced");
 }
 #endif
 
-void UInputKeySelector::SynchronizeProperties()
+void UInputKeySelectorMapping::SynchronizeProperties()
 {
 	Super::SynchronizeProperties();
 
@@ -181,14 +181,14 @@ void UInputKeySelector::SynchronizeProperties()
 	MyInputKeySelector->SetEscapeKeys(EscapeKeys);
 }
 
-void UInputKeySelector::ReleaseSlateResources(bool bReleaseChildren)
+void UInputKeySelectorMapping::ReleaseSlateResources(bool bReleaseChildren)
 {
 	Super::ReleaseSlateResources(bReleaseChildren);
 
 	MyInputKeySelector.Reset();
 }
 
-TSharedRef<SWidget> UInputKeySelector::RebuildWidget()
+TSharedRef<SWidget> UInputKeySelectorMapping::RebuildWidget()
 {
 	MyInputKeySelector = SNew(SInputKeySelector)
 		.SelectedKey(SelectedKey)
@@ -205,18 +205,18 @@ TSharedRef<SWidget> UInputKeySelector::RebuildWidget()
 	return MyInputKeySelector.ToSharedRef();
 }
 
-void UInputKeySelector::HandleKeySelected(const FInputChord& InSelectedKey)
+void UInputKeySelectorMapping::HandleKeySelected(const FInputChord& InSelectedKey)
 {
 	SelectedKey = InSelectedKey;
 	OnKeySelected.Broadcast(SelectedKey);
 }
 
-void UInputKeySelector::HandleIsSelectingKeyChanged()
+void UInputKeySelectorMapping::HandleIsSelectingKeyChanged()
 {
-	OnIsSelectingKeyChanged.Broadcast();
+	OnIsSelectingKeyChanged.Broadcast(this);
 }
 
-void UInputKeySelector::SetTextBlockVisibility(const ESlateVisibility InVisibility)
+void UInputKeySelectorMapping::SetTextBlockVisibility(const ESlateVisibility InVisibility)
 {
 	if (MyInputKeySelector.IsValid())
 	{

@@ -11,22 +11,25 @@
 #include "Components/Widget.h"
 #include "Styling/SlateTypes.h"
 #include "Layout/Visibility.h"
-#include "InputKeySelector.generated.h"
+#include "InputKeySelectorMapping.generated.h"
 
 class SInputKeySelector;
 struct FButtonStyle;
 
 /** A widget for selecting a single key or a single key with a modifier. */
 UCLASS()
-class UMG_API UInputKeySelector : public UWidget
+class SIMPLEGAMESETTINGS_API UInputKeySelectorMapping : public UWidget
 {
 	GENERATED_UCLASS_BODY()
 
 public:
-	DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam( FOnKeySelected, FInputChord, SelectedKey );
-	DECLARE_DYNAMIC_MULTICAST_DELEGATE( FOnIsSelectingKeyChanged );
+	DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam( FOnKeySelectedMappings, FInputChord, SelectedKey );
+	DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam( FOnIsSelectingKeyMappingChanged, UInputKeySelectorMapping*, InputKeySelectorMapping);
 
 public:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Appearance, meta = (DisplayName = "Style"))
+	FName ActionName;
+
 	/** The button style used at runtime */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Appearance, meta = (DisplayName = "Style"))
 	FButtonStyle WidgetStyle;
@@ -67,11 +70,11 @@ public:
 public:
 	/** Called whenever a new key is selected by the user. */
 	UPROPERTY( BlueprintAssignable, Category = "Widget Event" )
-	FOnKeySelected OnKeySelected;
+	FOnKeySelectedMappings OnKeySelected;
 
 	/** Called whenever the key selection mode starts or stops. */
 	UPROPERTY( BlueprintAssignable, Category = "Widget Event" )
-	FOnIsSelectingKeyChanged OnIsSelectingKeyChanged;
+	FOnIsSelectingKeyMappingChanged OnIsSelectingKeyChanged;
 
 	/** Sets the currently selected key. */
 	UFUNCTION( BlueprintCallable, Category = "Widget" )
