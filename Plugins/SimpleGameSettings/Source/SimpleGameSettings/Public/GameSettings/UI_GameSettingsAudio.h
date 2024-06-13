@@ -3,15 +3,18 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "UMG/Public/Blueprint/UserWidget.h"
+#include "Core/UI_SimpleGameSettingCore.h"
 #include "UI_GameSettingsAudio.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class SIMPLEGAMESETTINGS_API UUI_GameSettingsAudio : public UUserWidget
+class SIMPLEGAMESETTINGS_API UUI_GameSettingsAudio : public UUI_SimpleGameSettingCore
 {
 	GENERATED_BODY()
-	
+
+public:
+	virtual void SaveSetting() override;
+	virtual void LoadSetting() override;
 };

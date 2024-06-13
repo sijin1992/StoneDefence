@@ -3,3 +3,12 @@
 
 #include "GameSettings/UI_GameSettingsOtherSettings.h"
 
+void UUI_GameSettingsOtherSettings::SaveSetting()
+{
+
+}
+
+void UUI_GameSettingsOtherSettings::LoadSetting()
+{
+
+}
