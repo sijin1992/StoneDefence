@@ -24,7 +24,7 @@ public:
 	virtual void NativeTick(const FGeometry& MyGeometry, float InDeltaTime) override;
 	virtual void SaveSetting() override;
 	virtual void LoadSetting() override;
-	UInputKeySelector
+	
 	UFUNCTION()
 	void ChangeInputKey(FInputChord SelectedKey);
 
