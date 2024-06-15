@@ -25,8 +25,8 @@ public:
 	virtual void LoadSetting() {}
 
 protected:
+	void UpdateAttributeLevel(USlider* NewSlider, UTextBlock* NewBlock);
 	void UpdateAttribute(USlider* NewSlider, UTextBlock* NewBlock);
-
 	UFUNCTION()
 	virtual void ChangeValue(float InValue) {}
 
@@ -37,9 +37,14 @@ protected:
 
 	virtual void BindSelectionChanged(UComboBoxString* NewComboBoxString);
 
-	void SetSettingsLevel(USlider* InSlider, UTextBlock* NewBlock, int32& InLevel);
-	void SetSettingsLevel(USlider* InSlider, UTextBlock* NewBlock, TFunction<void(int32 InLevel)> InFunc);
-
 	void LoadSettingsLevel(USlider* InSlider, UTextBlock* NewBlock, TFunction<float()> InFunc);
+	void LoadSettingsValue(USlider* InSlider, UTextBlock* NewBlock, TFunction<float()> InFunc);
+
+	void SetSettingsLevel(USlider* InSlider, UTextBlock* NewBlock, TFunction<void(float InLevel)> InFunc);
+
+	void SetSettingsValue(USlider* InSlider, UTextBlock* NewBlock, TFunction<void(float InVlue)> InFunc);
+	void SetSettingsValue(USlider* InSlider, UTextBlock* NewBlock, TFunction<float()> InFunc);
+
+
 	void LoadBoxString(UComboBoxString* InBoxString, TFunction<FString()> InFunc);
 };
