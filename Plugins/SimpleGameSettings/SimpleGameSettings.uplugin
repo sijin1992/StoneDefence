@@ -19,6 +19,11 @@
 			"Name": "SimpleGameSettings",
 			"Type": "Runtime",
 			"LoadingPhase": "PostEngineInit"
+		},
+		{
+			"Name": "SimpleGameSettingsEditor",
+			"Type": "Editor",
+			"LoadingPhase": "Default"
 		}
 	]
 }
