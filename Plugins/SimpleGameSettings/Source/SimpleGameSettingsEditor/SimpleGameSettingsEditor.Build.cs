@@ -38,6 +38,8 @@ public class SimpleGameSettingsEditor : ModuleRules
 				"Engine",
 				"Slate",
 				"SlateCore",
+				"SimpleGameSettings",
+				"Settings"
 				// ... add private dependencies that you statically link with here ...	
 			}
 			);
