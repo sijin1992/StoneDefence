@@ -2,3 +2,8 @@
 
 
 #include "Data/Save/GameSaveData.h"
+
+void UGameSaveData::InitSaveGame(UWorld* InWorld)
+{
+	
+}

@@ -5,6 +5,12 @@
 #include "CoreMinimal.h"
 #include "StoneDefenceType.generated.h"
 
+enum EGameSaveType
+{
+	NONE		= 0b0000,//没有存档
+	ARCHIVES	= 0b0001,//有存档
+};
+
 //技能是自动提交还是手动提交
 UENUM(BlueprintType)
 enum class ESubmissionSkillRequestType :uint8

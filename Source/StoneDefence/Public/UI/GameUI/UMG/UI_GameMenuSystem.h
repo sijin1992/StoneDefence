@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Drop/UI_NativeOnDrop.h"
+#include "UMG/Public/Components/Button.h"
 #include "UI_GameMenuSystem.generated.h"
 
 class UButton;
@@ -22,7 +23,7 @@ class STONEDEFENCE_API UUI_GameMenuSystem : public UUI_NativeOnDrop
 	UButton* SaveGameButton;
 
 	UPROPERTY(meta = (BindWidget))
-	UButton* GameSettingButton;
+	UButton* SaveSettingsButton;
 
 	UPROPERTY(meta = (BindWidget))
 	UButton* GameQuitButton;
@@ -30,13 +31,13 @@ class STONEDEFENCE_API UUI_GameMenuSystem : public UUI_NativeOnDrop
 public:
 	virtual void NativeConstruct();
 
+	void BindSaveGame(FOnButtonClickedEvent ClickedEvent);
+
+	void BindSaveSettings(FOnButtonClickedEvent ClickedEvent);
+
+	void BindReturnGame(FOnButtonClickedEvent ClickedEvent);
+
 private:
-	UFUNCTION()
-	void ReturnGame();
-	UFUNCTION()
-	void SaveGame();
-	UFUNCTION()
-	void GameSetting();
 	UFUNCTION()
 	void GameQuit();
 };

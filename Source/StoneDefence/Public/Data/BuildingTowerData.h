@@ -34,7 +34,7 @@ struct FBuildingTower
 	UPROPERTY(SaveGame)
 	float CurrentConstructionTowersCD;
 
-	//作为Icon指针
+	//作为Icon指针,SaveGame会被保存Transient不会被保存
 	UPROPERTY(SaveGame)
 	UTexture2D* Icon;
 

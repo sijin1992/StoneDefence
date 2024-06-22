@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "GameFramework/SaveGame.h"
+#include "../Core/SaveGameCore.h"
 #include "../CharacterData.h"
 #include "../PlayerData.h"
 #include "../GameData.h"
@@ -13,7 +13,7 @@
  * 
  */
 UCLASS()
-class STONEDEFENCE_API UGameSaveData : public USaveGame
+class STONEDEFENCE_API UGameSaveData : public USaveGameCore
 {
 	GENERATED_BODY()
 
@@ -24,4 +24,7 @@ public:
 	//游戏数据
 	UPROPERTY(SaveGame)
 	FGameInstanceDatas GameDatas;
+
+	virtual void InitSaveGame(UWorld* InWorld) override;
+
 };

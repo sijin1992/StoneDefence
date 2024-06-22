@@ -9,6 +9,8 @@
 #include "UObject/ConstructorHelpers.h"
 #include "../StoneDefenceUtils.h"
 #include "Core/GameCore/TowerDefencePlayerController.h"
+#include "Core/GameCore/TowerDefenceGameInstance.h"
+#include "Data/CharacterData.h"
 
 ATowerDefencePlayerState::ATowerDefencePlayerState()
 {
@@ -19,23 +21,35 @@ ATowerDefencePlayerState::ATowerDefencePlayerState()
 void ATowerDefencePlayerState::BeginPlay()
 {
 	Super::BeginPlay();
-	//背包、建造列表数据
-	for (int32 i = 0; i < 21; i++)
+}
+
+bool ATowerDefencePlayerState::SaveGameData(int32 SaveNumber)
+{
+	if (SaveData)
 	{
-		GetSaveData()->BuildingTowers.Add(FGuid::NewGuid(), FBuildingTower());
+		return UGameplayStatics::SaveGameToSlot(SaveData, FString::Printf(TEXT("PlayerData_%i"), SaveNumber), 0);
 	}
-	//玩家技能数据
-	for (int32 i = 0; i < 10; i++)
-	{
-		GetSaveData()->PlayerSkillDatas.Add(FGuid::NewGuid(), FPlayerSkillData());
-	}
+	return false;
+}
+
+bool ATowerDefencePlayerState::ReadGameData(int32 SaveNumber)
+{
+	SaveData = Cast<UPlayerSaveData>(UGameplayStatics::LoadGameFromSlot(FString::Printf(TEXT("PlayerData_%i"), SaveNumber), 0));
+	return SaveData != nullptr;
 }
 
 UPlayerSaveData* ATowerDefencePlayerState::GetSaveData()
 {
 	if (!SaveData)
 	{
-		SaveData = Cast<UPlayerSaveData>(UGameplayStatics::CreateSaveGameObject(UPlayerSaveData::StaticClass()));
+		if (UTowerDefenceGameInstance* InGameInstance = GetWorld()->GetGameInstance<UTowerDefenceGameInstance>())
+		{
+			SaveData = StoneDefenceUtils::GetSave<UPlayerSaveData>(
+				GetWorld(), 
+				TEXT("PlayerData_%i"), 
+				InGameInstance->GetCurrentSaveSlotNumber(),
+				InGameInstance->GetGameType());
+		}
 	}
 
 	return SaveData;
@@ -118,16 +132,7 @@ void ATowerDefencePlayerState::UsePlayerSkill(const FGuid& SlotID)
 
 void ATowerDefencePlayerState::AddPlayerSkill(const FGuid& SlotID, int32 SkillID)
 {
-	if (const FPlayerSkillData* SkillData = GetPlayerSkillDataFromTable(SkillID))
-	{
-		GetSaveData()->PlayerSkillDatas[SlotID] = *SkillData;
-
-		//通知客户端添加玩家技能
-		StoneDefenceUtils::CallUpdateAllClient(GetWorld(), [&](ATowerDefencePlayerController* MyPlayerController)
-			{
-				MyPlayerController->UpdatePlayerSkill_Client(SlotID, false);
-			});
-	}
+	GetSaveData()->AddPlayerSkill(GetWorld(), &SlotID, SkillID);
 }
 
 const TArray<const FGuid*> ATowerDefencePlayerState::GetBuildingTowerIDs()

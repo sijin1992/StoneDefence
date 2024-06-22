@@ -34,13 +34,6 @@ void UUI_PlayerSkillSystem::LayoutPlayerSkillSlot()
 					PanelSlot->SetVerticalAlignment(VAlign_Fill);
 				}
 
-				//技能赋值
-				if (GetPlayerState()->GetPlayerData().SkillID.IsValidIndex(i))
-				{
-					int32 CurrentSkillID = GetPlayerState()->GetPlayerData().SkillID[i];
-					GetPlayerState()->AddPlayerSkill(*PlayerSkillGUIDs[i], CurrentSkillID);
-				}
-
 				PlayerSkillSlot->UpdateUI();
 			}
 		}

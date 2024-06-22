@@ -10,10 +10,33 @@
 #include "UMG/Public/Components/Image.h"
 #include "UI/GameUI/UMG/UI_RucksackSystem.h"
 #include "UI/GameUI/UMG/UI_PlayerSkillSystem.h"
+#include "../StoneDefenceUtils.h"
+#include "UI/GameUI/UMG/UI_GameMenuSystem.h"
+#include "UMG/Public/Components/VerticalBox.h"
 
 void UUI_MainScreen::NativeConstruct()
 {
 	Super::NativeConstruct();
+
+	SettingsButton->OnClicked.AddDynamic(this, &UUI_MainScreen::Settings);
+	//SaveGame
+	{
+		FOnButtonClickedEvent Delegate;
+		Delegate.AddDynamic(this, &UUI_MainScreen::SaveGame);
+		GameMenuSystem->BindSaveGame(Delegate);
+	}
+	//SaveSettings
+	{
+		FOnButtonClickedEvent Delegate;
+		Delegate.AddDynamic(this, &UUI_MainScreen::SaveSettings);
+		GameMenuSystem->BindSaveSettings(Delegate);
+	}
+	//ReturnGame
+	{
+		FOnButtonClickedEvent Delegate;
+		Delegate.AddDynamic(this, &UUI_MainScreen::ReturnGame);
+		GameMenuSystem->BindReturnGame(Delegate);
+	}
 }
 
 void UUI_MainScreen::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
@@ -84,4 +107,33 @@ void UUI_MainScreen::UpdatePlayerSkillSlot(const FGuid& PlayerSkillSlotGUID, boo
 	{
 		PlayerSkillSystem->UpdatePlayerSkillSlot(PlayerSkillSlotGUID, bInCD);
 	}
+}
+
+void UUI_MainScreen::Settings()
+{
+	if (GameMenuSystem->GetVisibility() == ESlateVisibility::Hidden)
+	{
+		NewWindows->SetVisibility(ESlateVisibility::Visible);
+		GameMenuSystem->SetVisibility(ESlateVisibility::Visible);
+	}
+	else 
+	{
+		NewWindows->SetVisibility(ESlateVisibility::Hidden);
+		GameMenuSystem->SetVisibility(ESlateVisibility::Hidden);
+	}
+}
+
+void UUI_MainScreen::SaveGame()
+{
+	StoneDefenceUtils::CreateAssistWidget<UUI_MainScreen, UUI_ArchivesSystem>(this, ArchivesSystemclass, BoxList);
+}
+
+void UUI_MainScreen::SaveSettings()
+{
+	StoneDefenceUtils::CreateAssistWidget<UUI_MainScreen, UUI_GameSettingsSystem>(this, GameSettingsSystemclass, BoxList);
+}
+
+void UUI_MainScreen::ReturnGame()
+{
+	Settings();
 }

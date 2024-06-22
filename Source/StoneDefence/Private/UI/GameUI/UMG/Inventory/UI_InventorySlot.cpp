@@ -47,12 +47,9 @@ void UUI_InventorySlot::UpdateUI()
 {
 	Super::UpdateSlotUI(GetBuildingTower().Icon, GetBuildingTower().TowersConstructionNumber);
 
-	if (GetBuildingTower().TowersPrepareBuildingNumber > 0)
-	{
-		TPBNumber->SetVisibility(ESlateVisibility::HitTestInvisible);
-	}
-
 	//TowersIcon->SetBrushFromSoftTexture(GetBuildingTower().Icon);
+
+	UpdateTowersBuildingInfo();
 }
 
 FBuildingTower& UUI_InventorySlot::GetBuildingTower()

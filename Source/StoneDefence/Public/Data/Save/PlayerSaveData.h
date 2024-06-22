@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "GameFramework/SaveGame.h"
+#include "../Core/SaveGameCore.h"
 #include "../PlayerData.h"
 #include "../BuildingTowerData.h"
 #include "../PlayerSkillData.h"
@@ -13,7 +13,7 @@
  * 
  */
 UCLASS()
-class STONEDEFENCE_API UPlayerSaveData : public USaveGame
+class STONEDEFENCE_API UPlayerSaveData : public USaveGameCore
 {
 	GENERATED_BODY()
 public:
@@ -28,5 +28,10 @@ public:
 	//玩家技能数据
 	UPROPERTY(SaveGame)
 	TMap<FGuid, FPlayerSkillData> PlayerSkillDatas;
+
+
+	virtual void InitSaveGame(UWorld* InWorld) override;
+
+	void AddPlayerSkill(UWorld* InWorld, const FGuid* Guid, int32 SkillID);
 
 };

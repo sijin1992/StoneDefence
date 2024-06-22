@@ -13,6 +13,20 @@ UCLASS()
 class STONEDEFENCE_API UUI_MainScreen : public UUI_RuleOfTheWidget
 {
 	GENERATED_BODY()
+
+	UPROPERTY(meta = (BindWidget))
+	class UVerticalBox* NewWindows;
+
+	UPROPERTY(meta = (BindWidget))
+	class UButton* SettingsButton;
+
+	UPROPERTY(meta = (BindWidget))
+	class USizeBox* BoxList;
+
+	UPROPERTY(EditDefaultsOnly, Category = UI)
+	TSubclassOf<class UUI_ArchivesSystem> ArchivesSystemclass;
+	UPROPERTY(EditDefaultsOnly, Category = UI)
+	TSubclassOf<class UUI_GameSettingsSystem> GameSettingsSystemclass;
 	
 	UPROPERTY(meta = (BindWidget))
 	class UUI_GameMenuSystem* GameMenuSystem;
@@ -49,4 +63,16 @@ public:
 	void UpdateInventorySlot(const FGuid& InventorySlotGUID, bool bInCD);
 
 	void UpdatePlayerSkillSlot(const FGuid& PlayerSkillSlotGUID, bool bInCD);
+
+	UFUNCTION()
+	void Settings();
+
+	UFUNCTION()
+	void SaveGame();
+
+	UFUNCTION()
+	void SaveSettings();
+
+	UFUNCTION()
+	void ReturnGame();
 };

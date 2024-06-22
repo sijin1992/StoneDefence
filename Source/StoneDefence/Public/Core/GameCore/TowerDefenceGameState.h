@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "GameFramework/GameState.h"
+#include "../RuleOfTheGameState.h"
 #include "Data/CharacterData.h"
 #include "Data/Save/GameSaveData.h"
 #include "Data/GameData.h"
@@ -20,7 +20,7 @@ class UGameSaveSlotList;
 struct FSkillData;
 
 UCLASS()
-class STONEDEFENCE_API ATowerDefenceGameState : public AGameState
+class STONEDEFENCE_API ATowerDefenceGameState : public ARuleOfTheGameState
 {
 	GENERATED_BODY()
 
@@ -44,11 +44,9 @@ public:
 	//获取游戏数据
 	FGameInstanceDatas& GetGameData();
 
-	UFUNCTION(BlueprintCallable, Category = SaveData)
-	bool SaveGameData(int32 SaveNumber);
+	virtual bool SaveGameData(int32 SaveNumber) override;
 
-	UFUNCTION(BlueprintCallable, Category = SaveData)
-	bool ReadGameData(int32 SaveNumber);
+	virtual bool ReadGameData(int32 SaveNumber) override;
 
 	/////////////////////////////////模板角色///////////////////////////////////
 	//获取塔、怪物数据表
@@ -96,16 +94,12 @@ public:
 protected:
 	//获取所有需要保存的数据
 	UGameSaveData* GetSaveData();
-	//获取存档数据
-	UGameSaveSlotList* GetGameSaveSlotList();
 
 private:
 	//需要保存的游戏数据
 	UPROPERTY()
 	UGameSaveData* SaveData;
-	//存档数据
-	UPROPERTY()
-	UGameSaveSlotList* SlotList;
+
 	//缓存数据
 	TArray<FCharacterData*> CacheTowerDatas;
 	TArray<FCharacterData*> CacheMonsterDatas;

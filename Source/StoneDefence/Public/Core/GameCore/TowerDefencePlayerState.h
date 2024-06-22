@@ -8,6 +8,7 @@
 #include "Data/BuildingTowerData.h"
 #include "TowerDefencePlayerState.generated.h"
 
+struct FCharacterData;
 /**
  * 
  */
@@ -26,6 +27,11 @@ public:
 	virtual void BeginPlay() override;
 
 	/////////////////////////////////////保存数据/////////////////////////////////////
+	
+	bool SaveGameData(int32 SaveNumber);
+
+	virtual bool ReadGameData(int32 SaveNumber);
+
 	//获取所有需要保存的数据
 	UPlayerSaveData* GetSaveData();
 	//获取玩家数据

@@ -14,6 +14,7 @@
 #include "Character/CharacterCore/Towers.h"
 #include "Character/CharacterCore/Monsters.h"
 #include "Engine/World.h"
+#include "Core/GameCore/TowerDefenceGameInstance.h"
 
 //关闭优化
 #if PLATFORM_WINDOWS
@@ -39,12 +40,67 @@ void AStoneDefenceGameMode::BeginPlay()
 	Super::BeginPlay();
 	UE_LOG(LogTemp, Warning, TEXT("Game BeginPlay"));
 
+	if (UTowerDefenceGameInstance* InGameInstance = GetWorld()->GetGameInstance<UTowerDefenceGameInstance>())
+	{
+		if (ATowerDefenceGameState* InGameState = GetGameState<ATowerDefenceGameState>())
+		{
+			//如果没有存档
+			if (InGameInstance->GetCurrentSaveSlotNumber() == INDEX_NONE &&
+				InGameInstance->GetGameType() == EGameSaveType::NONE)
+			{
+				InitData();
+			}
+			else
+			{
+				//从存档读取数据
+				InitDataFromArchives();
+				//清除存档痕迹
+				InGameInstance->ClearSaveMark();
+				//通过存档读取数据并还原游戏场景
+				//第一阶段：还原场景中的角色
+				for (auto& Temp : InGameState->GetSaveData()->CharacterDatas)
+				{
+					if (Temp.Value.Team == ETeam::RED)
+					{
+						SpawnTower(Temp.Value.ID, Temp.Value.Location, Temp.Value.Rotator, Temp.Key);
+					}
+					else
+					{
+						SpawnMonster(Temp.Value.ID, Temp.Value.Location, Temp.Value.Rotator, Temp.Key);
+					}
+				}
+			}
+		}
+	}
+}
+
+void AStoneDefenceGameMode::InitData()
+{
 	if (ATowerDefenceGameState* InGameState = GetGameState<ATowerDefenceGameState>())
 	{
 		InGameState->GetGameData().AssignedMonsterAmount();//计算每一波的怪物数量
+		//生成主塔
+		SpawnMainTowerRule();
 	}
-	//生成主塔
-	SpawnMainTowerRule();
+}
+
+void AStoneDefenceGameMode::InitDataFromArchives()
+{
+	if (ATowerDefenceGameState* InGameState = GetGameState<ATowerDefenceGameState>())
+	{
+		//初始化游戏数据
+		InGameState->GetSaveData();
+		//初始化存储的列表
+		InGameState->GetGameSaveSlotList();
+		//初始化玩家数据表
+		StoneDefenceUtils::CallUpdateAllClient(GetWorld(), [&](ATowerDefencePlayerController* MyPlayerController)
+			{
+				if (ATowerDefencePlayerState* InPlayerState = MyPlayerController->GetPlayerState<ATowerDefencePlayerState>())
+				{
+					InPlayerState->GetSaveData();//初始化玩家数据表
+				}
+			});
+	}
 }
 
 void AStoneDefenceGameMode::Tick(float DeltaSeconds)
@@ -267,9 +323,19 @@ ATowers* AStoneDefenceGameMode::SpawnTower(const int32 CharacterID, int32 Charac
 	return SpawnCharacter<ATowers>(CharacterID, CharacterLevel, GetGameState<ATowerDefenceGameState>()->AITowerCharacterData, Location, Rotator);
 }
 
+ATowers* AStoneDefenceGameMode::SpawnTower(const int32 CharacterID, const FVector& Location, const FRotator& Rotator, const FGuid& InCharacterGuid)
+{
+	return SpawnCharacter<ATowers>(CharacterID, 1, GetGameState<ATowerDefenceGameState>()->AITowerCharacterData, Location, Rotator, InCharacterGuid);
+}
+
 AMonsters* AStoneDefenceGameMode::SpawnMonster(const int32 CharacterID, int32 CharacterLevel, const FVector& Location, const FRotator& Rotator)
 {
 	return SpawnCharacter<AMonsters>(CharacterID, CharacterLevel, GetGameState<ATowerDefenceGameState>()->AIMonsterCharacterData, Location, Rotator);
+}
+
+AMonsters* AStoneDefenceGameMode::SpawnMonster(const int32 CharacterID, const FVector& Location, const FRotator& Rotator, const FGuid& InCharacterGuid)
+{
+	return SpawnCharacter<AMonsters>(CharacterID, 1, GetGameState<ATowerDefenceGameState>()->AIMonsterCharacterData, Location, Rotator, InCharacterGuid);
 }
 
 ARuleOfTheCharacter* AStoneDefenceGameMode::SpawnCharacter(
@@ -277,7 +343,8 @@ ARuleOfTheCharacter* AStoneDefenceGameMode::SpawnCharacter(
 	int32 CharacterLevel,
 	const UDataTable* InCharacterData,
 	const FVector& Location,
-	const FRotator& Rotator)
+	const FRotator& Rotator,
+	const FGuid& InCharacterGuid)
 {
 	ARuleOfTheCharacter* OutCharacter = nullptr;
 	if (ATowerDefenceGameState* InGameState = GetGameState<ATowerDefenceGameState>())
@@ -307,23 +374,32 @@ ARuleOfTheCharacter* AStoneDefenceGameMode::SpawnCharacter(
 				{
 					if (ARuleOfTheCharacter* RuleOfTheCharacter = GetWorld()->SpawnActor<ARuleOfTheCharacter>(NewClass, Location, Rotator))
 					{
-						RuleOfTheCharacter->ResetGUID();
-
-						FCharacterData& CharacterInstance = InGameState->AddCharacterData(RuleOfTheCharacter->GUID, *CharacterData);
-						CharacterInstance.UpdateHealth();
-						if (CharacterLevel > 1)
+						if (InCharacterGuid == FGuid())//新创建的角色对象
 						{
-							//升级
-							for (int32 i = 0; i < CharacterLevel; i++)
-							{
-								CharacterInstance.UpdateLevel();
-							}
-						}
-						//初始化角色的被动技能
-						RuleOfTheCharacter->InitSkill();
+							RuleOfTheCharacter->ResetGUID();
 
-						//注册队伍类型
-						RuleOfTheCharacter->RegisterTeam();
+							FCharacterData& CharacterInstance = InGameState->AddCharacterData(RuleOfTheCharacter->GUID, *CharacterData);
+							CharacterInstance.UpdateHealth();
+							if (CharacterLevel > 1)
+							{
+								//升级
+								for (int32 i = 0; i < CharacterLevel; i++)
+								{
+									CharacterInstance.UpdateLevel();
+								}
+							}
+
+							//初始化角色的被动技能
+							RuleOfTheCharacter->InitSkill();
+
+							//注册队伍类型
+							RuleOfTheCharacter->RegisterTeam();
+						}
+						else
+						{//还原存档的角色对象
+							RuleOfTheCharacter->GUID = InCharacterGuid;
+						}
+
 						OutCharacter = RuleOfTheCharacter;
 					}
 				}

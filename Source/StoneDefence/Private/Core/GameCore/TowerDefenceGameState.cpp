@@ -12,6 +12,7 @@
 #include "Data/SkillData.h"
 #include "Core/GameCore/TowerDefencePlayerController.h"
 #include "../StoneDefenceType.h"
+#include "Core/GameCore/TowerDefenceGameInstance.h"
 
 //关闭优化optimize
 #if PLATFORM_WINDOWS
@@ -55,24 +56,17 @@ UGameSaveData* ATowerDefenceGameState::GetSaveData()
 {
 	if (!SaveData)
 	{
-		SaveData = Cast<UGameSaveData>(UGameplayStatics::CreateSaveGameObject(UGameSaveData::StaticClass()));
-	}
-
-	return SaveData;
-}
-
-UGameSaveSlotList* ATowerDefenceGameState::GetGameSaveSlotList()
-{
-	if (!SlotList)
-	{
-		SlotList = Cast<UGameSaveSlotList>(UGameplayStatics::LoadGameFromSlot(FString::Printf(TEXT("SlotList")), 0));
-		if (!SlotList)
+		if (UTowerDefenceGameInstance* InGameInstance = GetWorld()->GetGameInstance<UTowerDefenceGameInstance>())
 		{
-			SlotList = Cast<UGameSaveSlotList>(UGameplayStatics::CreateSaveGameObject(UGameSaveSlotList::StaticClass()));
+			SaveData = StoneDefenceUtils::GetSave<UGameSaveData>(
+				GetWorld(), 
+				TEXT("SaveSlot_%i"), 
+				InGameInstance->GetCurrentSaveSlotNumber(),
+				InGameInstance->GetGameType());
 		}
 	}
 
-	return SlotList;
+	return SaveData;
 }
 
 ////////////////////////////////角色//////////////////////////////////////////

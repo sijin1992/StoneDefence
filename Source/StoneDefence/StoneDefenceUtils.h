@@ -4,6 +4,8 @@
 
 #include "CoreMinimal.h"
 #include "EngineUtils.h"
+#include "Kismet/GameplayStatics.h"
+#include "UMG/Public/Components/SizeBox.h"
 
 class ARuleOfTheCharacter;
 class IRuleCharacter;
@@ -17,6 +19,93 @@ class APlayerSkillSlotActor;
 
 namespace StoneDefenceUtils
 {
+	//获取存档
+	template<class T>
+	T* GetSave(UWorld* InWorld, const TCHAR* SaveName, int32 SaveIndex = INDEX_NONE, EGameSaveType InFlag = EGameSaveType::NONE)
+	{
+		T* InSlot = nullptr;
+
+		auto InitSlot = [&]()
+			{
+				InSlot = Cast<T>(UGameplayStatics::CreateSaveGameObject(T::StaticClass()));
+				if (InSlot)
+				{
+					InSlot->InitSaveGame(InWorld);
+				}
+			};
+
+		if (InFlag && EGameSaveType::ARCHIVES)
+		{
+			FString SlotString;
+			if (SaveIndex != INDEX_NONE)
+			{
+				SlotString = FString::Printf(TEXT("%s"), UTF8_TO_TCHAR(SaveName), SaveIndex);
+			}
+			else
+			{
+				SlotString = SaveName;
+				if (SlotString.Contains("%i"))
+				{
+					SlotString.RemoveFromEnd("_%i");
+					SlotString += TEXT("_0");
+				}
+			}
+
+			InSlot = Cast<T>(UGameplayStatics::LoadGameFromSlot(SlotString, 0));
+			if (!InSlot)
+			{
+				InitSlot();
+			}
+		}
+		else
+		{
+			InitSlot();
+		}
+
+		return InSlot;
+	}
+
+	//切换界面的模板
+	template<class T, class UserObject>
+	UserObject* CreateAssistWidget(T* ThisClass, UClass* AssistClass, USizeBox* WidgetArray)
+	{
+		UserObject* UserObjectElement = nullptr;
+
+		//播放动画的判断
+		if (0)
+		{
+			//播放淡入
+		}
+
+		if (WidgetArray->GetChildAt(0))
+		{
+			if (WidgetArray->GetChildAt(0)->IsA(AssistClass))
+			{
+				//关闭Border淡出
+
+				return UserObjectElement;
+			}
+			else
+			{
+				WidgetArray->ClearChildren();
+			}
+		}
+
+		UserObjectElement = CreateWidget<UserObject>(ThisClass->GetWorld(), AssistClass);
+		if (UserObjectElement)
+		{
+			if (WidgetArray->AddChild(UserObjectElement))
+			{
+			}
+			else
+			{
+				UserObjectElement->RemoveFromParent();
+			}
+		}
+
+		return UserObjectElement;
+	}
+
 	//找到相应角色触发代理函数
 	void FindCharacterToExecution(UWorld* InWorld, const FGuid CharacterFGuid, TFunction<void(ARuleOfTheCharacter* InCharacter)> Code);
 

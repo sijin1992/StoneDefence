@@ -29,17 +29,24 @@ public:
 protected:
 	virtual void BeginPlay() override;
 
+	void InitData();
+
+	void InitDataFromArchives();
+
 	virtual void Tick(float DeltaSeconds) override;
 	//生成主塔
 	void SpawnMainTowerRule();
 
+	ATowers* SpawnTower(const int32 CharacterID, const FVector& Location, const FRotator& Rotator, const FGuid& InCharacterGuid);
+	AMonsters* SpawnMonster(const int32 CharacterID, const FVector& Location, const FRotator& Rotator, const FGuid& InCharacterGuid);
+
 	//生成角色
-	ARuleOfTheCharacter* SpawnCharacter(const int32 CharacterID, int32 CharacterLevel, const UDataTable* InCharacterData, const FVector& Location, const FRotator& Rotator);
+	ARuleOfTheCharacter* SpawnCharacter(const int32 CharacterID, int32 CharacterLevel, const UDataTable* InCharacterData, const FVector& Location, const FRotator& Rotator, const FGuid& InCharacterGuid = FGuid());
 	//生成角色的模板函数
 	template<class T>
-	T* SpawnCharacter(const int32 CharacterID, int32 CharacterLevel, const UDataTable* InCharacterData, const FVector& Location, const FRotator& Rotator)
+	T* SpawnCharacter(const int32 CharacterID, int32 CharacterLevel, const UDataTable* InCharacterData, const FVector& Location, const FRotator& Rotator, const FGuid& InCharacterGuid = FGuid())
 	{
-		return Cast<T>(SpawnCharacter(CharacterID, CharacterLevel, InCharacterData, Location, Rotator));
+		return Cast<T>(SpawnCharacter(CharacterID, CharacterLevel, InCharacterData, Location, Rotator, InCharacterGuid));
 	}
 
 	//更新怪物数据
