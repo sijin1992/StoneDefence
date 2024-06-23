@@ -36,18 +36,23 @@ namespace StoneDefenceUtils
 
 		if (InFlag && EGameSaveType::ARCHIVES)
 		{
-			FString SlotString;
+			FString SlotString = SaveName;
 			if (SaveIndex != INDEX_NONE)
 			{
-				SlotString = FString::Printf(TEXT("%s"), UTF8_TO_TCHAR(SaveName), SaveIndex);
+				//FText MyText = FText::Format(FText::FromString(SaveName), SaveIndex);
+				//SlotString = MyText.ToString();
+				if (SlotString.Contains("%i"))
+				{
+					SlotString.RemoveFromEnd("%i");
+					SlotString += FString::FromInt(SaveIndex);
+				}
 			}
 			else
 			{
-				SlotString = SaveName;
 				if (SlotString.Contains("%i"))
 				{
-					SlotString.RemoveFromEnd("_%i");
-					SlotString += TEXT("_0");
+					SlotString.RemoveFromEnd("%i");
+					SlotString += TEXT("0");
 				}
 			}
 
