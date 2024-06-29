@@ -61,6 +61,10 @@ namespace StoneDefenceUtils
 			{
 				InitSlot();
 			}
+			else
+			{
+				InSlot->InitSaveGameFromArchives(InWorld);
+			}
 		}
 		else
 		{
@@ -193,4 +197,48 @@ namespace MeshUtils
 	/// <param name="SkeletalMeshComponent"></param>
 	/// <returns></returns>
 	UStaticMesh* SkeletalMeshToStaticMesh(USkeletalMeshComponent* SkeletalMeshComponent);
+}
+/// <summary>
+/// 渲染
+/// </summary>
+namespace RenderingUtils
+{
+	struct FScreenShot
+	{
+		/// <summary>
+		/// 构造函数
+		/// </summary>
+		/// <param name="InWidth"></param>
+		/// <param name="InHeight"></param>
+		/// <param name="InTexture">截图</param>
+		/// <param name="InOuter">在谁的内部</param>
+		/// <param name="InFilename">贴图名</param>
+		/// <param name="InImageQuality">贴图质量</param>
+		/// <param name="bInShowUI">截屏时是否把UI也截进去</param>
+		/// <param name="bAddFilenameSuffix">是否添加文件名后缀</param>
+		FScreenShot(
+			int32 InWidth,
+			int32 InHeight,
+			UTexture2D*& InTexture,
+			UObject* InOuter,
+			int32 InImageQuality = 80,
+			bool bInShowUI = false,
+			bool bAddFilenameSuffix = true
+		);
+
+		FString& GetFilename() { return Filename; }
+
+	protected:
+		void OnScreenshotCapturedInternal(int32 SrcWidth, int32 SrcHeight, const TArray<FColor>& OrigBitmap);
+
+	private:
+		//玩家定制的属性
+		UTexture2D*& Texture;
+		FDelegateHandle ScreenShotDelegateHandle;
+		int32 ScaleWidth;
+		int32 ScaleHeight;
+		int32 ImageQuality;
+		UObject* Outer;
+		FString Filename;
+	};
 }

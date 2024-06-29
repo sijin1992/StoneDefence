@@ -43,3 +43,5 @@ for (const auto& Temp : AdditionalSkillData) \
 	Value -= Temp.Value.InCD; \
 } \
 return Value;
+
+#define GAMETHUMBNAIL_SCREENSHOT(InWidth,InHeight,InTexture,InOuter) (new RenderingUtils::FScreenShot(InWidth,InHeight,InTexture,InOuter))

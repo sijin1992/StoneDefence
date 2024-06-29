@@ -19,7 +19,8 @@ public class StoneDefence : ModuleRules
 			"ApexDestruction",
             "AIModule",
 			"GameplayTasks",
-            "RawMesh"
+            "RawMesh",
+			"ImageWrapper"
         });
 		//自定义插件
         PublicDependencyModuleNames.AddRange(new string[] {

@@ -6,6 +6,8 @@
 #include "UMG/Public/Components/CheckBox.h"
 #include "Core/SimpleArchivesGlobalVariable.h"
 #include "UMG/Public/Components/TextBlock.h"
+#include "Components/Image.h"
+#include "Data/SimpleArchivesList.h"
 
 
 #define LOCTEXT_NAMESPACE "ArchivesBar"
@@ -23,6 +25,16 @@ void UUI_ArchivesBar::NativeConstruct()
 	
 	CheckBoxButton->OnCheckStateChanged.AddDynamic(this, &UUI_ArchivesBar::ClickedCheckBox);
 	DeleteMyDataButton->OnClicked.AddDynamic(this, &UUI_ArchivesBar::OnClickedWidgetDelete);
+}
+
+void UUI_ArchivesBar::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
+{
+	Super::NativeTick(MyGeometry, InDeltaTime);
+
+	if (FSaveSlot* InSlot = GetSaveSlot())
+	{
+		SetGameThumbnail(InSlot->GameThumbnail.GameThumbnail);
+	}
 }
 
 void UUI_ArchivesBar::Update()
@@ -56,7 +68,10 @@ void UUI_ArchivesBar::SetCheckBoxState(ECheckBoxState InState)
 
 void UUI_ArchivesBar::SetGameThumbnail(UTexture2D* InImage)
 {
-
+	if (GameThumbnail->Brush.GetResourceObject() != InImage)
+	{
+		GameThumbnail->SetBrushFromTexture(InImage);
+	}
 }
 
 void UUI_ArchivesBar::SetChapterName(const FText& InText)
@@ -74,6 +89,15 @@ void UUI_ArchivesBar::ClearSlotData()
 	SetSaveGameDate(FText::GetEmpty());
 	SetChapterName(FText::GetEmpty());
 	SetGameThumbnail(nullptr);
+}
+
+FSaveSlot* UUI_ArchivesBar::GetSaveSlot()
+{
+	if (ISimpleArchivesInterface* SimpleArchivesInterface = GetCorrectArchivesInterface())
+	{
+		return SimpleArchivesInterface->GetSaveSlot(SlotIndex);
+	}
+	return nullptr;
 }
 
 #undef LOCTEXT_NAMESPACE

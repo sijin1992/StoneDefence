@@ -10,6 +10,7 @@
 #include "../StoneDefenceUtils.h"
 #include "Core/GameCore/TowerDefencePlayerState.h"
 #include "Core/GameCore/TowerDefencePlayerController.h"
+#include "../StoneDefenceMacro.h"
 
 #define LOCTEXT_NAMESPACE "TowerGameInstance"
 
@@ -39,7 +40,7 @@ bool UTowerDefenceGameInstance::SaveGameData(int32 SaveNumber)
 			InSlot->DateText = FText::FromString(FDateTime::Now().ToString());
 			InSlot->LevelName = LOCTEXT("LevelName", "TestMap");
 			InSlot->ChapterName = LOCTEXT("ChapterName", "Hello World~~");
-			InSlot->GameThumbnail = nullptr;
+			InSlot->GameThumbnail.ScrPath = GAMETHUMBNAIL_SCREENSHOT(400,200, InSlot->GameThumbnail.GameThumbnail, GetWorld())->GetFilename();
 
 			bSave = InGameState->SaveGameData(SaveNumber);
 		}

@@ -3,18 +3,17 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "UMG/Public/Blueprint/UserWidget.h"
+#include "Core/UI_ArchivesWidget.h"
 #include "UI_ArchivesSystem.generated.h"
 
 class UButton;
 class UUI_ArchivesBar;
 class UScrollBox;
-class ISimpleArchivesInterface;
 /**
  * 
  */
 UCLASS()
-class SIMPLEARCHIVES_API UUI_ArchivesSystem : public UUserWidget
+class SIMPLEARCHIVES_API UUI_ArchivesSystem : public UUI_ArchivesWidget
 {
 	GENERATED_BODY()
 	
@@ -49,9 +48,6 @@ protected:
 	void CallAllCheckBox(UUI_ArchivesBar* OwnerArchivesBar);
 
 	void ResetArchivesBar(UUI_ArchivesBar* InArchivesBar, const FSaveSlot* InData);
-
-	//获取正确的接口
-	ISimpleArchivesInterface* GetCorrectArchivesInterface();
 
 private:
 

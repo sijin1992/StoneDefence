@@ -151,20 +151,6 @@ void UUI_ArchivesSystem::ResetArchivesBar(UUI_ArchivesBar* InArchivesBar, const 
 	if (InArchivesBar && InData)
 	{
 		InArchivesBar->SetSaveGameDate(InData->DateText);
-		InArchivesBar->SetGameThumbnail(InData->GameThumbnail);
 		InArchivesBar->SetChapterName(InData->ChapterName);
 	}
-}
-
-ISimpleArchivesInterface* UUI_ArchivesSystem::GetCorrectArchivesInterface()
-{
-	TArray<ISimpleArchivesInterface*>& MyArchives = SimpleArchivesGlobalVariable::GetSimpleArchivesArray();
-	for (const auto& Temp : MyArchives)
-	{
-		if (Temp->GetSimpleWorld())
-		{
-			return Temp;
-		}
-	}
-	return nullptr;
 }

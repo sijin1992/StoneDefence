@@ -15,6 +15,8 @@ class STONEDEFENCE_API USaveGameCore : public USaveGame
 	GENERATED_BODY()
 
 public:
-	//创建时调用
+	//创建时调用,如果是读取就不调用
 	virtual void InitSaveGame(UWorld* InWorld);
+
+	virtual void InitSaveGameFromArchives(UWorld* InWorld) {}
 };

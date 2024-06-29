@@ -39,6 +39,7 @@ public class SimpleArchives : ModuleRules
 				"Slate",
 				"SlateCore",
 				"UMG",
+                "ImageWrapper",
 				// ... add private dependencies that you statically link with here ...	
 			}
 			);

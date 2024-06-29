@@ -21,4 +21,7 @@ public:
 	FSaveSlotList SlotList;
 
 	virtual void InitSaveGame(UWorld* InWorld) override;
+
+	virtual void InitSaveGameFromArchives(UWorld* InWorld) override;
+
 };

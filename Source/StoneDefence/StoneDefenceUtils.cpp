@@ -18,6 +18,11 @@
 #include "Bullet/RuleOfTheBullet.h"
 #include "Core/GameCore/TowerDefencePlayerController.h"
 #include "Bullet/PlayerSkillSlotActor.h"
+#include "ImageUtils.h"
+#include "Modules/ModuleManager.h"
+#include "IImageWrapperModule.h"
+#include "IImageWrapper.h"
+#include "Misc/FileHelper.h"
 
 //关闭优化optimize
 #if PLATFORM_WINDOWS
@@ -510,6 +515,61 @@ UStaticMesh* MeshUtils::SkeletalMeshToStaticMesh(USkeletalMeshComponent* Skeleta
 	}
 
 	return StaticMesh;
+}
+
+RenderingUtils::FScreenShot::FScreenShot(
+	int32 InWidth, 
+	int32 InHeight, 
+	UTexture2D*& InTexture, 
+	UObject* InOuter, 
+	int32 InImageQuality /*= 80*/, 
+	bool bInShowUI /*= false*/,
+	bool bAddFilenameSuffix /*= true */)
+	:Texture(InTexture),
+	ScaleWidth(InWidth),
+	ScaleHeight(InHeight),
+	ImageQuality(InImageQuality),
+	Outer(InOuter)
+{
+	if (!UGameViewportClient::OnScreenshotCaptured().IsBound())
+	{
+		Filename = FPaths::ProjectSavedDir() / TEXT("SaveGames") / FGuid::NewGuid().ToString();
+		//绑定代理,渲染结束回调
+		ScreenShotDelegateHandle = UGameViewportClient::OnScreenshotCaptured().AddRaw(this, &RenderingUtils::FScreenShot::OnScreenshotCapturedInternal);
+		//请求渲染
+		FScreenshotRequest::RequestScreenshot(Filename, bInShowUI, bAddFilenameSuffix);
+		Filename += TEXT(".jpg");
+	}
+}
+
+void RenderingUtils::FScreenShot::OnScreenshotCapturedInternal(int32 SrcWidth, int32 SrcHeight, const TArray<FColor>& OrigBitmap)
+{
+	//加载专门处理图片的模块
+	IImageWrapperModule& ImageWrapperModule = FModuleManager::LoadModuleChecked<IImageWrapperModule>(FName("ImageWrapper"));
+
+	check(OrigBitmap.Num() == SrcWidth * SrcHeight);
+
+	//调整图像大小以强制最大大小
+	TArray<FColor> ScaledBitmap;
+	FImageUtils::ImageResize(SrcWidth, SrcHeight, OrigBitmap, ScaleWidth, ScaleHeight, ScaledBitmap, true);
+	//获取图像处理工具
+	TSharedPtr<IImageWrapper> ImageWrapper = ImageWrapperModule.CreateImageWrapper(EImageFormat::JPEG);
+	ImageWrapper->SetRaw(ScaledBitmap.GetData(), ScaledBitmap.GetAllocatedSize(), ScaleWidth, ScaleHeight, ERGBFormat::BGRA, 8);
+
+	//jpg资源包头
+	TArray64<uint8> JPEGData = ImageWrapper->GetCompressed(ImageQuality);
+	FFileHelper::SaveArrayToFile(JPEGData, *Filename);
+	//开始压缩
+	FCreateTexture2DParameters Params;//压缩参数
+	Params.bDeferCompression = true;//一直压缩直到被保存为止
+	Texture = FImageUtils::CreateTexture2D(ScaleWidth, ScaleHeight, ScaledBitmap, Outer, FGuid::NewGuid().ToString(), RF_NoFlags, Params);
+	//移除代理
+	UGameViewportClient::OnScreenshotCaptured().Remove(ScreenShotDelegateHandle);
+	//释放图像处理的接口
+	ImageWrapper.Reset();
+
+	//结束自己
+	delete this;
 }
 
 //打开优化

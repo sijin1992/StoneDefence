@@ -3,18 +3,19 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "UMG/Public/Blueprint/UserWidget.h"
+#include "Core/UI_ArchivesWidget.h"
 #include "UI_ArchivesBar.generated.h"
 
 class UImage;
 class UTextBlock;
 class UCheckBox;
 class UButton;
+struct FSaveSlot;
 /**
  * 
  */
 UCLASS()
-class SIMPLEARCHIVES_API UUI_ArchivesBar : public UUserWidget
+class SIMPLEARCHIVES_API UUI_ArchivesBar : public UUI_ArchivesWidget
 {
 	GENERATED_BODY()
 	
@@ -46,6 +47,8 @@ public:
 
 	virtual void NativeConstruct() override;
 
+	virtual void NativeTick(const FGeometry& MyGeometry, float InDeltaTime) override;
+
 	void Update();
 
 	UFUNCTION()
@@ -63,4 +66,7 @@ public:
 	void SetSaveGameDate(const FText& InText);
 
 	void ClearSlotData();
+
+	FSaveSlot* GetSaveSlot();
+
 };

@@ -3,6 +3,27 @@
 #include "CoreMinimal.h"
 #include "SimpleArchivesList.generated.h"
 
+//游戏储存缩略图
+USTRUCT()
+struct SIMPLEARCHIVES_API FGameArchivesThumbnail
+{
+	GENERATED_USTRUCT_BODY()
+
+	FGameArchivesThumbnail();
+
+	//存档缩略图,Transient表示当前数据没法保存
+	UPROPERTY(Transient)
+	UTexture2D* GameThumbnail;
+
+	UPROPERTY(SaveGame)
+	FString ScrPath;
+
+	void InitResource();
+
+protected:
+	//读取图片
+	void LoadTexture2D(const FString& ImagePath);
+};
 
 USTRUCT()
 struct SIMPLEARCHIVES_API FSaveSlot
@@ -13,7 +34,7 @@ struct SIMPLEARCHIVES_API FSaveSlot
 
 	//存档缩略图
 	UPROPERTY(SaveGame)
-	UTexture2D* GameThumbnail;
+	FGameArchivesThumbnail GameThumbnail;
 
 	//存档关卡名
 	UPROPERTY(SaveGame)
