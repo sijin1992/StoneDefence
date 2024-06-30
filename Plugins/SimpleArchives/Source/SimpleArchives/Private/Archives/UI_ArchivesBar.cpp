@@ -70,6 +70,7 @@ void UUI_ArchivesBar::SetGameThumbnail(UTexture2D* InImage)
 {
 	if (GameThumbnail->Brush.GetResourceObject() != InImage)
 	{
+		GameThumbnail->SetColorAndOpacity(FLinearColor::White);
 		GameThumbnail->SetBrushFromTexture(InImage);
 	}
 }
@@ -86,9 +87,10 @@ void UUI_ArchivesBar::SetSaveGameDate(const FText& InText)
 
 void UUI_ArchivesBar::ClearSlotData()
 {
+	SetGameThumbnail(nullptr);
+	GameThumbnail->SetColorAndOpacity(FLinearColor::Black);
 	SetSaveGameDate(FText::GetEmpty());
 	SetChapterName(FText::GetEmpty());
-	SetGameThumbnail(nullptr);
 }
 
 FSaveSlot* UUI_ArchivesBar::GetSaveSlot()
